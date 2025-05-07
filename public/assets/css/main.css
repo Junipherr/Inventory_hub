@@ -3100,6 +3100,14 @@ body.fixed-layout.sidebar-mini .page-sidebar, body.fixed-layout.sidebar-mini .pa
 body.fixed-layout.sidebar-mini .content-wrapper {
   margin-left: 0; }
 
+body.sidebar-mini .header.sidebar-mini-active {
+  margin-left: 60px; /* Adjust topbar position */
+}
+
+body.sidebar-mini .content-wrapper {
+  margin-left: 60px; /* Adjust content position */
+}
+
 .page-footer {
   position: absolute;
   left: 0;

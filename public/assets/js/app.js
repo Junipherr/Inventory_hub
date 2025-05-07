@@ -1,4 +1,3 @@
-
 var APP = function() {
 
     // PATHS
@@ -104,6 +103,14 @@ $(function () {
     // SIDEBAR TOGGLE ACTION
     $('.js-sidebar-toggler').click(function() {
         $('body').toggleClass('sidebar-mini');
+        // Sync topbar by toggling class on header
+        $('.header').toggleClass('sidebar-mini-active');
+        // Ensure sidebar and topbar are in sync
+        if ($('body').hasClass('sidebar-mini')) {
+            $('.header').addClass('sidebar-mini-active');
+        } else {
+            $('.header').removeClass('sidebar-mini-active');
+        }
     });
     
     // fixed layout
@@ -220,4 +227,3 @@ $(function () {
     }
 
 });
-

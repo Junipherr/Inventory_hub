@@ -7,7 +7,7 @@
             </li>
         </ol>
     </div>
-    <div class="table-responsive">   
+    <div class="table-responsive">
         <div class="page-content fade-in-up">
             <div class="row">
                 <div class="col-md-6">
@@ -20,7 +20,26 @@
                         </div>
 
                         <div class="ibox-body">
-                            <form>
+                            @if (session('success'))
+                                <div class="alert alert-success">
+                                    <strong>Success!</strong> {{ session('success') }}
+
+                                </div>
+                            @endif
+
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <strong>Error!</strong> Please fix the following errors and try submitting again.
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            <form method="POST" action="{{ route('inventory.store') }}">
+                                @csrf
                                 <div class="form-group">
                                     <label for="item_name">Item Name</label>
                                     <input type="text" class="form-control" name="item_name">
@@ -69,10 +88,11 @@
                                 <button type="submit" class="btn btn-primary">Add Item</button>
                             </form>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
+
+
     </div>
 </x-main-layout>

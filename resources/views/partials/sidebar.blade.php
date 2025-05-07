@@ -1,4 +1,4 @@
-<nav class="page-sidebar overflow-hidden" id="sidebar">
+<nav class="page-sidebar overflow-hidden sidebar1" id="sidebar">
     <div id="sidebar-collapse">
         <div class="admin-block d-flex">
             <div>
@@ -11,23 +11,23 @@
         <ul class="side-menu metismenu">
             <li>
                 <a href="{{ url('dashboard') }}" class="{{ Request::is('dashboard') ? 'active' : '' }}">
-                    <i class="sidebar-item-icon fa fa-th-large"></i> 
+                    <i class="sidebar-item-icon fa fa-th-large"></i>
                     <span class="nav-label">
-                    Dashboard
+                        Dashboard
                     </span>
                 </a>
-                
-                    {{-- <span class="nav-label">Dashboard</span> --}}
-                
+
+                {{-- <span class="nav-label">Dashboard</span> --}}
+
             </li>
             <li class="heading">INVENTORY</li>
 
 
             <li>
                 <a href="{{ url('scanner') }}" class="{{ Request::is('scanner') ? 'active' : '' }}">
-                    <i class="sidebar-item-icon fa fa-qrcode"></i>  <span class="nav-label">Scanner</span>
+                    <i class="sidebar-item-icon fa fa-qrcode"></i> <span class="nav-label">Scanner</span>
                 </a>
-                
+
             </li>
 
 
@@ -45,7 +45,8 @@
                 </a>
             </li>
             <li>
-                <a href="categories.html"><i class="sidebar-item-icon fa fa-tags"></i>
+                <a href="{{ url('category') }}" class="{{ Request::is('category') ? 'active' : '' }}">
+                    <i class="sidebar-item-icon fa fa-tags"></i>
                     <span class="nav-label">Item Categories</span>
                 </a>
             </li>

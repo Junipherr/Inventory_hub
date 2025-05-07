@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('Inventory', 'Laravel') }}</title>
+    <title>{{ config('Inventory', 'Inventory Hub') }}</title>
     <!-- GLOBAL MAINLY STYLES-->
     <link href="{{ asset('/assets/vendors/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/vendors/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
@@ -14,9 +14,11 @@
     <link href="{{ asset('/assets/vendors/jvectormap/jquery-jvectormap-2.0.3.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/css/main.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="{{ asset('/assets/css/sidebar.css') }}" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/sidebar_fix.js'])
 </head>
-<body class="fixed-navbar has-animation sidebar-mini">
+<body class="fixed-navbar sidebar-mini has-animation">
+    
     <div class="page-wrapper">
         <header class="header">
             @include('partials.startheader')
@@ -30,6 +32,12 @@
             {{ $slot }}
         </div>
     </div>
+    
+    <div class="sidenav-backdrop backdrop"></div>
+    {{-- Tuyok2 --}}
+<div class="preloader-backdrop">
+    <div class="page-preloader">Loading</div>
+</div>
     <script src="{{ asset('assets/vendors/jquery/dist/jquery.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/vendors/popper.js/dist/umd/popper.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/vendors/bootstrap/dist/js/bootstrap.min.js') }}" type="text/javascript"></script>
@@ -41,6 +49,7 @@
     <script src="{{ asset('assets/vendors/jvectormap/jquery-jvectormap-us-aea-en.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/category.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/qr.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/js/sidebar_fix.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/app.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/scripts/dashboard_1_demo.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/dropdown-fix.js') }}" type="text/javascript"></script>
