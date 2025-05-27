@@ -13,7 +13,7 @@
                 <div class="col-md-6">
                     <div class="ibox">
                         <div class="ibox-head">
-                            <div class="ibox-title">Basic form</div>
+                            <div class="ibox-title">Add Items</div>
                             <div class="ibox-tools">
                                 <a class="ibox-collapse"><i class="fa fa-minus"></i></a>
                             </div>

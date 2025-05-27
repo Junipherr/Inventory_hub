@@ -4,31 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\QRCodeController;
 use App\Http\Controllers\ProfileController;
-use App\Models\Item;
 
-Route::get('/debug-item-units', function () {
-    $items = Item::with('units')->get();
-
-    $result = $items->map(function ($item) {
-        return [
-            'item_id' => $item->id,
-            'item_name' => $item->item_name,
-            'units' => $item->units->map(function ($unit) {
-                return [
-                    'unit_id' => $unit->id,
-                    'unit_number' => $unit->unit_number,
-                    'last_checked_at' => $unit->last_checked_at,
-                ];
-            }),
-        ];
-    });
-
-    return response()->json($result);
-});
-
+// Inventory routes
 Route::get('/inventory/qrcode/{id}', [InventoryController::class, 'generateQRCode'])->name('inventory.qrcode');
 
-// Commented the QR function
+// Removed QR code and show routes as QR feature is removed
 // Route::get('/inventory/{item}', [InventoryController::class, 'show'])->name('inventory.show');
 
 Route::get('/scanner', [InventoryController::class, 'scanner'])->middleware(['auth', 'verified'])->name('scanner');
