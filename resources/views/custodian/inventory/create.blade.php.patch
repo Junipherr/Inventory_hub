@@ -1,0 +1,70 @@
+@if (session('success'))
+                                <div class="alert alert-success">
+                                    <strong>Success!</strong> {{ session('success') }}
+
+                                </div>
+                            @endif
+
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <strong>Error!</strong> Please fix the following errors and try submitting again.
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+=======
+                        <div class="ibox-body">
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <strong>Error!</strong> Please fix the following errors and try submitting again.
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+>>>>>>> REPLACE
+
+<<<<<<< SEARCH
+                <div class="ibox-body" id="addedItemPanel" style="min-height: 300px; padding: 10px; transition: opacity 0.5s ease; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <p style="color: #6b7280; font-size: 1rem;">No item added yet.</p>
+                        </div>
+=======
+                <div class="ibox-body" id="addedItemPanel" style="min-height: 300px; padding: 10px; transition: opacity 0.5s ease; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            @if (session('success'))
+                                <div class="alert alert-success" id="successNotification" style="width: 100%; margin-bottom: 10px;">
+                                    <strong>Success!</strong> {{ session('success') }}
+                                </div>
+                            @endif
+                            <p style="color: #6b7280; font-size: 1rem;">No item added yet.</p>
+                        </div>
+>>>>>>> REPLACE
+
+<<<<<<< SEARCH
+</script>
+
+</x-main-layout>
+=======
+</script>
+
+<script>
+// Make success notification disappear after 1 second
+window.addEventListener('DOMContentLoaded', (event) => {
+    const successNotification = document.getElementById('successNotification');
+    if (successNotification) {
+        setTimeout(() => {
+            successNotification.style.transition = 'opacity 0.5s ease';
+            successNotification.style.opacity = '0';
+            setTimeout(() => {
+                successNotification.remove();
+            }, 500);
+        }, 1000);
+    }
+});
+</script>
+
+</x-main-layout>

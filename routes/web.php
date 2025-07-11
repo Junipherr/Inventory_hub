@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InventoryController;
+
+Route::post('/inventory/confirm', [InventoryController::class, 'confirm'])->name('inventory.confirm');
+
 use App\Http\Controllers\QRCodeController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Item;
@@ -27,9 +30,6 @@ Route::get('/debug-item-units', function () {
 });
 
 Route::get('/inventory/qrcode/{id}', [InventoryController::class, 'generateQRCode'])->name('inventory.qrcode');
-
-// Commented the QR function
-// Route::get('/inventory/{item}', [InventoryController::class, 'show'])->name('inventory.show');
 
 Route::get('/scanner', [InventoryController::class, 'scanner'])->middleware(['auth', 'verified'])->name('scanner');
 

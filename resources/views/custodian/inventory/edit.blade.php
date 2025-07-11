@@ -49,10 +49,6 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="quantity">Quantity</label>
-                            <input type="number" class="form-control" id="quantity" name="quantity" value="{{ old('quantity', $item->quantity) }}" min="1" required>
-                        </div>
-                        <div class="form-group">
                             <label for="description">Description</label>
                             <textarea class="form-control" id="description" name="description">{{ old('description', $item->description) }}</textarea>
                         </div>

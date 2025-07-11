@@ -34,8 +34,8 @@
                                         <td>{{ $unit->unit_number }}</td>
                                         <td>{{ $item->description }}</td>
                                     </tr>
-                                    @endforeach
                                 @endforeach
+                            @endforeach
                             </tbody>
                         </table>
                         <button type="submit" class="btn btn-primary">Submit Checked Units</button>

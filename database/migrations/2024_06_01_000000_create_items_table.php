@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,7 +17,7 @@ class CreateItemsTable extends Migration
             $table->string('item_name');
             $table->string('department');
             $table->string('category_id');
-            $table->integer('quantity');
+            // $table->integer('quantity');
             $table->text('description')->nullable();
             $table->timestamps();
         });

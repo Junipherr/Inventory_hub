@@ -21,7 +21,7 @@
                                     <th>Item Name</th>
                                     <th>Department</th>
                                     <th>Category</th>
-                                    <th>Unit Number</th>
+                                    {{-- <th>Unit Number</th> --}}
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -32,7 +32,7 @@
                                         <td>{{ $item->item_name }}</td>
                                         <td>{{ $item->department }}</td>
                                         <td>{{ $item->category_id }}</td>
-                                        <td>{{ $unit->unit_number }}</td>
+                                        {{-- <td>{{ $unit->unit_number }}</td> --}}
                                         <td>
                                             @if($unit->last_checked_at)
                                                 <span class="badge bg-success">Present</span>

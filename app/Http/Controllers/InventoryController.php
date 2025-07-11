@@ -19,7 +19,7 @@ class InventoryController extends Controller
 
     public function scanner()
     {
-        $items = Item::with('units')->orderBy('quantity', 'desc')->get();
+        $items = Item::with('units')->get();
         return view('custodian.scanner', compact('items'));
     }
 
@@ -65,16 +65,41 @@ class InventoryController extends Controller
 
     public function store(Request $request)
     {
+        // Disable store method as item creation is moved to confirm
+        return redirect()->route('inventory.create');
+    }
+
+    public function confirm(Request $request)
+    {
         $validated = $request->validate([
             'item_name' => 'required|string|max:255',
             'department' => 'required|string|max:255',
             'category_id' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:1',
             'description' => 'nullable|string',
         ]);
 
+        $validated['quantity'] = 1;
+
         $item = Item::create($validated);
-        $item->syncUnits();
+
+        // Generate QR code data (e.g., encode item info as JSON)
+        $qrData = json_encode([
+            'id' => $item->id,
+            'item_name' => $item->item_name,
+            'department' => $item->department,
+            'category_id' => $item->category_id,
+            'description' => $item->description,
+        ]);
+
+        // Save QR code data to item
+        $item->qr_code = $qrData;
+        $item->save();
+
+        // Create a default unit for the new item
+        $item->units()->create([
+            'unit_number' => '1', // Default unit number, can be adjusted as needed
+            'last_checked_at' => null,
+        ]);
 
         return redirect()->route('inventory.create')->with('success', 'Item added successfully.');
     }
@@ -99,8 +124,8 @@ class InventoryController extends Controller
             'item_name' => 'required|string|max:255',
             'department' => 'required|string|max:255',
             'category_id' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:1',
             'description' => 'nullable|string',
+            'quantity' => 'required|integer|min:0',
         ]);
 
         $item->update($validated);
@@ -133,5 +158,20 @@ class InventoryController extends Controller
         }
 
         return redirect()->route('scanner')->with('success', 'Checked units updated successfully.');
+    }
+
+    public function generateQRCode($id)
+    {
+        $item = Item::findOrFail($id);
+
+        $qrData = $item->qr_code;
+
+        if (!$qrData) {
+            abort(404, 'QR code not found for this item.');
+        }
+
+        $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')->size(300)->generate($qrData);
+
+        return response($qrCode)->header('Content-Type', 'image/png');
     }
 }

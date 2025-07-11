@@ -45,16 +45,6 @@
                                                         <td>{{ $item->quantity }}</td>
                                                         <td>{{ $item->description }}</td>
                                                         <td>
-                                                            <a href="{{ route('inventory.edit', $item->id) }}" class="btn btn-primary btn-sm" style="margin-right: 5px;" title="Edit">
-                                                                <i class="ti-pencil"></i>
-                                                            </a>
-                                                            <form class="delete-item-form d-inline" data-item-id="{{ $item->id }}" onsubmit="return confirm('Are you sure you want to delete this item?');" action="{{ route('inventory.destroy', $item->id) }}" method="POST" style="display:inline;">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="btn btn-danger btn-sm" title="Delete">
-                                                                    <i class="ti-trash"></i>
-                                                                </button>
-                                                            </form>
                                                             <button
                                                                 type="button"
                                                                 class="btn btn-info btn-sm"
