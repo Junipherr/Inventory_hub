@@ -30,6 +30,13 @@ class InventoryController extends Controller
 
     public function dashboard()
     {
+        $user = auth()->user();
+        if ($user->role === 'Viewer') {
+            abort(403, 'Access denied. Viewers cannot access the custodian dashboard.');
+            // Alternatively, redirect to viewer dashboard placeholder route:
+            // return redirect()->route('viewer.dashboard');
+        }
+
         // Fetch distinct departments
         $departments = DB::table('items')
             ->select('department')
@@ -47,10 +54,10 @@ class InventoryController extends Controller
             $departmentCategories[$department] = $categories;
         }
 
-        // Fetch items grouped by department
+        // Fetch items grouped by department with eager loading units
         $itemsByDepartment = [];
         foreach ($departments as $department) {
-            $items = Item::where('department', $department)->get();
+            $items = Item::with('units')->where('department', $department)->get();
             $itemsByDepartment[$department] = $items;
         }
 
@@ -76,23 +83,15 @@ class InventoryController extends Controller
             'department' => 'required|string|max:255',
             'category_id' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'qr_code' => 'required|string|max:255',
         ]);
 
         $validated['quantity'] = 1;
 
         $item = Item::create($validated);
 
-        // Generate QR code data (e.g., encode item info as JSON)
-        $qrData = json_encode([
-            'id' => $item->id,
-            'item_name' => $item->item_name,
-            'department' => $item->department,
-            'category_id' => $item->category_id,
-            'description' => $item->description,
-        ]);
-
-        // Save QR code data to item
-        $item->qr_code = $qrData;
+        // Save qr_code from request
+        $item->qr_code = $validated['qr_code'];
         $item->save();
 
         // Create a default unit for the new item
@@ -100,6 +99,15 @@ class InventoryController extends Controller
             'unit_number' => '1', // Default unit number, can be adjusted as needed
             'last_checked_at' => null,
         ]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Item added successfully.',
+                'item_id' => $item->id,
+                'qr_code' => $validated['qr_code'],
+            ]);
+        }
 
         return redirect()->route('inventory.create')->with('success', 'Item added successfully.');
     }
@@ -170,8 +178,18 @@ class InventoryController extends Controller
             abort(404, 'QR code not found for this item.');
         }
 
-        $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')->size(300)->generate($qrData);
+        // For debugging: return raw qr_code data as plain text
+        return response($qrData)->header('Content-Type', 'text/plain');
+
+        /*
+        try {
+            $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')->size(300)->generate($qrData);
+        } catch (\Exception $e) {
+            \Log::error('QR code generation failed for item ID ' . $id . ': ' . $e->getMessage());
+            abort(500, 'Failed to generate QR code.');
+        }
 
         return response($qrCode)->header('Content-Type', 'image/png');
+        */
     }
 }

@@ -12,10 +12,10 @@
         @endif
         <div class="form-group">
             <div class="input-group-icon right">
-                <div class="input-icon"><i class="fa fa-envelope"></i></div>
-                <input class="form-control" type="email" name="email" placeholder="Email" value="{{ old('email') }}" required autofocus>
+                <div class="input-icon"><i class="fa fa-user"></i></div>
+                <input class="form-control" type="text" name="login" placeholder="Name or Email" value="{{ old('login') }}" required autofocus>
             </div>
-            @error('email')
+            @error('login')
                 <span class="text-danger">{{ $message }}</span>
             @enderror
         </div>

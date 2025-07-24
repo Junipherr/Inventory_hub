@@ -15,6 +15,10 @@ class ItemUnit extends Model
         'last_checked_at',
     ];
 
+    protected $casts = [
+        'last_checked_at' => 'datetime',
+    ];
+
     public function item()
     {
         return $this->belongsTo(Item::class);

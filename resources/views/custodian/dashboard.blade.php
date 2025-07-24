@@ -10,7 +10,7 @@
                         <ul class="nav nav-tabs tabs-line" role="tablist">
                             @foreach($departments as $index => $department)
                                 <li class="nav-item" role="presentation">
-                                    <a class="nav-link @if($index == 0) active @endif" id="tab-{{ $index }}-tab" data-toggle="tab" href="#tab-{{ $index }}" role="tab" aria-controls="tab-{{ $index }}" aria-selected="{{ $index == 0 ? 'true' : 'false' }}">
+                                    <a class="nav-link @if($index == 0) active @else bg-light text-dark @endif" id="tab-{{ $index }}-tab" data-toggle="tab" href="#tab-{{ $index }}" role="tab" aria-controls="tab-{{ $index }}" aria-selected="{{ $index == 0 ? 'true' : 'false' }}">
                                         {{ $department }}
                                     </a>
                                 </li>
@@ -25,8 +25,8 @@
                                     @if($items->isEmpty())
                                         <p>No items found in {{ $department }}.</p>
                                     @else
-                                        <table class="table table-striped">
-                                            <thead>
+                                        <table class="table table-striped table-hover">
+                                            <thead class="table-primary">
                                                 <tr>
                                                     <th>Item Name</th>
                                                     <th>Department</th>
@@ -75,18 +75,42 @@
             @endphp
             @foreach($items as $item)
                 <!-- Bootstrap Modal -->
-                <div class="modal fade" id="itemInfoModal{{ $item->id }}" tabindex="-1" aria-labelledby="itemInfoModalLabel{{ $item->id }}" aria-hidden="true">
+                <div class="modal fade" id="itemInfoModal{{ $item->id }}" tabindex="-1" aria-labelledby="itemInfoModalLabel{{ $item->id }}" aria-hidden="true" data-qr="{{ $item->qr_code }}">
                     <div class="modal-dialog modal-md modal-dialog-centered">
                         <div class="modal-content">
-                            <div class="modal-header">
+                            <div class="modal-header bg-primary text-white">
                                 <h5 class="modal-title" id="itemInfoModalLabel{{ $item->id }}">{{ $item->item_name }} Info</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <p><strong>Department:</strong> {{ $item->department }}</p>
+                                <p><strong>Department:</strong> <span class="badge bg-info text-dark">{{ $item->department }}</span></p>
                                 <p><strong>Category:</strong> {{ $item->category_id }}</p>
-                                <p><strong>Quantity:</strong> {{ $item->quantity }}</p>
+                                <p><strong>Quantity:</strong> <span class="badge bg-info text-dark">{{ $item->quantity }}</span></p>
                                 <p><strong>Description:</strong> {{ $item->description }}</p>
+                                @if($item->units->isNotEmpty())
+                                    <div class="mt-3">
+                                        <h6 class="text-primary">Units</h6>
+                                        <table class="table table-sm table-bordered">
+                                            <thead class="table-secondary">
+                                                <tr>
+                                                    <th>Unit Number</th>
+                                                    <th>Last Checked At</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($item->units as $unit)
+                                                    <tr>
+                                                        <td>{{ $unit->unit_number }}</td>
+<td>{{ $unit->last_checked_at ? $unit->last_checked_at->timezone(config('app.timezone'))->format('Y-m-d H:i') : 'Never' }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @endif
+                                <div class="card mt-3 p-3 text-center">
+                                    <canvas id="qrcode-{{ $item->id }}"></canvas>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -97,4 +121,32 @@
             @endforeach
         @endforeach
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var modals = document.querySelectorAll('.modal');
+            modals.forEach(function(modal) {
+                modal.addEventListener('show.bs.modal', function (event) {
+                    console.log('Modal show event fired for:', modal.id);
+                    var qrData = modal.getAttribute('data-qr');
+                    console.log('QR Data:', qrData);
+                    var qrcodeContainer = modal.querySelector('[id^="qrcode-"]');
+                    if (qrcodeContainer) {
+                        qrcodeContainer.innerHTML = '';
+                        if (qrData) {
+                            QRCode.toCanvas(qrcodeContainer, qrData, { width: 150, margin: 2 }, function (error) {
+                                if (error) console.error('QRCode error:', error);
+                                else console.log('QRCode generated successfully');
+                            });
+                        } else {
+                            console.warn('No QR data found for modal:', modal.id);
+                        }
+                    } else {
+                        console.warn('QR code container not found in modal:', modal.id);
+                    }
+                });
+            });
+        });
+    </script>
 </x-main-layout>

@@ -28,6 +28,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = auth()->user();
+
+        if ($user->role === 'Viewer') {
+            // Redirect to viewer dashboard placeholder route
+            return redirect()->route('viewer.dashboard');
+        }
+
+        // Default redirect to custodian dashboard
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

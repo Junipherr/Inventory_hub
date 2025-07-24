@@ -8,13 +8,11 @@
         </ol>
     </div>
     <div class="table-responsive">
-        @if (session('success'))
-            <div>
-                <div class="alert alert-success position-fixed" id="successNotification" style="top: 10px; right: 10px; z-index: 1050; width: auto; max-width: 300px;">
-                    <strong>Success!</strong> {{ session('success') }}
-                </div>
+        <div id="dynamicSuccessMessage" style="position: fixed; top: 10px; right: 10px; z-index: 1050; width: auto; max-width: 300px; display: none;">
+            <div class="alert alert-success">
+                <strong>Success!</strong> <span id="successMessageText"></span>
             </div>
-        @endif
+        </div>
         <div class="page-content fade-in-up">
             <div class="row">
                 <div class="col-md-6">
@@ -94,7 +92,6 @@
         </div>
     </div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <script>
 document.getElementById('addItemButton').addEventListener('click', function() {
     // Get form values
@@ -109,122 +106,105 @@ document.getElementById('addItemButton').addEventListener('click', function() {
         return;
     }
 
-    // Generate QR code data as JSON string
-    const qrData = JSON.stringify({
-        item_name: itemName,
-        department: department,
-        category_id: category,
-        description: description
-    });
-
-    // Generate QR code as data URL
-    QRCode.toDataURL(qrData, { width: 200, margin: 2 }, function (err, url) {
-        if (err) {
-            console.error(err);
-            alert('Failed to generate QR code.');
-            return;
+    // Generate random alphanumeric code for qr_code (12 characters)
+    function generateRandomCode(length) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
         }
+        return result;
+    }
+    const randomCode = generateRandomCode(12);
 
-        // Display added item details and QR code in the panel
-        const addedItemPanel = document.getElementById('addedItemPanel');
-            addedItemPanel.innerHTML = `
-                <div style="width: 100%; max-width: 400px; text-align: center; font-family: Arial, sans-serif; color: #374151;">
-                    <h3 style="font-weight: 600; font-size: 1.25rem; margin-bottom: 12px; padding-bottom: 6px;">Added Item Details</h3>
-                    <p style="margin: 8px 0;"><strong>Item Name:</strong> ${itemName}</p>
-                    <p style="margin: 8px 0;"><strong>Department:</strong> ${department}</p>
-                    <p style="margin: 8px 0;"><strong>Category:</strong> ${category}</p>
-                    <p style="margin: 8px 0 16px 0;"><strong>Description:</strong> ${description}</p>
-                    <img src="${url}" alt="QR Code" style="border: 2px solid #3b82f6; border-radius: 8px; margin: 0 auto 20px auto; display: block; width: 200px; height: 200px;" />
-                    <form method="POST" action="{{ route('inventory.confirm') }}" id="confirmForm">
-                        @csrf
-                        <input type="hidden" name="item_name" value="${itemName}">
-                        <input type="hidden" name="department" value="${department}">
-                        <input type="hidden" name="category_id" value="${category}">
-                        <input type="hidden" name="description" value="${description}">
-                        <button type="submit" class="btn btn-success" id="confirmButton" style="padding: 10px 20px; font-size: 1rem; border-radius: 6px; transition: background-color 0.3s ease;">Confirm</button>
-                    </form>
-                </div>
-            `;
+    // Display added item details with QR code immediately
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(randomCode)}&size=200x200`;
+    const addedItemPanel = document.getElementById('addedItemPanel');
+    addedItemPanel.innerHTML = `
+        <div style="width: 100%; max-width: 400px; text-align: center; font-family: Arial, sans-serif; color: #374151;">
+            <h3 style="font-weight: 600; font-size: 1.25rem; margin-bottom: 12px; padding-bottom: 6px;">Added Item Details</h3>
+            <p style="margin: 8px 0;"><strong>Item Name:</strong> ${itemName}</p>
+            <p style="margin: 8px 0;"><strong>Department:</strong> ${department}</p>
+            <p style="margin: 8px 0;"><strong>Category:</strong> ${category}</p>
+            <p style="margin: 8px 0 16px 0;"><strong>Description:</strong> ${description}</p>
+            <img src="${qrCodeUrl}" alt="QR Code" style="border: 2px solid #3b82f6; border-radius: 8px; margin: 20px auto 0 auto; display: block; width: 200px; height: 200px;" />
+            <form method="POST" action="{{ route('inventory.confirm') }}" id="confirmForm">
+                @csrf
+                <input type="hidden" name="item_name" value="${itemName}">
+                <input type="hidden" name="department" value="${department}">
+                <input type="hidden" name="category_id" value="${category}">
+                <input type="hidden" name="description" value="${description}">
+                <input type="hidden" name="qr_code" value="${randomCode}">
+                <button type="submit" class="btn btn-success" id="confirmButton" style="padding: 10px 20px; font-size: 1rem; border-radius: 6px; transition: background-color 0.3s ease;">Confirm</button>
+            </form>
+        </div>
+    `;
 
-            // Add event listener to disable confirm button on submit to prevent multiple submissions
-            const confirmForm = document.getElementById('confirmForm');
-            const confirmButton = document.getElementById('confirmButton');
-            confirmForm.addEventListener('submit', function(event) {
-                confirmButton.disabled = true;
-                confirmButton.innerText = 'Submitting...';
-            });
+    // Add event listener to confirm form for AJAX submission
+    const confirmForm = document.getElementById('confirmForm');
+    const confirmButton = document.getElementById('confirmButton');
+    confirmForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        confirmButton.disabled = true;
+        confirmButton.innerText = 'Submitting...';
 
-            // Fade in animation for added item panel
-            addedItemPanel.style.opacity = 0;
-            setTimeout(() => {
-                addedItemPanel.style.opacity = 1;
-            }, 50);
+        const formData = new FormData(confirmForm);
+
+        fetch(confirmForm.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': formData.get('_token'),
+                'Accept': 'application/json',
+            },
+            body: formData,
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Show success message dynamically
+                const successMessage = document.getElementById('dynamicSuccessMessage');
+                const successMessageText = document.getElementById('successMessageText');
+                successMessageText.textContent = data.message || 'Item confirmed successfully.';
+                successMessage.style.display = 'block';
+
+                // Reset confirm button text and keep it disabled to prevent resubmission
+                confirmButton.innerText = 'Confirmed';
+
+                setTimeout(() => {
+                    successMessage.style.transition = 'opacity 0.5s ease';
+                    successMessage.style.opacity = '0';
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                        successMessage.style.opacity = '1';
+                    }, 500);
+                }, 2000);
+            } else {
+                alert(data.message || 'Failed to confirm item.');
+                confirmButton.disabled = false;
+                confirmButton.innerText = 'Confirm';
+            }
+        })
+        .catch(error => {
+            confirmButton.disabled = false;
+            confirmButton.innerText = 'Confirm';
+            alert('Error submitting confirmation: ' + error.message);
+        });
+        // Do not re-enable the button on success to prevent resubmission
     });
+
+    // Fade in animation for added item panel
+    addedItemPanel.style.opacity = 0;
+    setTimeout(() => {
+        addedItemPanel.style.opacity = 1;
+    }, 50);
 });
 </script>
 
-<script>
-// Make success notification disappear after 1 second
-window.addEventListener('DOMContentLoaded', (event) => {
-    const successNotification = document.getElementById('successNotification');
-    if (successNotification) {
-        setTimeout(() => {
-            successNotification.style.transition = 'opacity 0.5s ease';
-            successNotification.style.opacity = '0';
-            setTimeout(() => {
-                successNotification.remove();
-            }, 500);
-        }, 1000);
-    }
-});
-</script>
-
-<script>
-// Make success notification disappear after 1 second
-window.addEventListener('DOMContentLoaded', (event) => {
-    const successNotification = document.getElementById('successNotification');
-    if (successNotification) {
-        setTimeout(() => {
-            successNotification.style.transition = 'opacity 0.5s ease';
-            successNotification.style.opacity = '0';
-            setTimeout(() => {
-                successNotification.remove();
-            }, 500);
-        }, 1000);
-    }
-});
-</script>
-
-<script>
-// Make success notification disappear after 1 second
-window.addEventListener('DOMContentLoaded', (event) => {
-    const successNotification = document.getElementById('successNotification');
-    if (successNotification) {
-        setTimeout(() => {
-            successNotification.style.transition = 'opacity 0.5s ease';
-            successNotification.style.opacity = '0';
-            setTimeout(() => {
-                successNotification.remove();
-            }, 500);
-        }, 1000);
-    }
-});
-</script>
-
-<script>
-// Make success notification disappear after 1 second
-window.addEventListener('DOMContentLoaded', (event) => {
-    const successNotification = document.getElementById('successNotification');
-    if (successNotification) {
-        setTimeout(() => {
-            successNotification.style.transition = 'opacity 0.5s ease';
-            successNotification.style.opacity = '0';
-            setTimeout(() => {
-                successNotification.remove();
-            }, 500);
-        }, 1000);
-    }
-});
 </script>
 
 </x-main-layout>

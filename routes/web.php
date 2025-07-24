@@ -9,25 +9,25 @@ use App\Http\Controllers\QRCodeController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Item;
 
-Route::get('/debug-item-units', function () {
-    $items = Item::with('units')->get();
+// Route::get('/debug-item-units', function () {
+//     $items = Item::with('units')->get();
 
-    $result = $items->map(function ($item) {
-        return [
-            'item_id' => $item->id,
-            'item_name' => $item->item_name,
-            'units' => $item->units->map(function ($unit) {
-                return [
-                    'unit_id' => $unit->id,
-                    'unit_number' => $unit->unit_number,
-                    'last_checked_at' => $unit->last_checked_at,
-                ];
-            }),
-        ];
-    });
+//     $result = $items->map(function ($item) {
+//         return [
+//             'item_id' => $item->id,
+//             'item_name' => $item->item_name,
+//             'units' => $item->units->map(function ($unit) {
+//                 return [
+//                     'unit_id' => $unit->id,
+//                     'unit_number' => $unit->unit_number,
+//                     'last_checked_at' => $unit->last_checked_at,
+//                 ];
+//             }),
+//         ];
+//     });
 
-    return response()->json($result);
-});
+//     return response()->json($result);
+// });
 
 Route::get('/inventory/qrcode/{id}', [InventoryController::class, 'generateQRCode'])->name('inventory.qrcode');
 
@@ -86,10 +86,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/qr/store-scan', [QRCodeController::class, 'storeScan'])->name('qr.storeScan');
 });
 
+use App\Http\Controllers\UserProfileController;
+
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
+    Route::post('/profile', [UserProfileController::class, 'store'])->name('profile.store');
+    Route::delete('/profile', [UserProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/viewer/dashboard', function () {
+        return view('viewer.dashboard');
+    })->name('viewer.dashboard');
 });
 
 // Route::get()

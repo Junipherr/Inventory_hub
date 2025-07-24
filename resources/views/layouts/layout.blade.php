@@ -18,7 +18,11 @@
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/sidebar_fix.js'])
 </head>
 <body class="fixed-navbar sidebar-mini has-animation">
-    
+    @if (session('success'))
+        <div class="alert alert-success position-fixed" id="successNotification" style="top: 10px; right: 10px; z-index: 1050; width: auto; max-width: 300px;">
+            <strong>Success!</strong> {{ session('success') }}
+        </div>
+    @endif
     <div class="page-wrapper">
         <header class="header">
             @include('partials.startheader')

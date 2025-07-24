@@ -59,9 +59,9 @@
             <li class="heading">ACCOUNT</li>
 
             <li>
-                <a href="profile.html"><i class="sidebar-item-icon fa fa-user"></i>
-                    <span class="nav-label">Profile</span>
-                </a>
+<a href="{{ route('profile.index') }}"><i class="sidebar-item-icon fa fa-user"></i>
+    <span class="nav-label">Profile</span>
+</a>
             </li>
 
             <li>
