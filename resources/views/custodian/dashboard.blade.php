@@ -4,32 +4,32 @@
             <div class="col-md-12">
                 <div class="ibox">
                     <div class="ibox-head">
-                        <div class="ibox-title">Departments</div>
+                        <div class="ibox-title">Rooms</div>
                     </div>
                     <div class="ibox-body">
                         <ul class="nav nav-tabs tabs-line" role="tablist">
-                            @foreach($departments as $index => $department)
+                            @foreach($rooms as $index => $room)
                                 <li class="nav-item" role="presentation">
                                     <a class="nav-link @if($index == 0) active @else bg-light text-dark @endif" id="tab-{{ $index }}-tab" data-toggle="tab" href="#tab-{{ $index }}" role="tab" aria-controls="tab-{{ $index }}" aria-selected="{{ $index == 0 ? 'true' : 'false' }}">
-                                        {{ $department }}
+                                        {{ $room->name }}
                                     </a>
                                 </li>
                             @endforeach
                         </ul>
                         <div class="tab-content">
-                            @foreach($departments as $index => $department)
+                            @foreach($rooms as $index => $room)
                                 <div class="tab-pane fade @if($index == 0) show active @endif" id="tab-{{ $index }}" role="tabpanel" aria-labelledby="tab-{{ $index }}-tab">
                                     @php
-                                        $items = $itemsByDepartment[$department] ?? collect();
+                                        $items = $itemsByRoom[$room->id] ?? collect();
                                     @endphp
                                     @if($items->isEmpty())
-                                        <p>No items found in {{ $department }}.</p>
+                                        <p>No items found in {{ $room->name }}.</p>
                                     @else
                                         <table class="table table-striped table-hover">
                                             <thead class="table-primary">
                                                 <tr>
                                                     <th>Item Name</th>
-                                                    <th>Department</th>
+                                                    <th>Room</th>
                                                     <th>Category</th>
                                                     <th>Quantity</th>
                                                     <th>Description</th>
@@ -40,8 +40,8 @@
                                                 @foreach($items as $item)
                                                     <tr>
                                                         <td>{{ $item->item_name }}</td>
-                                                        <td>{{ $item->department }}</td>
-                                                        <td>{{ $item->category_id }}</td>
+                                                        <td>{{ $room->name }}</td>
+                                                        <td>{{ ucwords(str_replace('_', ' ', $item->category_id)) }}</td>
                                                         <td>{{ $item->quantity }}</td>
                                                         <td>{{ $item->description }}</td>
                                                         <td>
@@ -69,9 +69,9 @@
             </div>
         </div>
 
-        @foreach($departments as $department)
+        @foreach($rooms as $room)
             @php
-                $items = $itemsByDepartment[$department] ?? collect();
+                $items = $itemsByRoom[$room->id] ?? collect();
             @endphp
             @foreach($items as $item)
                 <!-- Bootstrap Modal -->
@@ -83,8 +83,18 @@
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <p><strong>Department:</strong> <span class="badge bg-info text-dark">{{ $item->department }}</span></p>
-                                <p><strong>Category:</strong> {{ $item->category_id }}</p>
+                                <p><strong>Room:</strong> <span class="badge bg-info text-dark">{{ $room->name }}</span></p>
+                                <p><strong>Person in Charge:</strong>
+                                    @php
+                                        $personInCharge = $personsInCharge[$room->id] ?? null;
+                                    @endphp
+                                    @if($personInCharge)
+                                        {{ $personInCharge->name }} 
+                                    @else
+                                        N/A
+                                    @endif
+                                </p>
+                                <p><strong>Category:</strong> {{ ucwords(str_replace('_', ' ', $item->category_id)) }}</p>
                                 <p><strong>Quantity:</strong> <span class="badge bg-info text-dark">{{ $item->quantity }}</span></p>
                                 <p><strong>Description:</strong> {{ $item->description }}</p>
                                 @if($item->units->isNotEmpty())
@@ -101,7 +111,7 @@
                                                 @foreach($item->units as $unit)
                                                     <tr>
                                                         <td>{{ $unit->unit_number }}</td>
-<td>{{ $unit->last_checked_at ? $unit->last_checked_at->timezone(config('app.timezone'))->format('Y-m-d H:i') : 'Never' }}</td>
+                                                        <td>{{ $unit->last_checked_at ? $unit->last_checked_at->timezone(config('app.timezone'))->format('Y-m-d H:i') : 'Never' }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
@@ -128,22 +138,15 @@
             var modals = document.querySelectorAll('.modal');
             modals.forEach(function(modal) {
                 modal.addEventListener('show.bs.modal', function (event) {
-                    console.log('Modal show event fired for:', modal.id);
                     var qrData = modal.getAttribute('data-qr');
-                    console.log('QR Data:', qrData);
                     var qrcodeContainer = modal.querySelector('[id^="qrcode-"]');
                     if (qrcodeContainer) {
                         qrcodeContainer.innerHTML = '';
                         if (qrData) {
                             QRCode.toCanvas(qrcodeContainer, qrData, { width: 150, margin: 2 }, function (error) {
                                 if (error) console.error('QRCode error:', error);
-                                else console.log('QRCode generated successfully');
                             });
-                        } else {
-                            console.warn('No QR data found for modal:', modal.id);
                         }
-                    } else {
-                        console.warn('QR code container not found in modal:', modal.id);
                     }
                 });
             });

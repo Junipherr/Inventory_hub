@@ -41,40 +41,37 @@
                                     <input type="text" class="form-control" name="item_name" id="item_name">
                                 </div>
                                 <div class="form-group">
-                                    <label for="department">Department</label>
-                                    <select name="department" class="form-control" id="departmentSelect">
-                                        <option value="">-- Select Department --</option>
-                                        <option value="nursing_department">Nursing Department</option>
-                                        <option value="computer_department">Computer Department</option>
-                                    </select>
-                                </div>
-                                <div class="form-group" id="categoryGroup" style="display:none;">
-                                    <label for="category_id">Category</label>
-                                    <select name="category_id" class="form-control" id="categorySelect">
-                                        <option value="">-- Select Category --</option>
-                                        <optgroup label="Nursing Department" id="nursing_department_categories">
-                                            <option value="medical_equipment">Medical Equipment</option>
-                                            <option value="lab_materials">Lab Materials</option>
-                                            <option value="protective_gear">Protective Gear</option>
-                                            <option value="first_aid_supplies">First Aid Supplies</option>
-                                        </optgroup>
-                                        <optgroup label="Computer Department" id="computer_department_categories">
-                                            <option value="computer_hardware">Computer Hardware</option>
-                                            <option value="networking_equipment">Networking Equipment</option>
-                                            <option value="software_licenses">Software Licenses</option>
-                                            <option value="accessories_peripherals">Accessories & Peripherals</option>
-                                        </optgroup>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="description">Description</label>
-                                    <textarea name="description" class="form-control" rows="3" id="description"></textarea>
-                                </div>
-                                <button type="button" id="addItemButton" class="btn btn-primary">Add Item</button>
-                            </form>
+                                    <label for="room_id">Room</label>
+                                    <select name="room_id" class="form-control" id="roomSelect">
+                                        <option value="">-- Select Room --</option>
+@foreach($rooms as $room)
+    <option value="{{ $room->id }}">{{ $room->name }}</option>
+@endforeach
+                            </select>
                         </div>
-                    </div>
+<div class="form-group" id="categoryGroup">
+                            <label for="category_id">Category</label>
+<select name="category_id" class="form-control" id="categorySelect">
+    <option value="">-- Select Category --</option>
+    <option value="computer_hardware_peripherals">Computer Hardware & Peripherals</option>
+    <option value="office_classroom_furniture">Office and Classroom Furniture</option>
+    <option value="appliances_electronics">Appliances and Electronics (Non-Computer)</option>
+    <option value="classroom_office_supplies">Classroom/Office Supplies & Equipment (Miscellaneous)</option>
+</select>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea name="description" class="form-control" rows="3" id="description"></textarea>
+                        </div>
+                        <button type="button" id="addItemButton" class="btn btn-primary">Add Item</button>
+                    </form>
                 </div>
+            </div>
+        </div>
+
+<script>
+    const rooms = @json($rooms);
+</script>
                 <div class="col-md-6">
                     <div class="ibox">
                         <div class="ibox-head">
@@ -96,13 +93,13 @@
 document.getElementById('addItemButton').addEventListener('click', function() {
     // Get form values
     const itemName = document.getElementById('item_name').value.trim();
-    const department = document.getElementById('departmentSelect').value;
+    const roomId = document.getElementById('roomSelect').value;
     const categorySelect = document.getElementById('categorySelect');
     const category = categorySelect ? categorySelect.value : '';
     const description = document.getElementById('description').value.trim();
 
-    if (!itemName || !department || !category) {
-        alert('Please fill in all required fields: Item Name, Department, and Category.');
+    if (!itemName || !roomId || !category) {
+        alert('Please fill in all required fields: Item Name, Room, and Category.');
         return;
     }
 
@@ -119,26 +116,34 @@ document.getElementById('addItemButton').addEventListener('click', function() {
 
     // Display added item details with QR code immediately
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(randomCode)}&size=200x200`;
-    const addedItemPanel = document.getElementById('addedItemPanel');
-    addedItemPanel.innerHTML = `
-        <div style="width: 100%; max-width: 400px; text-align: center; font-family: Arial, sans-serif; color: #374151;">
-            <h3 style="font-weight: 600; font-size: 1.25rem; margin-bottom: 12px; padding-bottom: 6px;">Added Item Details</h3>
-            <p style="margin: 8px 0;"><strong>Item Name:</strong> ${itemName}</p>
-            <p style="margin: 8px 0;"><strong>Department:</strong> ${department}</p>
-            <p style="margin: 8px 0;"><strong>Category:</strong> ${category}</p>
-            <p style="margin: 8px 0 16px 0;"><strong>Description:</strong> ${description}</p>
-            <img src="${qrCodeUrl}" alt="QR Code" style="border: 2px solid #3b82f6; border-radius: 8px; margin: 20px auto 0 auto; display: block; width: 200px; height: 200px;" />
-            <form method="POST" action="{{ route('inventory.confirm') }}" id="confirmForm">
-                @csrf
-                <input type="hidden" name="item_name" value="${itemName}">
-                <input type="hidden" name="department" value="${department}">
-                <input type="hidden" name="category_id" value="${category}">
-                <input type="hidden" name="description" value="${description}">
-                <input type="hidden" name="qr_code" value="${randomCode}">
-                <button type="submit" class="btn btn-success" id="confirmButton" style="padding: 10px 20px; font-size: 1rem; border-radius: 6px; transition: background-color 0.3s ease;">Confirm</button>
-            </form>
-        </div>
-    `;
+const addedItemPanel = document.getElementById('addedItemPanel');
+const roomName = rooms.find(room => room.id == roomId)?.name || roomId;
+const categoryNames = {
+    computer_hardware_peripherals: "Computer Hardware & Peripherals",
+    office_classroom_furniture: "Office and Classroom Furniture",
+    appliances_electronics: "Appliances and Electronics (Non-Computer)",
+    classroom_office_supplies: "Classroom/Office Supplies & Equipment (Miscellaneous)"
+};
+const categoryName = categoryNames[category] || category;
+addedItemPanel.innerHTML = `
+    <div style="width: 100%; max-width: 400px; text-align: center; font-family: Arial, sans-serif; color: #374151;">
+        <h3 style="font-weight: 600; font-size: 1.25rem; margin-bottom: 12px; padding-bottom: 6px;">Added Item Details</h3>
+        <p style="margin: 8px 0;"><strong>Item Name:</strong> ${itemName}</p>
+        <p style="margin: 8px 0;"><strong>Room:</strong> ${roomName}</p>
+        <p style="margin: 8px 0;"><strong>Category:</strong> ${categoryName}</p>
+        <p style="margin: 8px 0 16px 0;"><strong>Description:</strong> ${description}</p>
+        <img src="${qrCodeUrl}" alt="QR Code" style="border: 2px solid #3b82f6; border-radius: 8px; margin: 20px auto 0 auto; display: block; width: 200px; height: 200px;" />
+        <form method="POST" action="{{ route('inventory.confirm') }}" id="confirmForm">
+            @csrf
+            <input type="hidden" name="item_name" value="${itemName}">
+            <input type="hidden" name="room_id" value="${roomId}">
+            <input type="hidden" name="category_id" value="${category}">
+            <input type="hidden" name="description" value="${description}">
+            <input type="hidden" name="qr_code" value="${randomCode}">
+            <button type="submit" class="btn btn-success" id="confirmButton" style="padding: 10px 20px; font-size: 1rem; border-radius: 6px; transition: background-color 0.3s ease;">Confirm</button>
+        </form>
+    </div>
+`;
 
     // Add event listener to confirm form for AJAX submission
     const confirmForm = document.getElementById('confirmForm');

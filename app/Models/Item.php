@@ -11,7 +11,7 @@ class Item extends Model
 
     protected $fillable = [
         'item_name',
-        'department',
+        'room_id',
         'category_id',
         'description',
         'last_checked_at',
@@ -22,5 +22,10 @@ class Item extends Model
     public function units()
     {
         return $this->hasMany(ItemUnit::class);
+    }
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
     }
 }

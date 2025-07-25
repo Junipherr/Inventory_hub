@@ -44,4 +44,15 @@ class UserProfileController extends Controller
 
         return Redirect::route('profile.index')->with('status', 'Profile registered successfully.');
     }
+
+    /**
+     * Display the viewer dashboard with user-specific data.
+     */
+    public function viewerDashboard()
+    {
+        // Fetch all items with their units without filtering by custodian_id or room_id
+        $items = \App\Models\Item::with('units')->get();
+
+        return view('viewer.dashboard', compact('items'));
+    }
 }

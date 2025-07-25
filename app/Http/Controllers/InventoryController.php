@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Item;
+use App\Models\Room;
 
 use Illuminate\Support\Facades\DB;
 
@@ -19,7 +20,7 @@ class InventoryController extends Controller
 
     public function scanner()
     {
-        $items = Item::with('units')->get();
+        $items = Item::with(['units', 'room'])->get();
         return view('custodian.scanner', compact('items'));
     }
 
@@ -37,31 +38,39 @@ class InventoryController extends Controller
             // return redirect()->route('viewer.dashboard');
         }
 
-        // Fetch distinct departments
-        $departments = DB::table('items')
-            ->select('department')
-            ->distinct()
-            ->pluck('department');
+        // Fetch distinct rooms with users eager loaded
+        $rooms = Room::with('users')->get();
 
-        // For each department, fetch distinct categories
-        $departmentCategories = [];
-        foreach ($departments as $department) {
+        // For each room, fetch distinct categories
+        $roomCategories = [];
+        foreach ($rooms as $room) {
             $categories = DB::table('items')
-                ->where('department', $department)
+                ->where('room_id', $room->id)
                 ->select('category_id')
                 ->distinct()
                 ->pluck('category_id');
-            $departmentCategories[$department] = $categories;
+            $roomCategories[$room->id] = $categories;
         }
 
-        // Fetch items grouped by department with eager loading units
-        $itemsByDepartment = [];
-        foreach ($departments as $department) {
-            $items = Item::with('units')->where('department', $department)->get();
-            $itemsByDepartment[$department] = $items;
+        // Fetch items grouped by room with eager loading units
+        $itemsByRoom = [];
+        foreach ($rooms as $room) {
+            $items = Item::with('units')->where('room_id', $room->id)->get();
+            $itemsByRoom[$room->id] = $items;
         }
 
-        return view('custodian.dashboard', compact('departments', 'departmentCategories', 'itemsByDepartment'));
+        // Determine person in charge for each room (user with role 'Custodian')
+        $personsInCharge = [];
+        foreach ($rooms as $room) {
+            $custodian = $room->users->firstWhere('role', 'Custodian');
+            if (!$custodian) {
+                // fallback to first user if no custodian found
+                $custodian = $room->users->first();
+            }
+            $personsInCharge[$room->id] = $custodian;
+        }
+
+        return view('custodian.dashboard', compact('rooms', 'roomCategories', 'itemsByRoom', 'personsInCharge'));
     }
 
     public function getItemsByCategory($categoryId)
@@ -76,11 +85,17 @@ class InventoryController extends Controller
         return redirect()->route('inventory.create');
     }
 
+    public function create()
+    {
+        $rooms = Room::all();
+        return view('custodian.inventory.create', compact('rooms'));
+    }
+
     public function confirm(Request $request)
     {
         $validated = $request->validate([
             'item_name' => 'required|string|max:255',
-            'department' => 'required|string|max:255',
+            'room_id' => 'required|integer|exists:rooms,id',
             'category_id' => 'required|string|max:255',
             'description' => 'nullable|string',
             'qr_code' => 'required|string|max:255',
@@ -130,7 +145,7 @@ class InventoryController extends Controller
     {
         $validated = $request->validate([
             'item_name' => 'required|string|max:255',
-            'department' => 'required|string|max:255',
+            'room_id' => 'required|integer|exists:rooms,id',
             'category_id' => 'required|string|max:255',
             'description' => 'nullable|string',
             'quantity' => 'required|integer|min:0',

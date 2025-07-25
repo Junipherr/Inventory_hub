@@ -2,12 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InventoryController;
-
-Route::post('/inventory/confirm', [InventoryController::class, 'confirm'])->name('inventory.confirm');
-
 use App\Http\Controllers\QRCodeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserProfileController;
 use App\Models\Item;
+
+Route::post('/inventory/confirm', [InventoryController::class, 'confirm'])->name('inventory.confirm');
 
 Route::get('/inventory/qrcode/{id}', [InventoryController::class, 'generateQRCode'])->name('inventory.qrcode');
 
@@ -39,8 +39,11 @@ Route::get('/inventory/items', [InventoryController::class, 'index'])
     ->middleware(['auth', 'verified', 'role:Admin'])
     ->name('inventory.items');
 
+use App\Models\Room;
+
 Route::get('/inventory/create', function () {
-    return view('custodian/inventory/create');
+    $rooms = Room::all();
+    return view('custodian/inventory/create', compact('rooms'));
 })->middleware(['auth', 'verified', 'role:Admin'])->name('inventory.create');
 
 Route::post('/inventory/create', [InventoryController::class, 'store'])
@@ -66,18 +69,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/qr/store-scan', [QRCodeController::class, 'storeScan'])->name('qr.storeScan');
 });
 
-use App\Http\Controllers\UserProfileController;
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
     Route::post('/profile', [UserProfileController::class, 'store'])->name('profile.store');
     Route::delete('/profile', [UserProfileController::class, 'destroy'])->name('profile.destroy');
 
-use App\Http\Controllers\UserProfileController;
-
-Route::get('/viewer/dashboard', [UserProfileController::class, 'viewerDashboard'])
-    ->middleware('role:Viewer')
-    ->name('viewer.dashboard');
+    Route::get('/viewer/dashboard', [UserProfileController::class, 'viewerDashboard'])
+        ->middleware('role:Viewer')
+        ->name('viewer.dashboard');
 });
 
 // Route::get()

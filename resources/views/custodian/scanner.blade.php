@@ -20,7 +20,7 @@
                                 <tr>
                                     <th>Check</th>
                                     <th>Item Name</th>
-                                    <th>Department</th>
+                                    <th>Room</th>
                                     <th>Category</th>
                                     <th>Unit Number</th>
                                     <th>Description</th>
@@ -34,8 +34,8 @@
                                             <input type="checkbox" name="checked_units[]" value="{{ $unit->id }}" {{ $unit->last_checked_at ? 'checked' : '' }}>
                                         </td>
                                         <td>{{ $item->item_name }}</td>
-                                        <td>{{ $item->department }}</td>
-                                        <td>{{ $item->category_id }}</td>
+                                        <td>{{ $item->room->name ?? 'N/A' }}</td>
+                                    <td>{{ ucwords(str_replace('_', ' ', $item->category_id)) }}</td>
                                         <td>{{ $unit->unit_number }}</td>
                                         <td>{{ $item->description }}</td>
                                     </tr>
