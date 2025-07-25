@@ -17,4 +17,9 @@ class Room extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function items()
+    {
+        return $this->hasMany(\App\Models\Item::class);
+    }
 }

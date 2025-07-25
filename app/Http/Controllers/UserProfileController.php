@@ -22,7 +22,7 @@ class UserProfileController extends Controller
     /**
      * Handle profile registration.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -42,6 +42,10 @@ class UserProfileController extends Controller
             'room_id' => $room->id,
         ]);
 
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Profile registered successfully.']);
+        }
+
         return Redirect::route('profile.index')->with('status', 'Profile registered successfully.');
     }
 
@@ -50,9 +54,18 @@ class UserProfileController extends Controller
      */
     public function viewerDashboard()
     {
-        // Fetch all items with their units without filtering by custodian_id or room_id
-        $items = \App\Models\Item::with('units')->get();
+        $user = auth()->user();
 
-        return view('viewer.dashboard', compact('items'));
+        if ($user->role === 'Admin') {
+            // Admin can see all rooms
+            $rooms = \App\Models\Room::with(['items.units'])->get();
+        } else {
+            // Viewer can see only their assigned room
+            $rooms = \App\Models\Room::with(['items.units'])
+                ->where('id', $user->room_id)
+                ->get();
+        }
+
+        return view('viewer.dashboard', compact('rooms'));
     }
 }

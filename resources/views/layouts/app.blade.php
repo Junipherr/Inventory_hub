@@ -35,5 +35,6 @@
                 {{ $slot }}
             </main>
         </div>
+    <script src="{{ asset('js/profile-registration.js') }}" defer></script>
     </body>
 </html>

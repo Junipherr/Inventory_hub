@@ -29,11 +29,18 @@ class ProfileController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'password' => ['required', 'string', 'min:8', 'confirmed'],
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+            ], 422);
+        }
 
         User::create([
             'name' => $validated['name'],
@@ -41,7 +48,10 @@ class ProfileController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        return redirect()->route('profile.index')->with('status', 'Profile registered successfully.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile registered successfully.',
+        ]);
     }
 
     /**

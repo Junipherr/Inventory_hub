@@ -21,7 +21,7 @@ class RoleMiddleware
         $user = Auth::user();
 
         if (!$user || !in_array($user->role, $roles)) {
-            return redirect()->back()->with('error', 'Unauthorized access.');
+            return redirect('/login')->with('error', 'Unauthorized access.');
         }
 
         return $next($request);
