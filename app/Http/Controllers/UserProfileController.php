@@ -30,12 +30,16 @@ class UserProfileController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
+        // Find or create the room by name
+        $room = \App\Models\Room::firstOrCreate(['name' => $validated['room_name']]);
+
         $user = User::create([
             'name' => $validated['name'],
-            'email' => strtolower(str_replace(' ', '_', $validated['room_name'])) . '@example.com',
+            'email' => strtolower(str_replace(' ', '_', $validated['name'])) . '@example.com',
             'password' => Hash::make($validated['password']),
             'role' => 'Viewer',
             'custodian_id' => auth()->id(),
+            'room_id' => $room->id,
         ]);
 
         return Redirect::route('profile.index')->with('status', 'Profile registered successfully.');

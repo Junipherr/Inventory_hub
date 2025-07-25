@@ -18,6 +18,7 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
+                                <th>Room</th>
                                 <th>Created At</th>
                             </tr>
                         </thead>
@@ -26,6 +27,7 @@
                                 <tr>
                                     <td>{{ $profile->name }}</td>
                                     <td>{{ $profile->email }}</td>
+                                    <td>{{ $profile->room ? $profile->room->name : '-' }}</td>
                                     <td>{{ $profile->created_at->format('Y-m-d H:i') }}</td>
                                 </tr>
                             @endforeach
