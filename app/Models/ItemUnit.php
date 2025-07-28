@@ -13,6 +13,7 @@ class ItemUnit extends Model
         'item_id',
         'unit_number',
         'last_checked_at',
+        'status',
     ];
 
     protected $casts = [

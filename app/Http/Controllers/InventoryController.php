@@ -161,9 +161,12 @@ class InventoryController extends Controller
         $validated = $request->validate([
             'checked_units' => 'nullable|array',
             'checked_units.*' => 'integer|exists:item_units,id',
+            'status' => 'nullable|array',
+            'status.*' => 'string',
         ]);
 
         $checkedUnitIds = $validated['checked_units'] ?? [];
+        $statusData = $validated['status'] ?? [];
         $now = now();
 
         $allUnitIds = \App\Models\ItemUnit::pluck('id')->toArray();
@@ -176,8 +179,18 @@ class InventoryController extends Controller
                 } else {
                     $unit->last_checked_at = null;
                 }
+                if (isset($statusData[$unitId])) {
+                    $unit->status = $statusData[$unitId];
+                }
                 $unit->save();
             }
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Checked units updated successfully.',
+            ]);
         }
 
         return redirect()->route('scanner')->with('success', 'Checked units updated successfully.');

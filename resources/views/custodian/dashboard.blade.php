@@ -8,21 +8,27 @@
                     </div>
                     <div class="ibox-body">
                         <ul class="nav nav-tabs tabs-line" role="tablist">
-                            @foreach($rooms as $index => $room)
+                            @foreach ($rooms as $index => $room)
                                 <li class="nav-item" role="presentation">
-                                    <a class="nav-link @if($index == 0) active @else bg-light text-dark @endif" id="tab-{{ $index }}-tab" data-toggle="tab" href="#tab-{{ $index }}" role="tab" aria-controls="tab-{{ $index }}" aria-selected="{{ $index == 0 ? 'true' : 'false' }}">
+                                    <a class="nav-link @if ($index == 0) active @else bg-light text-dark @endif"
+                                        id="tab-{{ $index }}-tab" data-toggle="tab"
+                                        href="#tab-{{ $index }}" role="tab"
+                                        aria-controls="tab-{{ $index }}"
+                                        aria-selected="{{ $index == 0 ? 'true' : 'false' }}">
                                         {{ $room->name }}
                                     </a>
                                 </li>
                             @endforeach
                         </ul>
                         <div class="tab-content">
-                            @foreach($rooms as $index => $room)
-                                <div class="tab-pane fade @if($index == 0) show active @endif" id="tab-{{ $index }}" role="tabpanel" aria-labelledby="tab-{{ $index }}-tab">
+                            @foreach ($rooms as $index => $room)
+                                <div class="tab-pane fade @if ($index == 0) show active @endif"
+                                    id="tab-{{ $index }}" role="tabpanel"
+                                    aria-labelledby="tab-{{ $index }}-tab">
                                     @php
                                         $items = $itemsByRoom[$room->id] ?? collect();
                                     @endphp
-                                    @if($items->isEmpty())
+                                    @if ($items->isEmpty())
                                         <p>No items found in {{ $room->name }}.</p>
                                     @else
                                         <table class="table table-striped table-hover">
@@ -37,22 +43,19 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach($items as $item)
+                                                @foreach ($items as $item)
                                                     <tr>
                                                         <td>{{ $item->item_name }}</td>
                                                         <td>{{ $room->name }}</td>
-                                                        <td>{{ ucwords(str_replace('_', ' ', $item->category_id)) }}</td>
+                                                        <td>{{ ucwords(str_replace('_', ' ', $item->category_id)) }}
+                                                        </td>
                                                         <td>{{ $item->quantity }}</td>
                                                         <td>{{ $item->description }}</td>
                                                         <td>
-                                                            <button
-                                                                type="button"
-                                                                class="btn btn-info btn-sm"
-                                                                title="Item Info"
-                                                                style="margin-left: 5px;"
+                                                            <button type="button" class="btn btn-info btn-sm"
+                                                                title="Item Info" style="margin-left: 5px;"
                                                                 data-bs-toggle="modal"
-                                                                data-bs-target="#itemInfoModal{{ $item->id }}"
-                                                            >
+                                                                data-bs-target="#itemInfoModal{{ $item->id }}">
                                                                 <i class="ti-info-alt"></i>
                                                             </button>
                                                         </td>
@@ -69,35 +72,42 @@
             </div>
         </div>
 
-        @foreach($rooms as $room)
+        @foreach ($rooms as $room)
             @php
                 $items = $itemsByRoom[$room->id] ?? collect();
             @endphp
-            @foreach($items as $item)
+            @foreach ($items as $item)
                 <!-- Bootstrap Modal -->
-                <div class="modal fade" id="itemInfoModal{{ $item->id }}" tabindex="-1" aria-labelledby="itemInfoModalLabel{{ $item->id }}" aria-hidden="true" data-qr="{{ $item->qr_code }}">
+                <div class="modal fade" id="itemInfoModal{{ $item->id }}" tabindex="-1"
+                    aria-labelledby="itemInfoModalLabel{{ $item->id }}" aria-hidden="true"
+                    data-qr="{{ $item->qr_code }}">
                     <div class="modal-dialog modal-md modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header bg-primary text-white">
-                                <h5 class="modal-title" id="itemInfoModalLabel{{ $item->id }}">{{ $item->item_name }} Info</h5>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <h5 class="modal-title" id="itemInfoModalLabel{{ $item->id }}">
+                                    {{ $item->item_name }} Info</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <p><strong>Room:</strong> <span class="badge bg-info text-dark">{{ $room->name }}</span></p>
+                                <p><strong>Room:</strong> <span
+                                        class="badge bg-info text-dark">{{ $room->name }}</span></p>
                                 <p><strong>Person in Charge:</strong>
                                     @php
                                         $personInCharge = $personsInCharge[$room->id] ?? null;
                                     @endphp
-                                    @if($personInCharge)
-                                        {{ $personInCharge->name }} 
+                                    @if ($personInCharge)
+                                        {{ $personInCharge->name }}
                                     @else
                                         N/A
                                     @endif
                                 </p>
-                                <p><strong>Category:</strong> {{ ucwords(str_replace('_', ' ', $item->category_id)) }}</p>
-                                <p><strong>Quantity:</strong> <span class="badge bg-info text-dark">{{ $item->quantity }}</span></p>
+                                <p><strong>Category:</strong> {{ ucwords(str_replace('_', ' ', $item->category_id)) }}
+                                </p>
+                                <p><strong>Quantity:</strong> <span
+                                        class="badge bg-info text-dark">{{ $item->quantity }}</span></p>
                                 <p><strong>Description:</strong> {{ $item->description }}</p>
-                                @if($item->units->isNotEmpty())
+                                @if ($item->units->isNotEmpty())
                                     <div class="mt-3">
                                         <h6 class="text-primary">Units</h6>
                                         <table class="table table-sm table-bordered">
@@ -108,10 +118,11 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach($item->units as $unit)
+                                                @foreach ($item->units as $unit)
                                                     <tr>
                                                         <td>{{ $unit->unit_number }}</td>
-                                                        <td>{{ $unit->last_checked_at ? $unit->last_checked_at->timezone(config('app.timezone'))->format('Y-m-d H:i') : 'Never' }}</td>
+                                                        <td>{{ $unit->last_checked_at ? $unit->last_checked_at->timezone(config('app.timezone'))->format('Y-m-d H:i') : 'Never' }}
+                                                        </td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
@@ -131,25 +142,4 @@
             @endforeach
         @endforeach
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var modals = document.querySelectorAll('.modal');
-            modals.forEach(function(modal) {
-                modal.addEventListener('show.bs.modal', function (event) {
-                    var qrData = modal.getAttribute('data-qr');
-                    var qrcodeContainer = modal.querySelector('[id^="qrcode-"]');
-                    if (qrcodeContainer) {
-                        qrcodeContainer.innerHTML = '';
-                        if (qrData) {
-                            QRCode.toCanvas(qrcodeContainer, qrData, { width: 150, margin: 2 }, function (error) {
-                                if (error) console.error('QRCode error:', error);
-                            });
-                        }
-                    }
-                });
-            });
-        });
-    </script>
 </x-main-layout>

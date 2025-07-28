@@ -17,9 +17,11 @@
     <link href="{{ asset('/assets/css/sidebar.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/sidebar_fix.js'])
 </head>
+
 <body class="fixed-navbar sidebar-mini has-animation">
     @if (session('success'))
-        <div class="alert alert-success position-fixed" id="successNotification" style="top: 10px; right: 10px; z-index: 1050; width: auto; max-width: 300px;">
+        <div class="alert alert-success position-fixed" id="successNotification"
+            style="top: 10px; right: 10px; z-index: 1050; width: auto; max-width: 300px;">
             <strong>Success!</strong> {{ session('success') }}
         </div>
     @endif
@@ -36,13 +38,16 @@
             {{ $slot }}
         </div>
     </div>
-    
+
     <div class="sidenav-backdrop backdrop"></div>
     {{-- Tuyok2 --}}
-<div class="preloader-backdrop">
-    <div class="page-preloader">Loading</div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <div class="preloader-backdrop">
+        <div class="page-preloader">Loading</div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     <script src="{{ asset('assets/vendors/jquery/dist/jquery.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/vendors/popper.js/dist/umd/popper.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/vendors/bootstrap/dist/js/bootstrap.min.js') }}" type="text/javascript"></script>
@@ -50,7 +55,8 @@
     <script src="{{ asset('assets/vendors/jquery-slimscroll/jquery.slimscroll.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/vendors/chart.js/dist/Chart.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/vendors/jvectormap/jquery-jvectormap-2.0.3.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js') }}" type="text/javascript">  </script>
+    <script src="{{ asset('assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js') }}" type="text/javascript">
+    </script>
     <script src="{{ asset('assets/vendors/jvectormap/jquery-jvectormap-us-aea-en.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/category.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/qr.js') }}" type="text/javascript"></script>
@@ -58,6 +64,8 @@
     <script src="{{ asset('assets/js/app.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/scripts/dashboard_1_demo.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/dropdown-fix.js') }}" type="text/javascript"></script>
-        <script src="{{ asset('js/profile-registration.js') }}" defer></script>
-    </body>
+    <script src="{{ asset('js/profile-registration.js') }}" defer></script>
+
+</body>
+
 </html>
