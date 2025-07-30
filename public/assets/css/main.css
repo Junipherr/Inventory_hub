@@ -3536,3 +3536,20 @@ table.dataTable {
     -webkit-justify-content: start !important;
     -ms-flex-pack: start !important;
     justify-content: start !important; } }
+
+body.scanner-page {
+  overflow: hidden !important;
+}
+
+body.scanner-page .page-sidebar {
+  display: none !important;
+}
+
+body.scanner-page .content-wrapper {
+  min-height: 100vh !important;
+}
+
+body.scanner-page, html.scanner-page {
+  overflow: hidden !important;
+  height: 100% !important;
+}

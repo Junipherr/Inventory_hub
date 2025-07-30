@@ -1,6 +1,6 @@
 <x-main-layout>
 
-    <div class="page-heading">
+    <div class="page-heading ">
         <div id="dynamicSuccessMessage"
             style="position: fixed; top: 10px; right: 10px; z-index: 1050; width: auto; max-width: 300px; display: none;">
             <div class="alert alert-success">
@@ -14,7 +14,7 @@
                     <div class="ibox-title" style="display: flex; justify-content: space-between; align-items: center;">
                         <h1 style="margin: 0;">QR Scanner - Items List</h1>
 
-                        <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 410px;">
                             <button type="button"
                                 class="btn btn-info btn-sm d-flex justify-content-center align-items-center"
                                 id="showLegendBtn"
@@ -23,7 +23,7 @@
                             </button>
                             <button type="submit" form="scannerForm" class="btn btn-sm btn-success"
                                 id="submitCheckedUnitsButton"
-                                style="padding: 6px 18px; font-weight: 600; font-size: 0.9rem;">
+                                style="padding: 6px 18px; font-weight: 600; font-size: 0.9rem; margin: 0;">
                                 Submit Checked Units
                             </button>
                         </div>
@@ -35,70 +35,62 @@
                 @else
                     <form method="POST" action="{{ route('scanner.update') }}" id="scannerForm">
                         @csrf
-                        <div style="max-height: 400px; overflow-y: auto;">
-                            <table class="custom-table" style="margin-bottom: 0;">
-                                <thead>
-                                    <tr>
-                                        <th>Check</th>
-                                        <th>Item Name</th>
-                                        <th>Room</th>
-                                        <th>Category</th>
-                                        <th>Unit Number</th>
-                                        <th>Description</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($items as $item)
-                                        @foreach ($item->units as $unit)
-                                            <tr>
-                                                <td>
-                                                    <input type="checkbox" name="checked_units[]"
-                                                        value="{{ $unit->id }}"
-                                                        {{ $unit->last_checked_at ? 'checked' : '' }}>
-                                                </td>
-                                                <td>{{ $item->item_name }}</td>
-                                                <td>{{ $item->room->name ?? 'N/A' }}</td>
-                                                <td>{{ ucwords(str_replace('_', ' ', $item->category_id)) }}</td>
-                                                <td>{{ $unit->unit_number }}</td>
-                                                <td>{{ $item->description }}</td>
-                                                <td>
-                                                    <select name="status[{{ $unit->id }}]" class="form-select">
-                                                        <option value="Good condition"
-                                                            {{ ($unit->status ?? '') == 'Good condition' ? 'selected' : '' }}>
-                                                            Good condition</option>
-                                                        <option value="New/Good condition"
-                                                            {{ ($unit->status ?? '') == 'New/Good condition' ? 'selected' : '' }}>
-                                                            New/Good condition</option>
-                                                        <option value="Not working"
-                                                            {{ ($unit->status ?? '') == 'Not working' ? 'selected' : '' }}>
-                                                            Not working</option>
-                                                        <option value="Empty"
-                                                            {{ ($unit->status ?? '') == 'Empty' ? 'selected' : '' }}>
-                                                            Empty</option>
-                                                        <option value="New purchased"
-                                                            {{ ($unit->status ?? '') == 'New purchased' ? 'selected' : '' }}>
-                                                            New purchased</option>
-                                                        <option value="Transfer to QA"
-                                                            {{ ($unit->status ?? '') == 'Transfer to QA' ? 'selected' : '' }}>
-                                                            Transfer to QA</option>
-                                                        <option value="Standard - not working"
-                                                            {{ ($unit->status ?? '') == 'Standard - not working' ? 'selected' : '' }}>
-                                                            Standard - not working</option>
-                                                        <option value="Loss (Under investigation)"
-                                                            {{ ($unit->status ?? '') == 'Loss (Under investigation)' ? 'selected' : '' }}>
-                                                            Lost (Under investigation)</option>
-                                                        <option value="Missing"
-                                                            {{ ($unit->status ?? '') == 'Missing' ? 'selected' : '' }}>
-                                                            Missing</option>
-                                                    </select>
-                                                </td>
-                                            </tr>
-                                        @endforeach
+                        <table class="custom-table" style="margin-bottom: 0; border-collapse: separate; border-spacing: 0;">
+                            <thead style="display: table; width: 100%; table-layout: fixed;">
+                                <tr>
+                                    <th style="width: 16.66%;">Item Name</th>
+                                    <th style="width: 16.66%;">Room</th>
+                                    <th style="width: 16.66%;">Category</th>
+                                    <th style="width: 16.66%;">Unit Number</th>
+                                    <th style="width: 16.66%;">Description</th>
+                                    <th style="width: 16.66%;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody style="display: block; max-height: 400px; overflow-y: auto; width: 100%;">
+                                @foreach ($items as $item)
+                                    @foreach ($item->units as $unit)
+                                        <tr style="display: table; width: 100%; table-layout: fixed;">
+                                            <td style="width: 16.66%;">{{ $item->item_name }}</td>
+                                            <td style="width: 16.66%;">{{ $item->room->name ?? 'N/A' }}</td>
+                                            <td style="width: 16.66%;">{{ ucwords(str_replace('_', ' ', $item->category_id)) }}</td>
+                                            <td style="width: 16.66%;">{{ $unit->unit_number }}</td>
+                                            <td style="width: 16.66%;">{{ $item->description }}</td>
+                                            <td style="width: 16.66%;">
+                                                <select name="status[{{ $unit->id }}]" class="form-select">
+                                                    <option value="Good condition"
+                                                        {{ ($unit->status ?? '') == 'Good condition' ? 'selected' : '' }}>
+                                                        Good condition</option>
+                                                    <option value="New/Good condition"
+                                                        {{ ($unit->status ?? '') == 'New/Good condition' ? 'selected' : '' }}>
+                                                        New/Good condition</option>
+                                                    <option value="Not working"
+                                                        {{ ($unit->status ?? '') == 'Not working' ? 'selected' : '' }}>
+                                                        Not working</option>
+                                                    <option value="Empty"
+                                                        {{ ($unit->status ?? '') == 'Empty' ? 'selected' : '' }}>
+                                                        Empty</option>
+                                                    <option value="New purchased"
+                                                        {{ ($unit->status ?? '') == 'New purchased' ? 'selected' : '' }}>
+                                                        New purchased</option>
+                                                    <option value="Transfer to QA"
+                                                        {{ ($unit->status ?? '') == 'Transfer to QA' ? 'selected' : '' }}>
+                                                        Transfer to QA</option>
+                                                    <option value="Standard - not working"
+                                                        {{ ($unit->status ?? '') == 'Standard - not working' ? 'selected' : '' }}>
+                                                        Standard - not working</option>
+                                                    <option value="Loss (Under investigation)"
+                                                        {{ ($unit->status ?? '') == 'Loss (Under investigation)' ? 'selected' : '' }}>
+                                                        Lost (Under investigation)</option>
+                                                    <option value="Missing"
+                                                        {{ ($unit->status ?? '') == 'Missing' ? 'selected' : '' }}>
+                                                        Missing</option>
+                                                </select>
+                                            </td>
+                                        </tr>
                                     @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </form>
                 @endif
             </div>

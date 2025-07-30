@@ -8,24 +8,28 @@
 
     <title>{{ config('Inventory', 'Inventory Hub') }}</title>
     <!-- GLOBAL MAINLY STYLES-->
-    <link href="{{ asset('/assets/vendors/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('/assets/vendors/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('/assets/vendors/themify-icons/css/themify-icons.css') }}" rel="stylesheet">
-    <link href="{{ asset('/assets/vendors/jvectormap/jquery-jvectormap-2.0.3.css') }}" rel="stylesheet">
-    <link href="{{ asset('/assets/css/main.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/vendors/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/vendors/themify-icons/css/themify-icons.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/vendors/jvectormap/jquery-jvectormap-2.0.3.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/css/main.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link href="{{ asset('/assets/css/sidebar.css') }}" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/sidebar_fix.js'])
+    <link href="{{ asset('assets/css/sidebar.css') }}" rel="stylesheet">
+     {{-- <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet"> --}}
+    @vite(['resources/css/app.css','resources/js/app.js', 'resources/js/sidebar_fix.js'])
 </head>
 
-<body class="fixed-navbar sidebar-mini has-animation">
+@php
+    $isScannerPage = request()->routeIs('scanner') || request()->routeIs('scanner.*');
+@endphp
+<body class="overflow-hidden fixed-navbar sidebar-mini has-animation {{ $isScannerPage ? 'scanner-page' : '' }}">
     @if (session('success'))
         <div class="alert alert-success position-fixed" id="successNotification"
             style="top: 10px; right: 10px; z-index: 1050; width: auto; max-width: 300px;">
             <strong>Success!</strong> {{ session('success') }}
         </div>
     @endif
-    <div class="page-wrapper">
+    <div class="page-wrapper ">
         <header class="header">
             @include('partials.startheader')
             <div class="flexbox flex-1">

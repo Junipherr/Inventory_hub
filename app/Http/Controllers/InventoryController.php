@@ -99,9 +99,8 @@ class InventoryController extends Controller
             'category_id' => 'required|string|max:255',
             'description' => 'nullable|string',
             'qr_code' => 'required|string|max:255',
+            'quantity' => 'required|integer|min:1',
         ]);
-
-        $validated['quantity'] = 1;
 
         $item = Item::create($validated);
 

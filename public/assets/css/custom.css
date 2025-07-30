@@ -1,0 +1,86 @@
+/* Scanner Page - Hide sidebar and make full-height content */
+body.scanner-page,
+html.scanner-page {
+  overflow: hidden !important;
+  height: 100% !important;
+}
+
+body.scanner-page .page-sidebar {
+  display: none !important;
+}
+
+body.scanner-page .content-wrapper {
+  min-height: 100vh !important;
+}
+
+/* Sidebar Toggle Button (Desktop Hidden, Mobile Visible) */
+.sidebar-toggle {
+  display: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #fff;
+  padding: 10px;
+}
+
+/* Mobile Styles */
+@media (max-width: 767px) {
+  /* Sidebar styling */
+  .page-sidebar {
+    position: fixed;
+    width: 220px;
+    height: 100%;
+    top: 0;
+    left: -220px;
+    background-color: #343a40;
+    transition: left 0.3s ease;
+    z-index: 1050;
+  }
+
+  .page-sidebar.active {
+    left: 0;
+  }
+
+  /* Sidebar overlay backdrop */
+  .sidenav-backdrop.backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+  }
+
+  .sidenav-backdrop.backdrop.active {
+    display: block;
+  }
+
+  /* Adjust content area on mobile */
+  .content-wrapper {
+    padding: 15px 10px;
+    margin-left: 0 !important;
+  }
+
+  /* Header and toolbar tweaks */
+  .header {
+    padding: 10px 15px;
+  }
+
+  .flexbox.flex-1 {
+    flex-direction: column;
+  }
+
+  /* Show toggle button on mobile */
+  .sidebar-toggle {
+    display: block;
+  }
+
+  /* Adjust font size for readability */
+  body,
+  .content-wrapper,
+  .header,
+  .page-sidebar {
+    font-size: 14px;
+  }
+}

@@ -2,4 +2,4 @@ INSERT INTO users (name, email, password, role, created_at, updated_at)
 VALUES (' ', ' ', ' ', 'Admin', NOW(), NOW());
 php artisan tinker
 
->>> bcrypt('password')
+>>> bcrypt('11111111')
