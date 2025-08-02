@@ -21,7 +21,20 @@ class InventoryController extends Controller
     public function scanner()
     {
         $items = Item::with(['units', 'room'])->get();
-        return view('custodian.scanner', compact('items'));
+        
+        // Determine person in charge for each room (user with role 'Custodian')
+        $rooms = Room::with('users')->get();
+        $personsInCharge = [];
+        foreach ($rooms as $room) {
+            $custodian = $room->users->firstWhere('role', 'Custodian');
+            if (!$custodian) {
+                // fallback to first user if no custodian found
+                $custodian = $room->users->first();
+            }
+            $personsInCharge[$room->id] = $custodian ? $custodian->name : 'N/A';
+        }
+        
+        return view('custodian.scanner', compact('items', 'personsInCharge'));
     }
 
     public function show(Item $item)

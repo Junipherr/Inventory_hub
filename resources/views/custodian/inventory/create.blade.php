@@ -67,7 +67,9 @@
                                     <label for="description">Description</label>
                                     <textarea name="description" class="form-control" rows="3" id="description"></textarea>
                                 </div>
-                                <button type="button" id="addItemButton" class="btn btn-primary">Add Item</button>
+                                <div class="form-group">
+                                    <button type="button" id="addItemButton" class="btn btn-primary w-full sm:w-auto">Add Item</button>
+                                </div>
                             </form>
                         </div>
                     </div>
