@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
@@ -15,8 +16,23 @@ class UserProfileController extends Controller
      */
     public function index()
     {
-        $profiles = User::all();
-        return view('profile.edit', ['profiles' => $profiles]);
+        $profiles = User::with('room')->get();
+        $rooms = Room::all();
+        $user = auth()->user();
+        return view('profile.edit', ['profiles' => $profiles, 'rooms' => $rooms, 'user' => $user]);
+    }
+
+    /**
+     * Get the details of a specific profile.
+     */
+    public function show($id)
+    {
+        $profile = User::with('room')->findOrFail($id);
+        
+        // Make the password visible for this specific request
+        $profile->makeVisible('password');
+        
+        return response()->json($profile);
     }
 
     /**
@@ -31,7 +47,7 @@ class UserProfileController extends Controller
         ]);
 
         // Find or create the room by name
-        $room = \App\Models\Room::firstOrCreate(['name' => $validated['room_name']]);
+        $room = Room::firstOrCreate(['name' => $validated['room_name']]);
 
         $user = User::create([
             'name' => $validated['name'],
@@ -47,6 +63,60 @@ class UserProfileController extends Controller
         }
 
         return Redirect::route('profile.index')->with('status', 'Profile registered successfully.');
+    }
+
+    /**
+     * Show the form for editing the specified profile.
+     */
+    public function edit($id)
+    {
+        $profile = User::findOrFail($id);
+        $rooms = Room::all();
+        return view('profile.edit', compact('profile', 'rooms'));
+    }
+
+    /**
+     * Update the specified profile.
+     */
+    public function update(Request $request, $id)
+    {
+        $profile = User::findOrFail($id);
+        
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $id],
+            'room_id' => ['nullable', 'exists:rooms,id'],
+            'password' => ['nullable', 'string', 'min:8'],
+        ]);
+
+        $profile->name = $validated['name'];
+        $profile->email = $validated['email'];
+        $profile->room_id = $validated['room_id'];
+        
+        if (!empty($validated['password'])) {
+            $profile->password = Hash::make($validated['password']);
+        }
+        
+        $profile->save();
+
+        return response()->json(['success' => true, 'message' => 'Profile updated successfully.']);
+    }
+
+    /**
+     * Remove the specified profile.
+     */
+    public function destroy($id)
+    {
+        $profile = User::findOrFail($id);
+        
+        // Prevent deletion of the currently authenticated user
+        if ($profile->id === auth()->id()) {
+            return response()->json(['success' => false, 'message' => 'You cannot delete your own profile.'], 403);
+        }
+        
+        $profile->delete();
+        
+        return response()->json(['success' => true, 'message' => 'Profile deleted successfully.']);
     }
 
     /**

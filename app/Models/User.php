@@ -51,6 +51,41 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Get the valid roles for the user.
+     *
+     * @return array<string>
+     */
+    public static function validRoles(): array
+    {
+        return ['Admin', 'Viewer'];
+    }
+
+    /**
+     * Check if the user is an Admin (custodian).
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'Admin';
+    }
+
+    /**
+     * Check if the user is a Viewer.
+     *
+     * @return bool
+     */
+    public function isViewer(): bool
+    {
+        return $this->role === 'Viewer';
+    }
+
+    /**
+     * Get the user's room.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function room()
     {
         return $this->belongsTo(Room::class);

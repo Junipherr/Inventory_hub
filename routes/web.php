@@ -71,8 +71,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/{id}', [UserProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/{id}/edit', [UserProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile', [UserProfileController::class, 'store'])->name('profile.store');
-    Route::delete('/profile', [UserProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::put('/profile/{id}', [UserProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile/{id}', [UserProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/viewer/dashboard', [UserProfileController::class, 'viewerDashboard'])
         ->middleware('role:Viewer')

@@ -1,94 +1,344 @@
 <x-main-layout>
     <div class="page-heading">
-        <h1 class="page-title">Add Items</h1>
+        <h1 class="page-title">Add New Inventory Items</h1>
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <a href="index.html"><i class="la la-home font-20"></i></a>
+                <a href="{{ route('dashboard') }}"><i class="la la-home font-20"></i></a>
             </li>
+            <li class="breadcrumb-item active">Add Items</li>
         </ol>
     </div>
-    <div class="table-responsive">
-        <div id="dynamicSuccessMessage" style="position: fixed; top: 10px; right: 10px; z-index: 1050; width: auto; max-width: 300px; display: none;">
-            <div class="alert alert-success">
-                <strong>Success!</strong> <span id="successMessageText"></span>
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa fa-check-circle"></i> {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert">
+                <span>&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa fa-exclamation-triangle"></i> Please fix the following errors:
+            <ul class="mb-0 mt-2">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="close" data-dismiss="alert">
+                <span>&times;</span>
+            </button>
+        </div>
+    @endif
+
+    <div class="page-content fade-in-up">
+        <!-- Progress Indicator -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" 
+                         style="width: 0%" 
+                         id="progressBar">
+                        Step 1 of 3
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="page-content fade-in-up">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="ibox">
-                        <div class="ibox-head">
-                            <div class="ibox-title">Add Items</div>
-                            <div class="ibox-tools">
-                                <a class="ibox-collapse"><i class="fa fa-minus"></i></a>
-                            </div>
+
+        <div class="row">
+            <!-- Main Form -->
+            <div class="col-lg-8">
+                <div class="ibox">
+                    <div class="ibox-head">
+                        <div class="ibox-title">
+                            <i class="fa fa-plus-circle"></i> Item Details
                         </div>
-                        <div class="ibox-body">
-                            @if ($errors->any())
-                                <div class="alert alert-danger">
-                                    <strong>Error!</strong> Please fix the following errors and try submitting again.
-                                    <ul>
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
+                        <div class="ibox-tools">
+                            <a class="ibox-collapse"><i class="fa fa-minus"></i></a>
+                        </div>
+                    </div>
+                    <div class="ibox-body">
+                        <form id="inventoryForm" method="POST" action="{{ route('inventory.store') }}">
+                            @csrf
+                            
+                            <!-- Step 1: Basic Information -->
+                            <div class="form-step" id="step1">
+                                <h4 class="text-info mb-3">Step 1: Basic Information</h4>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="item_name" class="required">Item Name *</label>
+                                            <input type="text" 
+                                                   class="form-control @error('item_name') is-invalid @enderror" 
+                                                   name="item_name" 
+                                                   id="item_name"
+                                                   placeholder="e.g., Dell Laptop, Office Chair"
+                                                   value="{{ old('item_name') }}"
+                                                   required>
+                                            <small class="form-text text-muted">Enter a descriptive name for the item</small>
+                                            @error('item_name')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="category_id" class="required">Category *</label>
+                                            <select name="category_id" 
+                                                    class="form-control select2 @error('category_id') is-invalid @enderror" 
+                                                    id="categorySelect" 
+                                                    required>
+                                                <option value="">-- Select Category --</option>
+                                                <option value="computer_hardware_peripherals" {{ old('category_id') == 'computer_hardware_peripherals' ? 'selected' : '' }}>💻 Computer Hardware & Peripherals</option>
+                                                <option value="office_classroom_furniture" {{ old('category_id') == 'office_classroom_furniture' ? 'selected' : '' }}>🪑 Office and Classroom Furniture</option>
+                                                <option value="appliances_electronics" {{ old('category_id') == 'appliances_electronics' ? 'selected' : '' }}>📺 Appliances and Electronics</option>
+                                                <option value="classroom_office_supplies" {{ old('category_id') == 'classroom_office_supplies' ? 'selected' : '' }}>📚 Classroom/Office Supplies</option>
+                                                <option value="networking_equipment" {{ old('category_id') == 'networking_equipment' ? 'selected' : '' }}>🌐 Networking Equipment</option>
+                                                <option value="security_systems" {{ old('category_id') == 'security_systems' ? 'selected' : '' }}>🔒 Security Systems</option>
+                                                <option value="laboratory_equipment" {{ old('category_id') == 'laboratory_equipment' ? 'selected' : '' }}>🧪 Laboratory Equipment</option>
+                                                <option value="medical_equipment" {{ old('category_id') == 'medical_equipment' ? 'selected' : '' }}>🏥 Medical Equipment</option>
+                                            </select>
+                                            @error('category_id')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
                                 </div>
-                            @endif
-                            <form id="addItemForm">
-                                @csrf
-                                <div class="form-group">
-                                    <label for="item_name">Item Name</label>
-                                    <input type="text" class="form-control" name="item_name" id="item_name">
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="room_id" class="required">Room Location *</label>
+                                            <select name="room_id" 
+                                                    class="form-control select2 @error('room_id') is-invalid @enderror" 
+                                                    id="roomSelect" 
+                                                    required>
+                                                <option value="">-- Select Room --</option>
+                                                @foreach($rooms as $room)
+                                                    <option value="{{ $room->id }}" {{ old('room_id') == $room->id ? 'selected' : '' }}>{{ $room->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('room_id')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="quantity" class="required">Quantity *</label>
+                                            <div class="input-group">
+                                                <input type="number" 
+                                                       class="form-control @error('quantity') is-invalid @enderror" 
+                                                       name="quantity" 
+                                                       id="quantity" 
+                                                       min="1" 
+                                                       value="{{ old('quantity', 1) }}"
+                                                       required>
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">units</span>
+                                                </div>
+                                                @error('quantity')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="room_id">Room</label>
-                                    <select name="room_id" class="form-control" id="roomSelect">
-                                        <option value="">-- Select Room --</option>
-                                        @foreach($rooms as $room)
-                                            <option value="{{ $room->id }}">{{ $room->name }}</option>
-                                        @endforeach
-                                    </select>
+                            </div>
+
+                            <!-- Step 2: Additional Details -->
+                            <div class="form-step d-none" id="step2">
+                                <h4 class="text-info mb-3">Step 2: Additional Details</h4>
+                                
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="description">Description</label>
+                                            <textarea name="description" 
+                                                      class="form-control @error('description') is-invalid @enderror" 
+                                                      rows="4" 
+                                                      id="description"
+                                                      placeholder="Provide detailed description, specifications, or notes...">{{ old('description') }}</textarea>
+                                            @error('description')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-group" id="categoryGroup">
-                                    <label for="category_id">Category</label>
-                                    <select name="category_id" class="form-control" id="categorySelect">
-                                        <option value="">-- Select Category --</option>
-                                        <option value="computer_hardware_peripherals">Computer Hardware & Peripherals</option>
-                                        <option value="office_classroom_furniture">Office and Classroom Furniture</option>
-                                        <option value="appliances_electronics">Appliances and Electronics (Non-Computer)</option>
-                                        <option value="classroom_office_supplies">Classroom/Office Supplies & Equipment (Miscellaneous)</option>
-                                    </select>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="purchase_date">Purchase Date</label>
+                                            <input type="date" 
+                                                   class="form-control @error('purchase_date') is-invalid @enderror" 
+                                                   name="purchase_date" 
+                                                   id="purchase_date"
+                                                   value="{{ old('purchase_date') }}" required>
+                                            @error('purchase_date')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="purchase_price">Purchase Price</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">₱</span>
+                                                </div>
+                                                <input type="number" 
+                                                       class="form-control @error('purchase_price') is-invalid @enderror" 
+                                                       name="purchase_price" 
+                                                       id="purchase_price"
+                                                       step="0.01"
+                                                       min="0"
+                                                       value="{{ old('purchase_price') }}">
+                                                @error('purchase_price')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="quantity">Quantity</label>
-                                    <input type="number" class="form-control" name="quantity" id="quantity" min="1" value="1">
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="warranty_expires">Warranty Expires</label>
+                                            <input type="date" 
+                                                   class="form-control @error('warranty_expires') is-invalid @enderror" 
+                                                   name="warranty_expires" 
+                                                   id="warranty_expires"
+                                                   value="{{ old('warranty_expires') }}">
+                                            @error('warranty_expires')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="condition">Condition</label>
+                                            <select name="condition" class="form-control @error('condition') is-invalid @enderror" id="condition">
+                                                <option value="new" {{ old('condition') == 'new' ? 'selected' : '' }}>🆕 New</option>
+                                                <option value="good" {{ old('condition') == 'good' ? 'selected' : '' }}>✅ Good</option>
+                                                <option value="fair" {{ old('condition') == 'fair' ? 'selected' : '' }}>⚠️ Fair</option>
+                                                <option value="poor" {{ old('condition') == 'poor' ? 'selected' : '' }}>❌ Poor</option>
+                                            </select>
+                                            @error('condition')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="description">Description</label>
-                                    <textarea name="description" class="form-control" rows="3" id="description"></textarea>
+                            </div>
+
+                            <!-- Step 3: QR Code & Confirmation -->
+                            <div class="form-step d-none" id="step3">
+                                <h4 class="text-info mb-3">Step 3: QR Code & Confirmation</h4>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Generated QR Code</label>
+                                            <div class="text-center p-3 border rounded">
+                                                <img id="qrPreview" 
+                                                     src="" 
+                                                     alt="QR Code Preview" 
+                                                     style="max-width: 200px; height: auto;"
+                                                     class="img-fluid">
+                                                <p class="mt-2 text-muted">
+                                                    <small>Scan this code to view item details</small>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-header bg-light">
+                                                <h5 class="mb-0">Item Summary</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <dl class="row">
+                                                    <dt class="col-sm-5">Item Name:</dt>
+                                                    <dd class="col-sm-7" id="summaryItemName">-</dd>
+                                                    
+                                                    <dt class="col-sm-5">Category:</dt>
+                                                    <dd class="col-sm-7" id="summaryCategory">-</dd>
+                                                    
+                                                    <dt class="col-sm-5">Room:</dt>
+                                                    <dd class="col-sm-7" id="summaryRoom">-</dd>
+                                                    
+                                                    <dt class="col-sm-5">Quantity:</dt>
+                                                    <dd class="col-sm-7" id="summaryQuantity">-</dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <button type="button" id="addItemButton" class="btn btn-primary w-full sm:w-auto">Add Item</button>
-                                </div>
-                            </form>
+                                
+                                <input type="hidden" name="qr_code" id="qrCodeInput">
+                            </div>
+
+                            <!-- Navigation Buttons -->
+                            <div class="form-group text-right mt-4">
+                                <button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </button>
+                                <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </button>
+                                <button type="submit" class="btn btn-success d-none" id="submitBtn">
+                                    <i class="fa fa-check"></i> Confirm & Add Item
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="col-lg-4">
+                <div class="ibox">
+                    <div class="ibox-head">
+                        <div class="ibox-title">
+                            <i class="fa fa-eye"></i> Live Preview
+                        </div>
+                    </div>
+                    <div class="ibox-body">
+                        <div id="livePreview">
+                            <div class="text-center text-muted py-5">
+                                <i class="fa fa-info-circle fa-3x mb-3"></i>
+                                <p>Fill in the form to see live preview</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <script>
-                    const rooms = @json($rooms);
-                </script>
-
-                <div class="col-md-6">
-                    <div class="ibox">
-                        <div class="ibox-head">
-                            <div class="ibox-title">Added Item</div>
-                            <div class="ibox-tools">
-                                <a class="ibox-collapse"><i class="fa fa-minus"></i></a>
-                            </div>
-                        </div>
-                        <div class="ibox-body" id="addedItemPanel" style="min-height: 300px; padding: 10px; transition: opacity 0.5s ease; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                            <p style="color: #6b7280; font-size: 1rem;">No item added yet.</p>
+                <!-- Quick Actions -->
+                <div class="ibox">
+                    <div class="ibox-head">
+                        <div class="ibox-title">Quick Actions</div>
+                    </div>
+                    <div class="ibox-body">
+                        <div class="list-group">
+                            <a href="{{ route('inventory.items') }}" class="list-group-item list-group-item-action">
+                                <i class="fa fa-list"></i> View All Items
+                            </a>
+                            <a href="{{ route('scanner') }}" class="list-group-item list-group-item-action">
+                                <i class="fa fa-qrcode"></i> QR Code Scanner
+                            </a>
+                            <a href="{{ route('dashboard') }}" class="list-group-item list-group-item-action">
+                                <i class="fa fa-tachometer-alt"></i> Dashboard
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -96,133 +346,29 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById('addItemButton').addEventListener('click', function() {
-            // Get form values
-            const itemName = document.getElementById('item_name').value.trim();
-            const roomId = document.getElementById('roomSelect').value;
-            const categorySelect = document.getElementById('categorySelect');
-            const category = categorySelect ? categorySelect.value : '';
-            const quantity = document.getElementById('quantity').value;
-            const description = document.getElementById('description').value.trim();
-
-            if (!itemName || !roomId || !category) {
-                alert('Please fill in all required fields: Item Name, Room, and Category.');
-                return;
-            }
-
-            if (!quantity || quantity < 1) {
-                alert('Please enter a valid quantity (minimum 1).');
-                return;
-            }
-
-            // Generate random alphanumeric code for qr_code (12 characters)
-            function generateRandomCode(length) {
-                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                let result = '';
-                for (let i = 0; i < length; i++) {
-                    result += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
-                return result;
-            }
-            const randomCode = generateRandomCode(12);
-
-            // Display added item details with QR code immediately
-            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(randomCode)}&size=200x200`;
-            const addedItemPanel = document.getElementById('addedItemPanel');
-            const roomName = rooms.find(room => room.id == roomId)?.name || roomId;
-            const categoryNames = {
-                computer_hardware_peripherals: "Computer Hardware & Peripherals",
-                office_classroom_furniture: "Office and Classroom Furniture",
-                appliances_electronics: "Appliances and Electronics (Non-Computer)",
-                classroom_office_supplies: "Classroom/Office Supplies & Equipment (Miscellaneous)"
-            };
-            const categoryName = categoryNames[category] || category;
-            addedItemPanel.innerHTML = `
-                <div style="width: 100%; max-width: 400px; text-align: center; font-family: Arial, sans-serif; color: #374151;">
-                    <h3 style="font-weight: 600; font-size: 1.25rem; margin-bottom: 12px; padding-bottom: 6px;">Added Item Details</h3>
-                    <p style="margin: 8px 0;"><strong>Item Name:</strong> ${itemName}</p>
-                    <p style="margin: 8px 0;"><strong>Room:</strong> ${roomName}</p>
-                    <p style="margin: 8px 0;"><strong>Category:</strong> ${categoryName}</p>
-                    <p style="margin: 8px 0;"><strong>Quantity:</strong> ${quantity}</p>
-                    <p style="margin: 8px 0 16px 0;"><strong>Description:</strong> ${description}</p>
-                    <img src="${qrCodeUrl}" alt="QR Code" style="border: 2px solid #3b82f6; border-radius: 8px; margin: 20px auto 0 auto; display: block; width: 200px; height: 200px;" />
-                    <form method="POST" action="{{ route('inventory.confirm') }}" id="confirmForm">
-                        @csrf
-                        <input type="hidden" name="item_name" value="${itemName}">
-                        <input type="hidden" name="room_id" value="${roomId}">
-                        <input type="hidden" name="category_id" value="${category}">
-                        <input type="hidden" name="quantity" value="${quantity}">
-                        <input type="hidden" name="description" value="${description}">
-                        <input type="hidden" name="qr_code" value="${randomCode}">
-                        <button type="submit" class="btn btn-success" id="confirmButton" style="padding: 10px 20px; font-size: 1rem; border-radius: 6px; transition: background-color 0.3s ease;">Confirm</button>
-                    </form>
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Success!</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
                 </div>
-            `;
+                <div class="modal-body text-center">
+                    <i class="fa fa-check-circle fa-5x text-success mb-3"></i>
+                    <h4>Item Added Successfully!</h4>
+                    <p>Your inventory item has been added to the system.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">
+                        <i class="fa fa-check"></i> OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            // Add event listener to confirm form for AJAX submission
-            const confirmForm = document.getElementById('confirmForm');
-            const confirmButton = document.getElementById('confirmButton');
-            confirmForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                confirmButton.disabled = true;
-                confirmButton.innerText = 'Submitting...';
-
-                const formData = new FormData(confirmForm);
-
-                fetch(confirmForm.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': formData.get('_token'),
-                        'Accept': 'application/json',
-                    },
-                    body: formData,
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        // Show success message dynamically
-                        const successMessage = document.getElementById('dynamicSuccessMessage');
-                        const successMessageText = document.getElementById('successMessageText');
-                        successMessageText.textContent = data.message || 'Item confirmed successfully.';
-                        successMessage.style.display = 'block';
-
-                        // Reset confirm button text and keep it disabled to prevent resubmission
-                        confirmButton.innerText = 'Confirmed';
-
-                        setTimeout(() => {
-                            successMessage.style.transition = 'opacity 0.5s ease';
-                            successMessage.style.opacity = '0';
-                            setTimeout(() => {
-                                successMessage.style.display = 'none';
-                                successMessage.style.opacity = '1';
-                            }, 500);
-                        }, 2000);
-                    } else {
-                        alert(data.message || 'Failed to confirm item.');
-                        confirmButton.disabled = false;
-                        confirmButton.innerText = 'Confirm';
-                    }
-                })
-                .catch(error => {
-                    confirmButton.disabled = false;
-                    confirmButton.innerText = 'Confirm';
-                    alert('Error submitting confirmation: ' + error.message);
-                });
-                // Do not re-enable the button on success to prevent resubmission
-            });
-
-            // Fade in animation for added item panel
-            addedItemPanel.style.opacity = 0;
-            setTimeout(() => {
-                addedItemPanel.style.opacity = 1;
-            }, 50);
-        });
-    </script>
-
+    
 </x-main-layout>

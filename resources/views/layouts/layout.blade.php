@@ -69,7 +69,8 @@
     <script src="{{ asset('assets/js/scripts/dashboard_1_demo.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/dropdown-fix.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/profile-registration.js') }}" defer></script>
+<script src="{{ asset('assets/js/scanner-fix.js') }}"></script>
 
+<script src="{{ asset('assets/js/inventory-create-fixed.js') }}"></script>
 </body>
-
 </html>
