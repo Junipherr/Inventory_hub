@@ -319,3 +319,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// import './inventory-create-compl.js';

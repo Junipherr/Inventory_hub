@@ -17,6 +17,10 @@ class Item extends Model
         'last_checked_at',
         'quantity',
         'qr_code',
+        'purchase_date',
+        'purchase_price',
+        'warranty_expires',
+        'condition',
     ];
 
     public function units()
