@@ -78,11 +78,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Helper functions for messages
     function showSuccessMessage(message) {
         const successDiv = document.createElement('div');
-        successDiv.className = 'alert alert-success alert-dismissible fade show';
-        successDiv.innerHTML = `
-            <strong>Success!</strong> ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
+       // successDiv.className = 'alert alert-success alert-dismissible fade show';
+        // successDiv.innerHTML = `
+        //     <strong>Success!</strong> ${message}
+        //     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        // `;
         
         const submitSection = document.querySelector('.submit-section');
         if (submitSection) {

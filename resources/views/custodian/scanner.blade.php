@@ -732,13 +732,19 @@
             });
 
             // Success message
+            let successTimeout; // Add this variable at the top of your <script> block
+
             function showSuccessMessage(message) {
                 const successDiv = document.getElementById('dynamicSuccessMessage');
                 const messageText = document.getElementById('successMessageText');
                 messageText.textContent = message;
                 successDiv.style.display = 'block';
-                
-                setTimeout(() => {
+
+                // Clear any previous timeout to prevent stacking
+                if (successTimeout) {
+                    clearTimeout(successTimeout);
+                }
+                successTimeout = setTimeout(() => {
                     successDiv.style.display = 'none';
                 }, 3000);
             }

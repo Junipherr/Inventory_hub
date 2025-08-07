@@ -9,6 +9,29 @@
         </ol>
     </div>
 
+    <!-- Dynamic Notification Container -->
+    <div id="dynamicSuccessMessage" 
+         style="position: fixed; top: 20px; right: 20px; z-index: 1050; width: auto; max-width: 400px; display: none;">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa fa-check-circle"></i> 
+            <span id="successMessageText"></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="dynamicErrorMessage" 
+         style="position: fixed; top: 20px; right: 20px; z-index: 1050; width: auto; max-width: 400px; display: none;">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa fa-exclamation-triangle"></i> 
+            <span id="errorMessageText"></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="fa fa-check-circle"></i> {{ session('success') }}
