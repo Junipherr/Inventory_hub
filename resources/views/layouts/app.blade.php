@@ -32,7 +32,7 @@
 
             <!-- Page Content -->
             <main>
-                {{ $slot }}
+                @yield('content')
             </main>
         </div>
     <script src="{{ asset('js/profile-registration.js') }}" defer></script>

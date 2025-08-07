@@ -123,7 +123,10 @@
                                                     data-qr-code="{{ $unit->qr_code ?? '' }}"
                                                     data-item-name="{{ $item->item_name }}"
                                                     data-room="{{ $item->room->name ?? 'N/A' }}"
-                                                    data-category="{{ ucwords(str_replace('_', ' ', $item->category_id)) }}">
+                                                    data-category="{{ ucwords(str_replace('_', ' ', $item->category_id)) }}"
+                                                    data-item-description="{{ $item->description ?? '' }}"
+                                                    data-item-quantity="{{ $item->quantity ?? '' }}"
+                                                    data-item-qr="{{ $item->qr_code ?? '' }}">
                                                     
                                                     <td>
                                                         <div class="item-info">
@@ -287,7 +290,9 @@
                                 </div>
                                 <div class="detail-item">
                                     <label>QR Code:</label>
-                                    <span id="modalQRCode"></span>
+                                    <div id="modalQRCode">
+                                        <img id="qrCodeImage" src="" alt="QR Code" style="max-width: 150px; height: auto;">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -674,10 +679,11 @@
                     const itemName = row.dataset.itemName;
                     const room = row.dataset.room;
                     const category = row.dataset.category;
-                    const quantity = row.querySelector('.badge.bg-primary').textContent;
+                    const quantity = row.dataset.itemQuantity;
                     const status = row.querySelector('.status-select').value;
                     const personInCharge = '{{ $personsInCharge[$item->room_id] ?? 'N/A' }}';
-                    const qrCode = row.dataset.qrCode;
+                    const qrCode = row.dataset.itemQr;
+                    const description = row.dataset.itemDescription;
 
                     document.getElementById('modalItemName').textContent = itemName;
                     document.getElementById('modalRoom').textContent = room;
@@ -685,7 +691,19 @@
                     document.getElementById('modalQuantity').textContent = quantity;
                     document.getElementById('modalStatus').textContent = status;
                     document.getElementById('modalPersonInCharge').textContent = personInCharge;
-                    document.getElementById('modalQRCode').textContent = qrCode || 'N/A';
+                    document.getElementById('modalDescription').textContent = description || 'No description available';
+                    
+                    // Display QR code
+                    const qrCodeImage = document.getElementById('qrCodeImage');
+                    if (qrCode) {
+                        // Generate QR code image using Google Chart API
+                        const qrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=${encodeURIComponent(qrCode)}`;
+                        qrCodeImage.src = qrUrl;
+                        qrCodeImage.style.display = 'block';
+                    } else {
+                        qrCodeImage.style.display = 'none';
+                        document.getElementById('modalQRCode').innerHTML = '<span>No QR code available</span>';
+                    }
                 });
             });
 

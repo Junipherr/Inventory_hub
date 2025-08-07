@@ -22,153 +22,175 @@
             </div>
         </div>
 
-        <!-- Room Selection Dropdown -->
+        <!-- Quick Stats Cards -->
         <div class="row mb-4">
+            @foreach ($rooms as $room)
+                @php
+                    $roomItems = $itemsByRoom[$room->id] ?? collect();
+                    $totalQuantity = $roomItems->sum('quantity');
+                @endphp
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        {{ $room->name }}
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        {{ $roomItems->count() }} Items
+                                    </div>
+                                    <div class="text-xs text-muted">
+                                        {{ $totalQuantity }} total quantity
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-door-open fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="row">
             <div class="col-12">
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
                                 <i class="fas fa-list mr-2"></i>
-                                Room Selection
+                                Items by Room
                             </h5>
-                            <div class="dropdown">
-                                <button class="btn btn-light dropdown-toggle" type="button" id="roomDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-door-open mr-2"></i>
-                                    {{ $rooms->isNotEmpty() ? $rooms->first()->name : 'Select Room' }}
-                                    <span class="badge bg-primary ms-2">
-                                        {{ $rooms->isNotEmpty() ? ($itemsByRoom[$rooms->first()->id]->count() ?? 0) : 0 }}
-                                    </span>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-light btn-sm" id="gridViewBtn">
+                                    <i class="fas fa-th"></i>
                                 </button>
-                                <ul class="dropdown-menu" aria-labelledby="roomDropdown">
-                                    @foreach ($rooms as $room)
-                                        @php
-                                            $roomItems = $itemsByRoom[$room->id] ?? collect();
-                                        @endphp
-                                        <li>
-                                            <a class="dropdown-item room-selector" 
-                                               href="#" 
-                                               data-room-id="{{ $room->id }}"
-                                               data-room-name="{{ $room->name }}">
-                                                <i class="fas fa-door-open mr-2"></i>
-                                                {{ $room->name }}
-                                                <span class="badge bg-secondary ms-auto">
-                                                    {{ $roomItems->count() }}
-                                                </span>
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                </ul>
+                                <button type="button" class="btn btn-outline-light btn-sm active" id="listViewBtn">
+                                    <i class="fas fa-list"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
                     <div class="card-body">
-                        <!-- Room Info Header -->
-                        <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded" id="roomInfoHeader">
-                            @if($rooms->isNotEmpty())
-                                @php
-                                    $firstRoom = $rooms->first();
-                                    $items = $itemsByRoom[$firstRoom->id] ?? collect();
-                                    $personInCharge = $personsInCharge[$firstRoom->id] ?? null;
-                                @endphp
-                                <div>
-                                    <h6 class="mb-1">
-                                        <i class="fas fa-user-tie text-primary mr-2"></i>
-                                        Person in Charge: 
-                                        <span class="text-primary" id="personInCharge">
-                                            {{ $personInCharge ? $personInCharge->name : 'N/A' }}
+                        <!-- Room Navigation -->
+                        <ul class="nav nav-pills nav-fill mb-4" id="roomTabs" role="tablist">
+                            @foreach ($rooms as $index => $room)
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link @if($index == 0) active @endif" 
+                                            id="room-{{ $room->id }}-tab" 
+                                            data-bs-toggle="pill" 
+                                            data-bs-target="#room-{{ $room->id }}" 
+                                            type="button" 
+                                            role="tab" 
+                                            aria-controls="room-{{ $room->id }}" 
+                                            aria-selected="{{ $index == 0 ? 'true' : 'false' }}">
+                                        <i class="fas fa-door-open mr-2"></i>
+                                        {{ $room->name }}
+                                        <span class="badge bg-secondary ms-2">
+                                            {{ $itemsByRoom[$room->id]->count() ?? 0 }}
                                         </span>
-                                    </h6>
-                                    <small class="text-muted">
-                                        <i class="fas fa-info-circle mr-1"></i>
-                                        <span id="roomItemCount">{{ $items->count() }}</span> items in 
-                                        <span id="currentRoomName">{{ $firstRoom->name }}</span>
-                                    </small>
-                                </div>
-                                <div class="text-right">
-                                    <small class="text-muted">Total Quantity</small>
-                                    <div class="h5 text-primary mb-0" id="totalQuantity">{{ $items->sum('quantity') }}</div>
-                                </div>
-                            @else
-                                <div class="text-center w-100">
-                                    <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
-                                    <h6>No rooms available</h6>
-                                </div>
-                            @endif
-                        </div>
+                                    </button>
+                                </li>
+                            @endforeach
+                        </ul>
 
-                        <!-- Items Display Area -->
-                        <div id="itemsDisplayArea">
-                            @if($rooms->isNotEmpty())
-                                @php
-                                    $firstRoom = $rooms->first();
-                                    $items = $itemsByRoom[$firstRoom->id] ?? collect();
-                                @endphp
-                                <div class="row" id="itemsGrid-{{ $firstRoom->id }}">
-                                    @if ($items->isEmpty())
-                                        <div class="col-12">
+                        <!-- Tab Content -->
+                        <div class="tab-content" id="roomTabsContent">
+                            @foreach ($rooms as $index => $room)
+                                <div class="tab-pane fade @if($index == 0) show active @endif" 
+                                     id="room-{{ $room->id }}" 
+                                     role="tabpanel" 
+                                     aria-labelledby="room-{{ $room->id }}-tab">
+                                    
+                                    @php
+                                        $items = $itemsByRoom[$room->id] ?? collect();
+                                        $personInCharge = $personsInCharge[$room->id] ?? null;
+                                    @endphp
+
+                                    <!-- Room Info Header -->
+                                    <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded">
+                                        <div>
+                                            <h6 class="mb-1">
+                                                <i class="fas fa-user-tie text-primary mr-2"></i>
+                                                Person in Charge: 
+                                                <span class="text-primary">
+                                                    {{ $personInCharge ? $personInCharge->name : 'N/A' }}
+                                                </span>
+                                            </h6>
+                                            <small class="text-muted">
+                                                <i class="fas fa-info-circle mr-1"></i>
+                                                {{ $items->count() }} items in this room
+                                            </small>
+                                        </div>
+                                        <div class="text-right">
+                                            <small class="text-muted">Total Quantity</small>
+                                            <div class="h5 text-primary mb-0">{{ $items->sum('quantity') }}</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Items Grid/List -->
+                                    <div class="items-container">
+                                        @if ($items->isEmpty())
                                             <div class="text-center py-5">
                                                 <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                                                 <h5 class="text-muted">No items found</h5>
                                                 <p class="text-muted">This room currently has no items assigned.</p>
                                             </div>
-                                        </div>
-                                    @else
-                                        @foreach ($items as $item)
-                                            <div class="col-lg-4 col-md-6 mb-4 item-card">
-                                                <div class="card border-left-info shadow-sm h-100">
-                                                    <div class="card-header bg-light py-2">
-                                                        <div class="d-flex justify-content-between align-items-center">
-                                                            <h6 class="mb-0 font-weight-bold text-primary">
-                                                                {{ $item->item_name }}
-                                                            </h6>
-                                                            <span class="badge bg-info text-white">
-                                                                {{ $item->quantity }}x
-                                                            </span>
+                                        @else
+                                            <div class="row" id="itemsGrid-{{ $room->id }}">
+                                                @foreach ($items as $item)
+                                                    <div class="col-lg-4 col-md-6 mb-4 item-card">
+                                                        <div class="card border-left-info shadow-sm h-100">
+                                                            <div class="card-header bg-light py-2">
+                                                                <div class="d-flex justify-content-between align-items-center">
+                                                                    <h6 class="mb-0 font-weight-bold text-primary">
+                                                                        {{ $item->item_name }}
+                                                                    </h6>
+                                                                    <span class="badge bg-info text-white">
+                                                                        {{ $item->quantity }}x
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <p class="text-muted small mb-2">
+                                                                    <i class="fas fa-tag mr-1"></i>
+                                                                    {{ ucwords(str_replace('_', ' ', $item->category_id)) }}
+                                                                </p>
+                                                                <p class="text-muted small mb-2">
+                                                                    <i class="fas fa-map-marker-alt mr-1"></i>
+                                                                    {{ $room->name }}
+                                                                </p>
+                                                                <p class="text-muted small mb-3">
+                                                                    {{ Str::limit($item->description, 50) }}
+                                                                </p>
+                                                                
+                                                                <!-- Quick Actions -->
+                                                                <div class="d-flex gap-1">
+                                                                    <button type="button" 
+                                                                            class="btn btn-primary btn-sm flex-fill"
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target="#itemInfoModal{{ $item->id }}">
+                                                                        <i class="fas fa-eye mr-1"></i>
+                                                                        Details
+                                                                    </button>
+                                                                    <button type="button" 
+                                                                            class="btn btn-outline-secondary btn-sm"
+                                                                            onclick="printItem({{ $item->id }})">
+                                                                        <i class="fas fa-print"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div class="card-body">
-                                                        <p class="text-muted small mb-2">
-                                                            <i class="fas fa-tag mr-1"></i>
-                                                            {{ ucwords(str_replace('_', ' ', $item->category_id)) }}
-                                                        </p>
-                                                        <p class="text-muted small mb-2">
-                                                            <i class="fas fa-map-marker-alt mr-1"></i>
-                                                            {{ $room->name }}
-                                                        </p>
-                                                        <p class="text-muted small mb-3">
-                                                            {{ Str::limit($item->description, 50) }}
-                                                        </p>
-                                                        
-                                                        <div class="d-flex gap-1">
-                                                            <button type="button" 
-                                                                    class="btn btn-primary btn-sm flex-fill"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#itemInfoModal{{ $item->id }}">
-                                                                <i class="fas fa-eye mr-1"></i>
-                                                                Details
-                                                            </button>
-                                                            <button type="button" 
-                                                                    class="btn btn-outline-secondary btn-sm"
-                                                                    onclick="printItem({{ $item->id }})">
-                                                                <i class="fas fa-print"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                @endforeach
                                             </div>
-                                        @endforeach
-                                    @endif
-                                </div>
-                            @else
-                                <div class="col-12">
-                                    <div class="text-center py-5">
-                                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                                        <h5 class="text-muted">No rooms available</h5>
-                                        <p class="text-muted">No rooms are currently assigned to you.</p>
+                                        @endif
                                     </div>
                                 </div>
-                            @endif
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -267,7 +289,10 @@
                                             <tbody>
                                                 @foreach ($item->units as $unit)
                                                     <tr>
-                                                        <td>{{ $unit->unit_number }}</td>
+                                                        <td>
+                                                            <i class="fas fa-hashtag mr-1"></i>
+                                                            {{ $unit->unit_number }}
+                                                        </td>
                                                         <td>
                                                             <span class="badge bg-{{ $unit->status == 'available' ? 'success' : 'warning' }}">
                                                                 {{ ucfirst($unit->status) }}
@@ -302,31 +327,21 @@
 
     <!-- JavaScript for enhanced functionality -->
     <script>
-        // Room selection functionality
-        document.querySelectorAll('.room-selector').forEach(selector => {
-            selector.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const roomId = this.getAttribute('data-room-id');
-                const roomName = this.getAttribute('data-room-name');
-                
-                // Update dropdown button
-                document.getElementById('selectedRoomBadge').textContent = roomName;
-                
-                // Update room info
-                document.getElementById('currentRoomName').textContent = roomName;
-                document.getElementById('personInCharge').textContent = this.getAttribute('data-person-in-charge') || 'N/A';
-                
-                // Update counts
-                const roomItems = this.querySelector('.badge').textContent;
-                const totalQuantity = this.getAttribute('data-total-quantity') || 0;
-                
-                document.getElementById('roomItemCount').textContent = roomItems;
-                document.getElementById('totalQuantity').textContent = totalQuantity;
-                
-                // In a real implementation, you would load items via AJAX here
-                console.log(`Loading items for room ${roomId}: ${roomName}`);
+        // View toggle functionality
+        document.getElementById('gridViewBtn')?.addEventListener('click', function() {
+            document.querySelectorAll('[id^="itemsGrid-"]').forEach(grid => {
+                grid.className = 'row row-cols-1 row-cols-md-2 row-cols-lg-3';
             });
+            this.classList.add('active');
+            document.getElementById('listViewBtn').classList.remove('active');
+        });
+
+        document.getElementById('listViewBtn')?.addEventListener('click', function() {
+            document.querySelectorAll('[id^="itemsGrid-"]').forEach(grid => {
+                grid.className = 'row';
+            });
+            this.classList.add('active');
+            document.getElementById('gridViewBtn').classList.remove('active');
         });
 
         // Print function
@@ -387,13 +402,16 @@
             transform: translateY(-2px);
         }
         
-        .dropdown-menu {
-            max-height: 300px;
-            overflow-y: auto;
+        .nav-pills .nav-link {
+            transition: all 0.3s;
         }
         
-        .room-selector:hover {
+        .nav-pills .nav-link:hover {
             background-color: rgba(78, 115, 223, 0.1);
+        }
+        
+        .nav-pills .nav-link.active {
+            background-color: #4e73df;
         }
     </style>
 </x-main-layout>

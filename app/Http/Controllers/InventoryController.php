@@ -28,7 +28,7 @@ class InventoryController extends Controller
             if (!$custodian) {
                 $custodian = $room->users->first();
             }
-            $personsInCharge[$room->id] = $custodian ? $custodian->name : 'N/A';
+            $personsInCharge[$room->id] = $custodian ?? null;
         }
         
         return view('custodian.scanner', compact('items', 'personsInCharge'));
@@ -69,7 +69,7 @@ class InventoryController extends Controller
             if (!$custodian) {
                 $custodian = $room->users->first();
             }
-            $personsInCharge[$room->id] = $custodian ? $custodian->name : 'N/A';
+            $personsInCharge[$room->id] = $custodian ?? null;
         }
 
         return view('custodian.dashboard', compact('rooms', 'roomCategories', 'itemsByRoom', 'personsInCharge'));
