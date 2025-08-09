@@ -1,4 +1,9 @@
 <x-main-layout>
+    @push('head')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    @endpush
+
     <div class="page-heading">
         <h1 class="page-title">Add New Inventory Items</h1>
         <ol class="breadcrumb">
@@ -83,7 +88,7 @@
                         </div>
                     </div>
                     <div class="ibox-body">
-                        <form id="inventoryForm" method="POST" action="{{ route('inventory.store') }}">
+                        <form id="inventoryForm" method="POST" action="/inventory">
                             @csrf
                             
                             <!-- Step 1: Basic Information -->
@@ -270,13 +275,11 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Generated QR Code</label>
+                                            <label>Item QR Code</label>
                                             <div class="text-center p-3 border rounded">
-                                                <img id="qrPreview" 
-                                                     src="" 
-                                                     alt="QR Code Preview" 
-                                                     style="max-width: 200px; height: auto;"
-                                                     class="img-fluid">
+                                                <div id="qrPreview" class="d-inline-block" style="min-height: 200px; min-width: 200px;">
+                                                    <!-- QR code will be generated here -->
+                                                </div>
                                                 <p class="mt-2 text-muted">
                                                     <small>Scan this code to view item details</small>
                                                 </p>
@@ -353,13 +356,13 @@
                     </div>
                     <div class="ibox-body">
                         <div class="list-group">
-                            <a href="{{ route('inventory.items') }}" class="list-group-item list-group-item-action">
+                            <a href="/inventory/items" class="list-group-item list-group-item-action">
                                 <i class="fa fa-list"></i> View All Items
                             </a>
-                            <a href="{{ route('scanner') }}" class="list-group-item list-group-item-action">
+                            <a href="/scanner" class="list-group-item list-group-item-action">
                                 <i class="fa fa-qrcode"></i> QR Code Scanner
                             </a>
-                            <a href="{{ route('dashboard') }}" class="list-group-item list-group-item-action">
+                            <a href="/dashboard" class="list-group-item list-group-item-action">
                                 <i class="fa fa-tachometer-alt"></i> Dashboard
                             </a>
                         </div>
@@ -392,6 +395,4 @@
             </div>
         </div>
     </div>
-
-    
 </x-main-layout>

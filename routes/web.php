@@ -9,7 +9,9 @@ use App\Models\Item;
 
 Route::post('/inventory/confirm', [InventoryController::class, 'confirm'])->name('inventory.confirm');
 
-Route::get('/inventory/qrcode/{id}', [InventoryController::class, 'generateQRCode'])->name('inventory.qrcode');
+Route::get('/inventory/qrcode/{data}', [InventoryController::class, 'generateQRCode'])
+    ->name('inventory.qrcode')
+    ->where('data', '.*'); // Allow any characters in the data parameter
 
 Route::get('/scanner', [InventoryController::class, 'scanner'])->middleware(['auth', 'verified', 'role:Admin'])->name('scanner');
 
@@ -39,14 +41,11 @@ Route::get('/inventory/items', [InventoryController::class, 'index'])
     ->middleware(['auth', 'verified', 'role:Admin'])
     ->name('inventory.items');
 
-use App\Models\Room;
+Route::get('/inventory/create', [InventoryController::class, 'create'])
+    ->middleware(['auth', 'verified', 'role:Admin'])
+    ->name('inventory.create');
 
-Route::get('/inventory/create', function () {
-    $rooms = Room::all();
-    return view('custodian/inventory/create', compact('rooms'));
-})->middleware(['auth', 'verified', 'role:Admin'])->name('inventory.create');
-
-Route::post('/inventory/create', [InventoryController::class, 'store'])
+Route::post('/inventory', [InventoryController::class, 'store'])
     ->middleware(['auth', 'verified', 'role:Admin'])
     ->name('inventory.store');
 

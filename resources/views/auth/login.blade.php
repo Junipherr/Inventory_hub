@@ -88,7 +88,7 @@
         
         .form-input {
             width: 100%;
-            padding: 12px 16px;
+            padding: 12px 48px; /* space for both left and right icons */
             border: 1px solid #d1d5db;
             border-radius: 8px;
             font-size: 16px;
@@ -111,20 +111,19 @@
         .input-icon {
             position: relative;
         }
-        
-        .input-icon i {
+
+        /* Left-side icon (user/lock) */
+        .input-icon i:not(.password-toggle) {
             position: absolute;
             left: 16px;
             top: 50%;
             transform: translateY(-50%);
             color: #9ca3af;
             font-size: 16px;
+            z-index: 2;
         }
-        
-        .input-icon .form-input {
-            padding-left: 48px;
-        }
-        
+
+        /* Right-side show/hide password icon */
         .password-toggle {
             position: absolute;
             right: 16px;
@@ -134,6 +133,7 @@
             color: #9ca3af;
             font-size: 16px;
             transition: color 0.3s ease;
+            z-index: 3;
         }
         
         .password-toggle:hover {
@@ -271,14 +271,12 @@
         </div>
         
         <div class="login-form">
-            <!-- Session Status -->
             @if (session('status'))
                 <div style="background: #d1fae5; color: #065f46; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px;">
                     <i class="fas fa-check-circle"></i> {{ session('status') }}
                 </div>
             @endif
             
-            <!-- Error Messages -->
             @if ($errors->any())
                 <div style="background: #fef2f2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px;">
                     <i class="fas fa-exclamation-triangle"></i>
@@ -296,46 +294,30 @@
                     Use your email/username and password to access the system
                 </div>
                 
-                <!-- Email/Username Field -->
                 <div class="form-group">
                     <label for="login" class="form-label">Email or Username</label>
                     <div class="input-icon">
                         <i class="fas fa-user"></i>
-                        <input type="text" 
-                               name="login" 
-                               id="login"
-                               class="form-input" 
-                               placeholder="Enter your email or username"
-                               value="{{ old('login') }}"
-                               required 
-                               autofocus>
+                        <input type="text" name="login" id="login" class="form-input" placeholder="Enter your email or username" value="{{ old('login') }}" required autofocus>
                     </div>
                     <div class="error-message" id="login-error"></div>
                 </div>
                 
-                <!-- Password Field -->
                 <div class="form-group">
                     <label for="password" class="form-label">Password</label>
                     <div class="input-icon">
                         <i class="fas fa-lock"></i>
-                        <input type="password" 
-                               name="password" 
-                               id="password"
-                               class="form-input" 
-                               placeholder="Enter your password"
-                               required>
+                        <input type="password" name="password" id="password" class="form-input" placeholder="Enter your password" required>
                         <i class="fas fa-eye password-toggle" id="password-toggle"></i>
                     </div>
                     <div class="error-message" id="password-error"></div>
                 </div>
                 
-                <!-- Remember Me & Forgot Password -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                     <label class="checkbox-label">
                         <input type="checkbox" name="remember" class="checkbox-input">
                         Remember me
                     </label>
-                    
                     @if (Route::has('password.request'))
                         <a href="{{ route('password.request') }}" class="forgot-password">
                             Forgot password?
@@ -343,13 +325,11 @@
                     @endif
                 </div>
                 
-                <!-- Login Button -->
                 <button type="submit" class="login-button" id="login-button">
                     <div class="loading-spinner" id="loading-spinner"></div>
                     <span id="button-text">Sign In</span>
                 </button>
                 
-                <!-- System Info -->
                 <div class="system-info">
                     <p><i class="fas fa-shield-alt"></i> Secure login for School Inventory Management System</p>
                     <p>© 2024 School Inventory System. All rights reserved.</p>
@@ -359,7 +339,6 @@
     </div>
 
     <script>
-        // Password visibility toggle
         const passwordToggle = document.getElementById('password-toggle');
         const passwordInput = document.getElementById('password');
         
@@ -370,20 +349,17 @@
             this.classList.toggle('fa-eye-slash');
         });
         
-        // Form submission handling
         const loginForm = document.getElementById('login-form');
         const loginButton = document.getElementById('login-button');
         const loadingSpinner = document.getElementById('loading-spinner');
         const buttonText = document.getElementById('button-text');
         
         loginForm.addEventListener('submit', function(e) {
-            // Show loading state
             loginButton.disabled = true;
             loadingSpinner.style.display = 'inline-block';
             buttonText.textContent = 'Signing In...';
         });
         
-        // Real-time validation
         const loginInput = document.getElementById('login');
         const loginError = document.getElementById('login-error');
         

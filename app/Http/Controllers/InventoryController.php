@@ -72,7 +72,10 @@ class InventoryController extends Controller
             $personsInCharge[$room->id] = $custodian ?? null;
         }
 
-        return view('custodian.dashboard', compact('rooms', 'roomCategories', 'itemsByRoom', 'personsInCharge'));
+        // Calculate total items count
+        $totalItems = Item::count();
+
+        return view('custodian.dashboard', compact('rooms', 'roomCategories', 'itemsByRoom', 'personsInCharge', 'totalItems'));
     }
 
     public function getItemsByCategory($categoryId)
@@ -83,36 +86,58 @@ class InventoryController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'item_name' => 'required|string|max:255',
-            'room_id' => 'required|integer|exists:rooms,id',
-            'category_id' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'quantity' => 'required|integer|min:1',
-            'qr_code' => 'nullable|string|max:255',
-            'purchase_date' => 'nullable|date',
-            'purchase_price' => 'nullable|numeric|min:0',
-            'warranty_expires' => 'nullable|date',
-            'condition' => 'nullable|string|max:255',
-        ]);
+        try {
+            $validated = $request->validate([
+                'item_name' => 'required|string|max:255',
+                'room_id' => 'required|integer|exists:rooms,id',
+                'category_id' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'quantity' => 'required|integer|min:1',
+                'qr_code' => 'nullable|string|max:255',
+                'purchase_date' => 'nullable|date',
+                'purchase_price' => 'nullable|numeric|min:0',
+                'warranty_expires' => 'nullable|date',
+                'condition' => 'nullable|string|max:255',
+            ]);
 
-        // Generate QR code if not provided
-        if (empty($validated['qr_code'])) {
-            $validated['qr_code'] = uniqid('item_');
+            // Generate QR code if not provided
+            if (empty($validated['qr_code'])) {
+                $validated['qr_code'] = uniqid('item_');
+            }
+
+            $item = Item::create($validated);
+
+            // Create default unit
+            $item->units()->create([
+                'unit_number' => '1',
+                'last_checked_at' => null,
+            ]);
+
+            // Return JSON response for AJAX handling
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Item "' . $item->item_name . '" added successfully!',
+                    'item' => $item
+                ]);
+            }
+
+            // Fallback for non-AJAX requests
+            return redirect()->route('inventory.items')
+                ->with('success', 'Item "' . $item->item_name . '" added successfully!');
+                
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error creating item: ' . $e->getMessage()
+                ], 422);
+            }
+            
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Error creating item: ' . $e->getMessage());
         }
-
-        $item = Item::create($validated);
-
-        // Create default unit
-        $item->units()->create([
-            'unit_number' => '1',
-            'last_checked_at' => null,
-        ]);
-
-        return redirect()->route('inventory.create')
-            ->with('success', 'Item added successfully.')
-            ->with('item_name', $item->item_name)
-            ->with('item_id', $item->id);
     }
 
     public function create()
@@ -183,17 +208,25 @@ class InventoryController extends Controller
 
     public function generateQRCode($id)
     {
-        $item = Item::findOrFail($id);
-        $qrData = $item->qr_code;
-
-        if (!$qrData) {
-            abort(404, 'QR code not found for this item.');
-        }
-
         try {
-            $qrCode = QrCode::format('png')->size(300)->generate($qrData);
-            return response($qrCode)->header('Content-Type', 'image/png');
+            // For direct data generation (not an item ID)
+            if (strpos($id, 'ITEM-') === 0) {
+                $qrData = $id;
+            } else {
+                $item = Item::findOrFail($id);
+                $qrData = $item->qr_code;
+            }
+
+            $qrCode = QrCode::format('png')
+                           ->size(300)
+                           ->margin(2)
+                           ->generate($qrData);
+
+            return response($qrCode)
+                   ->header('Content-Type', 'image/png')
+                   ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
         } catch (\Exception $e) {
+            \Log::error('QR Code Generation Error: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to generate QR code'], 500);
         }
     }

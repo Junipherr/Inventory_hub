@@ -35,8 +35,8 @@
                             <div class="dropdown">
                                 <button class="btn btn-light dropdown-toggle" type="button" id="roomDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fas fa-door-open mr-2"></i>
-                                    {{ $rooms->isNotEmpty() ? $rooms->first()->name : 'Select Room' }}
-                                    <span class="badge bg-primary ms-2">
+                                    <span id="selectedRoomText">{{ $rooms->isNotEmpty() ? $rooms->first()->name : 'Select Room' }}</span>
+                                    <span class="badge bg-primary ms-2" id="selectedRoomBadge">
                                         {{ $rooms->isNotEmpty() ? ($itemsByRoom[$rooms->first()->id]->count() ?? 0) : 0 }}
                                     </span>
                                 </button>
@@ -44,12 +44,16 @@
                                     @foreach ($rooms as $room)
                                         @php
                                             $roomItems = $itemsByRoom[$room->id] ?? collect();
+                                            $personInCharge = $personsInCharge[$room->id] ?? null;
+                                            $totalQuantity = $roomItems->sum('quantity');
                                         @endphp
                                         <li>
                                             <a class="dropdown-item room-selector" 
                                                href="#" 
                                                data-room-id="{{ $room->id }}"
-                                               data-room-name="{{ $room->name }}">
+                                               data-room-name="{{ $room->name }}"
+                                               data-person-in-charge="{{ $personInCharge ? $personInCharge->name : 'N/A' }}"
+                                               data-total-quantity="{{ $totalQuantity }}">
                                                 <i class="fas fa-door-open mr-2"></i>
                                                 {{ $room->name }}
                                                 <span class="badge bg-secondary ms-auto">
@@ -100,66 +104,68 @@
                         <!-- Items Display Area -->
                         <div id="itemsDisplayArea">
                             @if($rooms->isNotEmpty())
-                                @php
-                                    $firstRoom = $rooms->first();
-                                    $items = $itemsByRoom[$firstRoom->id] ?? collect();
-                                @endphp
-                                <div class="row" id="itemsGrid-{{ $firstRoom->id }}">
-                                    @if ($items->isEmpty())
-                                        <div class="col-12">
-                                            <div class="text-center py-5">
-                                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                                                <h5 class="text-muted">No items found</h5>
-                                                <p class="text-muted">This room currently has no items assigned.</p>
+                                @foreach ($rooms as $room)
+                                    @php
+                                        $items = $itemsByRoom[$room->id] ?? collect();
+                                    @endphp
+                                    <div class="row" id="itemsGrid-{{ $room->id }}" 
+                                         style="{{ $loop->first ? 'display: flex;' : 'display: none;' }}">
+                                        @if ($items->isEmpty())
+                                            <div class="col-12">
+                                                <div class="text-center py-5">
+                                                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                                    <h5 class="text-muted">No items found</h5>
+                                                    <p class="text-muted">This room currently has no items assigned.</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                    @else
-                                        @foreach ($items as $item)
-                                            <div class="col-lg-4 col-md-6 mb-4 item-card">
-                                                <div class="card border-left-info shadow-sm h-100">
-                                                    <div class="card-header bg-light py-2">
-                                                        <div class="d-flex justify-content-between align-items-center">
-                                                            <h6 class="mb-0 font-weight-bold text-primary">
-                                                                {{ $item->item_name }}
-                                                            </h6>
-                                                            <span class="badge bg-info text-white">
-                                                                {{ $item->quantity }}x
-                                                            </span>
+                                        @else
+                                            @foreach ($items as $item)
+                                                <div class="col-lg-4 col-md-6 mb-4 item-card">
+                                                    <div class="card border-left-info shadow-sm h-100">
+                                                        <div class="card-header bg-light py-2">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <h6 class="mb-0 font-weight-bold text-primary">
+                                                                    {{ $item->item_name }}
+                                                                </h6>
+                                                                <span class="badge bg-info text-white">
+                                                                    {{ $item->quantity }}x
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <p class="text-muted small mb-2">
-                                                            <i class="fas fa-tag mr-1"></i>
-                                                            {{ ucwords(str_replace('_', ' ', $item->category_id)) }}
-                                                        </p>
-                                                        <p class="text-muted small mb-2">
-                                                            <i class="fas fa-map-marker-alt mr-1"></i>
-                                                            {{ $room->name }}
-                                                        </p>
-                                                        <p class="text-muted small mb-3">
-                                                            {{ Str::limit($item->description, 50) }}
-                                                        </p>
-                                                        
-                                                        <div class="d-flex gap-1">
-                                                            <button type="button" 
-                                                                    class="btn btn-primary btn-sm flex-fill"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#itemInfoModal{{ $item->id }}">
-                                                                <i class="fas fa-eye mr-1"></i>
-                                                                Details
-                                                            </button>
-                                                            <button type="button" 
-                                                                    class="btn btn-outline-secondary btn-sm"
-                                                                    onclick="printItem({{ $item->id }})">
-                                                                <i class="fas fa-print"></i>
-                                                            </button>
+                                                        <div class="card-body">
+                                                            <p class="text-muted small mb-2">
+                                                                <i class="fas fa-tag mr-1"></i>
+                                                                {{ ucwords(str_replace('_', ' ', $item->category_id)) }}
+                                                            </p>
+                                                            <p class="text-muted small mb-2">
+                                                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                                                {{ $room->name }}
+                                                            </p>
+                                                            <p class="text-muted small mb-3">
+                                                                {{ Str::limit($item->description, 50) }}
+                                                            </p>
+                                                            
+                                                            <div class="d-flex gap-1">
+                                                                <button type="button" 
+                                                                        class="btn btn-primary btn-sm flex-fill"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#itemInfoModal{{ $item->id }}">
+                                                                    <i class="fas fa-eye mr-1"></i>
+                                                                    Details
+                                                                </button>
+                                                                <button type="button" 
+                                                                        class="btn btn-outline-secondary btn-sm"
+                                                                        onclick="printItem({{ $item->id }})">
+                                                                    <i class="fas fa-print"></i>
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        @endforeach
-                                    @endif
-                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                @endforeach
                             @else
                                 <div class="col-12">
                                     <div class="text-center py-5">
@@ -310,19 +316,30 @@
                 const roomId = this.getAttribute('data-room-id');
                 const roomName = this.getAttribute('data-room-name');
                 
-                // Update dropdown button
-                document.getElementById('selectedRoomBadge').textContent = roomName;
+                // Update dropdown button text and badge count
+                document.getElementById('selectedRoomText').textContent = roomName;
+                const roomItemsCount = this.querySelector('.badge').textContent;
+                document.getElementById('selectedRoomBadge').textContent = roomItemsCount;
                 
                 // Update room info
                 document.getElementById('currentRoomName').textContent = roomName;
                 document.getElementById('personInCharge').textContent = this.getAttribute('data-person-in-charge') || 'N/A';
                 
                 // Update counts
-                const roomItems = this.querySelector('.badge').textContent;
+                const roomItems = roomItemsCount;
                 const totalQuantity = this.getAttribute('data-total-quantity') || 0;
                 
                 document.getElementById('roomItemCount').textContent = roomItems;
                 document.getElementById('totalQuantity').textContent = totalQuantity;
+                
+                // Toggle items display grids
+                document.querySelectorAll('[id^="itemsGrid-"]').forEach(grid => {
+                    if (grid.id === `itemsGrid-${roomId}`) {
+                        grid.style.display = 'flex';
+                    } else {
+                        grid.style.display = 'none';
+                    }
+                });
                 
                 // In a real implementation, you would load items via AJAX here
                 console.log(`Loading items for room ${roomId}: ${roomName}`);

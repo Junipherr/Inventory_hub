@@ -51,7 +51,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous">
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     <script src="{{ asset('assets/vendors/jquery/dist/jquery.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/vendors/popper.js/dist/umd/popper.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/vendors/bootstrap/dist/js/bootstrap.min.js') }}" type="text/javascript"></script>
@@ -63,15 +62,13 @@
     </script>
     <script src="{{ asset('assets/vendors/jvectormap/jquery-jvectormap-us-aea-en.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/category.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/js/qr.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/sidebar_fix.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/app.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/scripts/dashboard_1_demo.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/dropdown-fix.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/profile-registration.js') }}" defer></script>
 <script src="{{ asset('assets/js/scanner-fix.js') }}"></script>
-<script src="{{ asset('assets/js/inventory-create-complete.js') }}"></script>
-
-<script src="{{ asset('assets/js/inventory-create-fixed.js') }}"></script>
+<script src="{{ asset('assets/js/inventory-create.js') }}"></script>
+    
 </body>
 </html>

@@ -681,7 +681,7 @@
                     const category = row.dataset.category;
                     const quantity = row.dataset.itemQuantity;
                     const status = row.querySelector('.status-select').value;
-                    const personInCharge = '{{ $personsInCharge[$item->room_id] ?? 'N/A' }}';
+                    const personInCharge = 'N/A';
                     const qrCode = row.dataset.itemQr;
                     const description = row.dataset.itemDescription;
 

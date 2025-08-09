@@ -72,7 +72,7 @@ class UserProfileController extends Controller
     {
         $profile = User::findOrFail($id);
         $rooms = Room::all();
-        return view('profile.edit', compact('profile', 'rooms'));
+        return view('profile.edit-single', compact('profile', 'rooms'));
     }
 
     /**
