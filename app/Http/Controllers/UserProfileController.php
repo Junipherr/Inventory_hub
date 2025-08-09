@@ -27,12 +27,49 @@ class UserProfileController extends Controller
      */
     public function show($id)
     {
-        $profile = User::with('room')->findOrFail($id);
-        
-        // Make the password visible for this specific request
-        $profile->makeVisible('password');
-        
-        return response()->json($profile);
+        try {
+            $profile = User::with('room')->findOrFail($id);
+            
+            // Only allow admins to see other profiles
+            if (auth()->user()->id !== $profile->id && !auth()->user()->isAdmin()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized to view this profile'
+                ], 403);
+            }
+            
+            // Calculate days since last password update
+            $daysSincePasswordUpdate = null;
+            if ($profile->password_updated_at) {
+                $daysSincePasswordUpdate = $profile->password_updated_at->diffInDays(now());
+            }
+            
+            return response()->json([
+                'success' => true,
+                'profile' => [
+                    'id' => $profile->id,
+                    'name' => $profile->name,
+                    'email' => $profile->email,
+                    'role' => $profile->role,
+                    'room' => $profile->room ? [
+                        'id' => $profile->room->id,
+                        'name' => $profile->room->name
+                    ] : null,
+                    'password_info' => [
+                        'has_password' => !empty($profile->password),
+                        'last_updated' => $profile->password_updated_at ? $profile->password_updated_at->format('Y-m-d H:i:s') : 'Never',
+                        'days_since_update' => $daysSincePasswordUpdate,
+                    ],
+                    'created_at' => $profile->created_at,
+                    'updated_at' => $profile->updated_at
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load profile information'
+            ], 404);
+        }
     }
 
     /**
@@ -86,7 +123,7 @@ class UserProfileController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $id],
             'room_id' => ['nullable', 'exists:rooms,id'],
-            'password' => ['nullable', 'string', 'min:8'],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
 
         $profile->name = $validated['name'];
@@ -94,12 +131,22 @@ class UserProfileController extends Controller
         $profile->room_id = $validated['room_id'];
         
         if (!empty($validated['password'])) {
-            $profile->password = Hash::make($validated['password']);
+            $profile->updatePassword($validated['password']);
         }
         
         $profile->save();
 
-        return response()->json(['success' => true, 'message' => 'Profile updated successfully.']);
+        return response()->json([
+            'success' => true, 
+            'message' => 'Profile updated successfully.',
+            'profile' => [
+                'id' => $profile->id,
+                'name' => $profile->name,
+                'email' => $profile->email,
+                'has_password' => !empty($profile->password),
+                'password_updated_at' => $profile->password_updated_at ? $profile->password_updated_at->format('Y-m-d H:i:s') : null,
+            ]
+        ]);
     }
 
     /**

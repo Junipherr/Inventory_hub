@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 use App\Models\Room;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
@@ -26,6 +27,7 @@ class User extends Authenticatable
         'role',
         'custodian_id',
         'room_id',
+        'password_updated_at',
     ];
 
     /**
@@ -48,6 +50,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'password_updated_at' => 'datetime',
         ];
     }
 
@@ -89,5 +92,18 @@ class User extends Authenticatable
     public function room()
     {
         return $this->belongsTo(Room::class);
+    }
+
+    /**
+     * Update the user's password.
+     *
+     * @param  string  $password
+     * @return void
+     */
+    public function updatePassword(string $password): void
+    {
+        $this->password = Hash::make($password);
+        $this->password_updated_at = now();
+        $this->save();
     }
 }

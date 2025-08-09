@@ -156,13 +156,13 @@
                                                 </td>
                                                 <td class="text-end">
                                                     <div class="btn-group" role="group">
-                                                        <a href="javascript:void(0)" 
-                                                           onclick="openEditModal({{ $profile->id }})"
-                                                           class="btn btn-sm btn-outline-primary" 
-                                                           data-bs-toggle="tooltip" 
-                                                           title="Edit Profile">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-outline-info" 
+                                                            onclick="showProfileInfo({{ $profile->id }})"
+                                                            data-bs-toggle="tooltip" 
+                                                            title="View Profile Info">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
                                                         <button type="button" 
                                                                 class="btn btn-sm btn-outline-danger" 
                                                                 onclick="deleteProfile({{ $profile->id }})"
@@ -403,13 +403,148 @@
 
     <!-- Enhanced JavaScript -->
     <script>
-        // Initialize tooltips
-        document.addEventListener('DOMContentLoaded', function() {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
+        // Show profile info function
+        function showProfileInfo(profileId) {
+            fetch(`/profile/${profileId}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && data.profile) {
+                    const modalContent = `
+                        <div class="modal fade" id="profileInfoModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-0 shadow">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h5 class="modal-title">Profile Information</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="card password-info-card">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title mb-3">Password Information</h6>
+                                                        <div class="mb-3">
+                                                            <label class="text-muted">Current Password:</label>
+                                                            <div class="input-group">
+                                                                <input type="password" 
+                                                                       class="form-control" 
+                                                                       id="currentPassword" 
+                                                                       value="********" 
+                                                                       readonly>
+                                                                <button class="btn btn-outline-secondary" 
+                                                                        type="button" 
+                                                                        id="toggleCurrentPassword">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <p class="mb-1"><small>Status:</small></p>
+                                                                <p id="passwordStatus"></p>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <p class="mb-1"><small>Last Updated:</small></p>
+                                                                <p id="passwordLastUpdated" class="text-muted"></p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mt-2">
+                                                            <p id="passwordUpdateInfo" class="password-update-info"></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Remove existing modal if present
+                    const existingModal = document.getElementById('profileInfoModal');
+                    if (existingModal) {
+                        existingModal.remove();
+                    }
+
+                    // Add modal to document
+                    document.body.insertAdjacentHTML('beforeend', modalContent);
+
+                    // Update password information
+                    const passwordStatus = document.getElementById('passwordStatus');
+                    const passwordLastUpdated = document.getElementById('passwordLastUpdated');
+                    const passwordUpdateInfo = document.getElementById('passwordUpdateInfo');
+                    
+                    // Set password status
+                    if (data.profile.password_info.has_password) {
+                        passwordStatus.innerHTML = '<span class="text-success"><i class="fas fa-check-circle"></i> Set</span>';
+                    } else {
+                        passwordStatus.innerHTML = '<span class="text-warning"><i class="fas fa-exclamation-circle"></i> Not Set</span>';
+                    }
+                    
+                    // Set last updated info
+                    passwordLastUpdated.textContent = data.profile.password_info.last_updated;
+                    
+                    // Set update info message
+                    if (data.profile.password_info.days_since_update !== null) {
+                        const daysAgo = data.profile.password_info.days_since_update;
+                        let updateMessage = `Password was last changed ${daysAgo} days ago. `;
+                        
+                        if (daysAgo > 90) {
+                            updateMessage += '<span class="text-warning"><i class="fas fa-exclamation-triangle"></i> Consider updating your password.</span>';
+                        } else {
+                            updateMessage += '<span class="text-success"><i class="fas fa-shield-alt"></i> Password is up to date.</span>';
+                        }
+                        
+                        passwordUpdateInfo.innerHTML = updateMessage;
+                    } else {
+                        passwordUpdateInfo.innerHTML = '<span class="text-warning"><i class="fas fa-exclamation-triangle"></i> No password update history available.</span>';
+                    }
+                    
+                    // After modal is added to document, set up password toggle
+                    const togglePasswordBtn = document.getElementById('toggleCurrentPassword');
+                    const currentPasswordInput = document.getElementById('currentPassword');
+                    
+                    if (togglePasswordBtn && currentPasswordInput) {
+                        togglePasswordBtn.addEventListener('click', function() {
+                            const type = currentPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                            currentPasswordInput.setAttribute('type', type);
+                            
+                            // Toggle icon
+                            const icon = this.querySelector('i');
+                            if (type === 'text') {
+                                icon.classList.remove('fa-eye');
+                                icon.classList.add('fa-eye-slash');
+                            } else {
+                                icon.classList.remove('fa-eye-slash');
+                                icon.classList.add('fa-eye');
+                            }
+                        });
+                    }
+
+                    // Show modal
+                    const modal = new bootstrap.Modal(document.getElementById('profileInfoModal'));
+                    modal.show();
+                } else {
+                    throw new Error(data.message || 'Failed to load profile information');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showErrorMessage('Failed to load profile information. Please try again.');
             });
-        });
+        }
 
         // Handle form submission via AJAX
         document.getElementById('profileRegistrationForm').addEventListener('submit', function(e) {
@@ -763,6 +898,60 @@
         
         .form-control:focus + .input-group-text {
             border-color: #86b7fe;
+        }
+
+        .password-info-card {
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .password-info-card .card-body {
+            padding: 1.25rem;
+        }
+
+        .password-status-badge {
+            display: inline-block;
+            padding: 0.25em 0.75em;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .password-status-badge.set {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .password-status-badge.not-set {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .password-update-info {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        #currentPassword {
+            background-color: #fff;
+        }
+
+        #currentPassword:read-only {
+            cursor: default;
+        }
+
+        #toggleCurrentPassword {
+            border-left: none;
+            background-color: #fff;
+        }
+
+        #toggleCurrentPassword:hover {
+            background-color: #f8f9fa;
+        }
+
+        #toggleCurrentPassword:focus {
+            box-shadow: none;
+            border-color: #ced4da;
         }
     </style>
 </x-main-layout>
