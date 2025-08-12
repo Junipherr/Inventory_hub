@@ -73,9 +73,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/{id}', [UserProfileController::class, 'show'])
          ->name('profile.show')
          ->where('id', '[0-9]+');  // Ensure ID is numeric
-    Route::get('/profile/{id}/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Edit profile functionality removed - no edit route needed
     Route::post('/profile', [UserProfileController::class, 'store'])->name('profile.store');
-    Route::put('/profile/{id}', [ProfileController::class, 'update'])->name('profile.update');
+    // Update route removed - edit profile functionality no longer available
     Route::delete('/profile/{id}', [UserProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/viewer/dashboard', [UserProfileController::class, 'viewerDashboard'])

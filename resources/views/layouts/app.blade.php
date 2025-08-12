@@ -36,5 +36,6 @@
             </main>
         </div>
     <script src="{{ asset('js/profile-registration.js') }}" defer></script>
+    @stack('scripts')
     </body>
 </html>

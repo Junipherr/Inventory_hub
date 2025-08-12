@@ -90,7 +90,7 @@
                         <h5 class="mb-0">User Profiles</h5>
                     </div>
                     <div class="card-body">
-                        @if($profiles->isEmpty())
+                        @if(!$profiles || $profiles->isEmpty())
                             <div class="text-center py-5">
                                 <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
                                 <h5 class="text-muted">No profiles found</h5>
@@ -213,10 +213,6 @@
                                             </div>
                                             
                                             <div class="d-flex gap-2">
-                                                <a href="{{ route('profile.edit', $profile->id) }}" 
-                                                   class="btn btn-sm btn-outline-primary flex-fill">
-                                                    <i class="fas fa-edit me-1"></i>Edit
-                                                </a>
                                                 <button type="button" 
                                                         class="btn btn-sm btn-outline-danger flex-fill"
                                                         onclick="deleteProfile({{ $profile->id }})">
@@ -316,89 +312,7 @@
             </div>
         </div>
 
-        <!-- Edit Profile Modal -->
-        <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow">
-                    <div class="modal-header bg-primary text-white border-0">
-                        <h5 class="modal-title" id="editProfileModalLabel">
-                            <i class="fas fa-user-edit me-2"></i>
-                            Edit Profile
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    
-                    <form id="profileEditForm" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <div class="modal-body">
-                            <div class="mb-4">
-                                <label for="edit_name" class="form-label fw-semibold">Full Name</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-user"></i>
-                                    </span>
-                                    <input id="edit_name" type="text" class="form-control" name="name" required 
-                                           placeholder="Enter full name">
-                                </div>
-                                <div class="invalid-feedback" id="error-edit-name"></div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="edit_room_name" class="form-label fw-semibold">Room Name</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-door-open"></i>
-                                    </span>
-                                    <input id="edit_room_name" type="text" class="form-control" name="room_name" required 
-                                           placeholder="Enter room name">
-                                </div>
-                                <div class="invalid-feedback" id="error-edit-room_name"></div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="edit_password" class="form-label fw-semibold">New Password (optional)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-lock"></i>
-                                    </span>
-                                    <input id="edit_password" type="password" class="form-control" name="password"
-                                           placeholder="Enter new password">
-                                    <button class="btn btn-outline-secondary" type="button" id="toggleEditPassword">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
-                                <div class="invalid-feedback" id="error-edit-password"></div>
-                            </div>
-
-                            <div class="mb-0">
-                                <label for="edit_password_confirmation" class="form-label fw-semibold">Confirm New Password</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-lock"></i>
-                                    </span>
-                                    <input id="edit_password_confirmation" type="password" class="form-control" 
-                                           name="password_confirmation" placeholder="Confirm new password">
-                                    <button class="btn btn-outline-secondary" type="button" id="toggleEditPasswordConfirm">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
-                                <div class="invalid-feedback" id="error-edit-password_confirmation"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="modal-footer border-0">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                <i class="fas fa-times me-1"></i>Cancel
-                            </button>
-                            <button type="submit" id="updateButton" class="btn btn-primary">
-                                <i class="fas fa-save me-1"></i>Save Changes
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        <!-- Edit Profile Modal removed - edit profile functionality no longer available -->
     </div>
 
     <!-- Enhanced JavaScript -->
@@ -425,47 +339,84 @@
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content border-0 shadow">
                                     <div class="modal-header bg-primary text-white">
-                                        <h5 class="modal-title">Profile Information</h5>
+                                        <h5 class="modal-title">
+                                            <i class="fas fa-user-circle me-2"></i>
+                                            Profile Information
+                                        </h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="row">
                                             <div class="col-12">
-                                                <div class="card password-info-card">
+                                                <div class="card border-0 shadow-sm">
                                                     <div class="card-body">
-                                                        <h6 class="card-title mb-3">Password Information</h6>
-                                                        <div class="mb-3">
-                                                            <label class="text-muted">Current Password:</label>
-                                                            <div class="input-group">
-                                                                <input type="password" 
-                                                                       class="form-control" 
-                                                                       id="currentPassword" 
-                                                                       value="********" 
-                                                                       readonly>
-                                                                <button class="btn btn-outline-secondary" 
-                                                                        type="button" 
-                                                                        id="toggleCurrentPassword">
-                                                                    <i class="fas fa-eye"></i>
-                                                                </button>
+                                                        <div class="text-center mb-4">
+                                                            <div class="avatar-lg bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                                                                <span class="text-primary fw-bold" style="font-size: 2rem;">
+                                                                    ${data.profile.name.charAt(0).toUpperCase()}
+                                                                </span>
                                                             </div>
+                                                            <h5 class="mb-1">${data.profile.name}</h5>
+                                                            <p class="text-muted mb-0">${data.profile.email}</p>
                                                         </div>
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <p class="mb-1"><small>Status:</small></p>
-                                                                <p id="passwordStatus"></p>
+                                                        
+                                                        <div class="row g-3">
+                                                            <div class="col-12">
+                                                                <div class="d-flex align-items-center">
+                                                                    <i class="fas fa-id-badge text-primary me-2"></i>
+                                                                    <div>
+                                                                        <small class="text-muted d-block">User ID</small>
+                                                                        <span class="fw-semibold">${data.profile.id}</span>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <div class="col-md-6">
-                                                                <p class="mb-1"><small>Last Updated:</small></p>
-                                                                <p id="passwordLastUpdated" class="text-muted"></p>
+                                                            
+                                                            <div class="col-12">
+                                                                <div class="d-flex align-items-center">
+                                                                    <i class="fas fa-envelope text-primary me-2"></i>
+                                                                    <div>
+                                                                        <small class="text-muted d-block">Email Address</small>
+                                                                        <span class="fw-semibold">${data.profile.email}</span>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="mt-2">
-                                                            <p id="passwordUpdateInfo" class="password-update-info"></p>
+                                                            
+                                                            <div class="col-12">
+                                                                <div class="d-flex align-items-center">
+                                                                    ${data.profile.room ? 
+                                                                        `<i class="fas fa-door-open text-success me-2"></i>
+                                                                        <div>
+                                                                            <small class="text-muted d-block">Assigned Room</small>
+                                                                            <span class="fw-semibold">${data.profile.room.name}</span>
+                                                                        </div>` : 
+                                                                        `<i class="fas fa-minus-circle text-secondary me-2"></i>
+                                                                        <div>
+                                                                            <small class="text-muted d-block">Room Assignment</small>
+                                                                            <span class="fw-semibold text-secondary">Not Assigned</span>
+                                                                        </div>`
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="col-12">
+                                                                <div class="d-flex align-items-center">
+                                                                    <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                                                    <div>
+                                                                        <small class="text-muted d-block">Member Since</small>
+                                                                        <span class="fw-semibold">${data.profile.created_at}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="modal-footer border-0">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            <i class="fas fa-times me-1"></i>Close
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -480,58 +431,6 @@
 
                     // Add modal to document
                     document.body.insertAdjacentHTML('beforeend', modalContent);
-
-                    // Update password information
-                    const passwordStatus = document.getElementById('passwordStatus');
-                    const passwordLastUpdated = document.getElementById('passwordLastUpdated');
-                    const passwordUpdateInfo = document.getElementById('passwordUpdateInfo');
-                    
-                    // Set password status
-                    if (data.profile.password_info.has_password) {
-                        passwordStatus.innerHTML = '<span class="text-success"><i class="fas fa-check-circle"></i> Set</span>';
-                    } else {
-                        passwordStatus.innerHTML = '<span class="text-warning"><i class="fas fa-exclamation-circle"></i> Not Set</span>';
-                    }
-                    
-                    // Set last updated info
-                    passwordLastUpdated.textContent = data.profile.password_info.last_updated;
-                    
-                    // Set update info message
-                    if (data.profile.password_info.days_since_update !== null) {
-                        const daysAgo = data.profile.password_info.days_since_update;
-                        let updateMessage = `Password was last changed ${daysAgo} days ago. `;
-                        
-                        if (daysAgo > 90) {
-                            updateMessage += '<span class="text-warning"><i class="fas fa-exclamation-triangle"></i> Consider updating your password.</span>';
-                        } else {
-                            updateMessage += '<span class="text-success"><i class="fas fa-shield-alt"></i> Password is up to date.</span>';
-                        }
-                        
-                        passwordUpdateInfo.innerHTML = updateMessage;
-                    } else {
-                        passwordUpdateInfo.innerHTML = '<span class="text-warning"><i class="fas fa-exclamation-triangle"></i> No password update history available.</span>';
-                    }
-                    
-                    // After modal is added to document, set up password toggle
-                    const togglePasswordBtn = document.getElementById('toggleCurrentPassword');
-                    const currentPasswordInput = document.getElementById('currentPassword');
-                    
-                    if (togglePasswordBtn && currentPasswordInput) {
-                        togglePasswordBtn.addEventListener('click', function() {
-                            const type = currentPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                            currentPasswordInput.setAttribute('type', type);
-                            
-                            // Toggle icon
-                            const icon = this.querySelector('i');
-                            if (type === 'text') {
-                                icon.classList.remove('fa-eye');
-                                icon.classList.add('fa-eye-slash');
-                            } else {
-                                icon.classList.remove('fa-eye-slash');
-                                icon.classList.add('fa-eye');
-                            }
-                        });
-                    }
 
                     // Show modal
                     const modal = new bootstrap.Modal(document.getElementById('profileInfoModal'));

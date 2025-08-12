@@ -69,6 +69,6 @@
     <script src="{{ asset('js/profile-registration.js') }}" defer></script>
 <script src="{{ asset('assets/js/scanner-fix.js') }}"></script>
 <script src="{{ asset('assets/js/inventory-create.js') }}"></script>
-    
+    @stack('scripts')
 </body>
 </html>

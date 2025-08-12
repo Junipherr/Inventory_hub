@@ -6,183 +6,154 @@ use App\Models\User;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class UserProfileController extends Controller
 {
     /**
-     * Display the list of profiles.
+     * Display all user profiles
      */
     public function index()
     {
-        $profiles = User::with('room')->get();
-        $rooms = Room::all();
-        $user = auth()->user();
-        return view('profile.edit', ['profiles' => $profiles, 'rooms' => $rooms, 'user' => $user]);
+        try {
+            // Load all user profiles with their rooms
+            $profiles = User::with('room')->get();
+            
+            if ($profiles->isEmpty()) {
+                \Log::info('No profiles found in UserProfileController@index');
+            }
+            
+            return view('profile.users', compact('profiles'));
+        } catch (\Exception $e) {
+            \Log::error('Error loading profiles: ' . $e->getMessage());
+            return view('profile.users', ['profiles' => collect([])]);
+        }
     }
 
     /**
-     * Get the details of a specific profile.
+     * Store a newly created user profile
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'room_name' => 'required|string|max:255',
+            'password' => 'required|string|min:8|confirmed',
+        ], [
+            'email.unique' => 'This email address is already registered. Please use a different email.',
+            'email.required' => 'Email address is required.',
+            'email.email' => 'Please enter a valid email address.',
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.confirmed' => 'Password confirmation does not match.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            // Create or find room
+            $room = Room::firstOrCreate(['name' => $request->room_name]);
+
+            // Create user
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'room_id' => $room->id,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User registered successfully!',
+                'user' => $user->load('room')
+            ]);
+
+        } catch (\Exception $e) {
+            // Handle constraint violations
+            if (strpos($e->getMessage(), 'users_email_unique') !== false) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This email address is already registered.',
+                    'errors' => ['email' => ['This email address is already registered.']]
+                ], 422);
+            }
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Registration failed. Please try again.',
+                'errors' => ['general' => [$e->getMessage()]]
+            ], 500);
+        }
+    }
+
+    /**
+     * Display the specified profile information
      */
     public function show($id)
     {
         try {
-            $profile = User::with('room')->findOrFail($id);
+            $user = User::with(['room'])->findOrFail($id);
             
-            // Only allow admins to see other profiles
-            if (auth()->user()->id !== $profile->id && !auth()->user()->isAdmin()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthorized to view this profile'
-                ], 403);
-            }
+            // Get password information
+            $passwordUpdatedAt = $user->password_updated_at;
+            $hasPassword = !empty($user->password);
             
-            // Calculate days since last password update
-            $daysSincePasswordUpdate = null;
-            if ($profile->password_updated_at) {
-                $daysSincePasswordUpdate = $profile->password_updated_at->diffInDays(now());
+            $daysSinceUpdate = null;
+            if ($passwordUpdatedAt) {
+                $daysSinceUpdate = now()->diffInDays($passwordUpdatedAt);
             }
             
             return response()->json([
                 'success' => true,
                 'profile' => [
-                    'id' => $profile->id,
-                    'name' => $profile->name,
-                    'email' => $profile->email,
-                    'role' => $profile->role,
-                    'room' => $profile->room ? [
-                        'id' => $profile->room->id,
-                        'name' => $profile->room->name
-                    ] : null,
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'room' => $user->room,
+                    'created_at' => $user->created_at->format('M d, Y'),
                     'password_info' => [
-                        'has_password' => !empty($profile->password),
-                        'last_updated' => $profile->password_updated_at ? $profile->password_updated_at->format('Y-m-d H:i:s') : 'Never',
-                        'days_since_update' => $daysSincePasswordUpdate,
-                    ],
-                    'created_at' => $profile->created_at,
-                    'updated_at' => $profile->updated_at
+                        'has_password' => $hasPassword,
+                        'last_updated' => $passwordUpdatedAt ? $passwordUpdatedAt->format('M d, Y') : 'Never',
+                        'days_since_update' => $daysSinceUpdate
+                    ]
                 ]
             ]);
+            
         } catch (\Exception $e) {
+            \Log::error('Error loading profile: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to load profile information'
-            ], 404);
+            ], 500);
         }
     }
 
     /**
-     * Handle profile registration.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'room_name' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
-        // Find or create the room by name
-        $room = Room::firstOrCreate(['name' => $validated['room_name']]);
-
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => strtolower(str_replace(' ', '_', $validated['name'])) . '@example.com',
-            'password' => Hash::make($validated['password']),
-            'role' => 'Viewer',
-            'custodian_id' => auth()->id(),
-            'room_id' => $room->id,
-        ]);
-
-        if ($request->expectsJson()) {
-            return response()->json(['success' => true, 'message' => 'Profile registered successfully.']);
-        }
-
-        return Redirect::route('profile.index')->with('status', 'Profile registered successfully.');
-    }
-
-    /**
-     * Show the form for editing the specified profile.
-     */
-    public function edit($id)
-    {
-        $profile = User::findOrFail($id);
-        $rooms = Room::all();
-        return view('profile.edit-single', compact('profile', 'rooms'));
-    }
-
-    /**
-     * Update the specified profile.
-     */
-    public function update(Request $request, $id)
-    {
-        $profile = User::findOrFail($id);
-        
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $id],
-            'room_id' => ['nullable', 'exists:rooms,id'],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-        ]);
-
-        $profile->name = $validated['name'];
-        $profile->email = $validated['email'];
-        $profile->room_id = $validated['room_id'];
-        
-        if (!empty($validated['password'])) {
-            $profile->updatePassword($validated['password']);
-        }
-        
-        $profile->save();
-
-        return response()->json([
-            'success' => true, 
-            'message' => 'Profile updated successfully.',
-            'profile' => [
-                'id' => $profile->id,
-                'name' => $profile->name,
-                'email' => $profile->email,
-                'has_password' => !empty($profile->password),
-                'password_updated_at' => $profile->password_updated_at ? $profile->password_updated_at->format('Y-m-d H:i:s') : null,
-            ]
-        ]);
-    }
-
-    /**
-     * Remove the specified profile.
+     * Remove the specified profile
      */
     public function destroy($id)
     {
-        $profile = User::findOrFail($id);
-        
-        // Prevent deletion of the currently authenticated user
-        if ($profile->id === auth()->id()) {
-            return response()->json(['success' => false, 'message' => 'You cannot delete your own profile.'], 403);
+        try {
+            $user = User::findOrFail($id);
+            $user->delete();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Profile deleted successfully!'
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete profile. Please try again.'
+            ], 500);
         }
-        
-        $profile->delete();
-        
-        return response()->json(['success' => true, 'message' => 'Profile deleted successfully.']);
-    }
-
-    /**
-     * Display the viewer dashboard with user-specific data.
-     */
-    public function viewerDashboard()
-    {
-        $user = auth()->user();
-
-        if ($user->role === 'Admin') {
-            // Admin can see all rooms
-            $rooms = \App\Models\Room::with(['items.units'])->get();
-        } else {
-            // Viewer can see only their assigned room
-            $rooms = \App\Models\Room::with(['items.units'])
-                ->where('id', $user->room_id)
-                ->get();
-        }
-
-        return view('viewer.dashboard', compact('rooms'));
     }
 }
