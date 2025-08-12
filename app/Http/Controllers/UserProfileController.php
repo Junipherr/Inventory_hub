@@ -38,22 +38,32 @@ class UserProfileController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'nullable|string|email|max:255|unique:users',
             'room_name' => 'required|string|max:255',
             'password' => 'required|string|min:8|confirmed',
         ], [
-            'email.unique' => 'This email address is already registered. Please use a different email.',
-            'email.required' => 'Email address is required.',
-            'email.email' => 'Please enter a valid email address.',
-            'password.min' => 'Password must be at least 8 characters.',
-            'password.confirmed' => 'Password confirmation does not match.',
+            'name.required' => 'Full name is required.',
+            'name.string' => 'Name must be a valid text.',
+            'name.max' => 'Name must not exceed 255 characters.',
+            'email.string' => 'Email must be a valid text.',
+            'email.email' => 'Please enter a valid email address format.',
+            'email.max' => 'Email must not exceed 255 characters.',
+            'email.unique' => 'This email address is already registered. Please use a different email address.',
+            'room_name.required' => 'Room name is required.',
+            'room_name.string' => 'Room name must be a valid text.',
+            'room_name.max' => 'Room name must not exceed 255 characters.',
+            'password.required' => 'Password is required.',
+            'password.string' => 'Password must be a valid text.',
+            'password.min' => 'Password must be at least 8 characters long.',
+            'password.confirmed' => 'Password confirmation does not match the password.',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
+                'error_type' => 'validation'
             ], 422);
         }
 
@@ -61,10 +71,31 @@ class UserProfileController extends Controller
             // Create or find room
             $room = Room::firstOrCreate(['name' => $request->room_name]);
 
+            // Auto-generate email if not provided
+            $email = $request->email;
+            if (!$email) {
+                // Generate email based on name and unique identifier
+                $baseName = strtolower(preg_replace('/[^a-z0-9]/', '', str_replace(' ', '', $request->name)));
+                $uniqueId = uniqid() . rand(1000, 9999);
+                $email = $baseName . '.' . $uniqueId . '@inventory.local';
+                
+                // Ensure uniqueness with a more robust approach
+                $counter = 1;
+                $originalEmail = $email;
+                while (User::where('email', $email)->exists()) {
+                    $email = $baseName . '.' . $uniqueId . '_' . $counter . '@inventory.local';
+                    $counter++;
+                    if ($counter > 100) { // Prevent infinite loops
+                        $email = 'user.' . uniqid() . '@inventory.local';
+                        break;
+                    }
+                }
+            }
+
             // Create user
             $user = User::create([
                 'name' => $request->name,
-                'email' => $request->email,
+                'email' => $email,
                 'password' => Hash::make($request->password),
                 'room_id' => $room->id,
             ]);

@@ -21,7 +21,8 @@ class CreateItemsTable extends Migration
             $table->string('qr_code')->nullable();
             $table->timestamp('last_checked_at')->nullable();
             $table->timestamps();
-
+            
+            // Foreign key constraint - will only work after rooms table exists
             $table->foreign('room_id')->references('id')->on('rooms')->onDelete('set null');
         });
     }

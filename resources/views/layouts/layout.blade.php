@@ -13,6 +13,7 @@
     <link href="{{ asset('assets/vendors/themify-icons/css/themify-icons.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/vendors/jvectormap/jquery-jvectormap-2.0.3.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/main.min.css') }}" rel="stylesheet">
+    <!-- <link href="{{ asset('assets/css/rtoolbar-responsive.css') }}" rel="stylesheet"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="{{ asset('assets/css/sidebar.css') }}" rel="stylesheet">
      <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet">
@@ -34,7 +35,8 @@
             @include('partials.startheader')
             <div class="flexbox flex-1">
                 @include('partials.toolbar')
-                @include('partials.rtoolbar')
+              @include('partials.rtoolbar')
+
             </div>
         </header>
         @include('partials.sidebar')

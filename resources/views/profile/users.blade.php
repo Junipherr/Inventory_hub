@@ -122,10 +122,8 @@
                                             <tr>
                                                 <td>
                                                     <div class="d-flex align-items-center">
-                                                        <div class="avatar-sm bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3">
-                                                            <span class="text-primary fw-bold">
-                                                                {{ strtoupper(substr($profile->name, 0, 1)) }}
-                                                            </span>
+                                                        <div class="avatar-sm rounded-circle d-flex align-items-center justify-content-center me-3">
+                                                            <i class="fas fa-user-circle text-primary" style="font-size: 1.5rem;"></i>
                                                         </div>
                                                         <div>
                                                             <h6 class="mb-0">{{ $profile->name }}</h6>
@@ -138,13 +136,13 @@
                                                 </td>
                                                 <td>
                                                     @if($profile->room)
-                                                        <span class="badge bg-light text-dark">
-                                                            <i class="fas fa-door-open me-1"></i>
+                                                        <span class="text-dark">
+                                                            <i class="fas fa-door-open text-success me-1"></i>
                                                             {{ $profile->room->name }}
                                                         </span>
                                                     @else
-                                                        <span class="badge bg-secondary">
-                                                            <i class="fas fa-minus me-1"></i>
+                                                        <span class="text-secondary">
+                                                            <i class="fas fa-minus-circle me-1"></i>
                                                             Unassigned
                                                         </span>
                                                     @endif
@@ -184,10 +182,8 @@
                                     <div class="card mb-3 border-0 shadow-sm">
                                         <div class="card-body">
                                             <div class="d-flex align-items-center mb-3">
-                                                <div class="avatar-sm bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3">
-                                                    <span class="text-primary fw-bold">
-                                                        {{ strtoupper(substr($profile->name, 0, 1)) }}
-                                                    </span>
+                                                <div class="avatar-sm rounded-circle d-flex align-items-center justify-content-center me-3">
+                                                    <i class="fas fa-user-circle text-primary" style="font-size: 1.5rem;"></i>
                                                 </div>
                                                 <div>
                                                     <h6 class="mb-0">{{ $profile->name }}</h6>
@@ -199,11 +195,15 @@
                                                 <div class="col-6">
                                                     <small class="text-muted d-block">Room</small>
                                                     @if($profile->room)
-                                                        <span class="badge bg-light text-dark">
+                                                        <span class="text-dark">
+                                                            <i class="fas fa-door-open text-success me-1"></i>
                                                             {{ $profile->room->name }}
                                                         </span>
                                                     @else
-                                                        <span class="badge bg-secondary">Unassigned</span>
+                                                        <span class="text-secondary">
+                                                            <i class="fas fa-minus-circle me-1"></i>
+                                                            Unassigned
+                                                        </span>
                                                     @endif
                                                 </div>
                                                 <div class="col-6 text-end">
@@ -751,7 +751,112 @@
                 }, index * 100);
             });
         });
+
+          document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('profileRegistrationForm');
+    const registerButton = document.getElementById('registerButton');
+
+    const successMessageContainer = document.getElementById('dynamicSuccessMessage');
+    const successMessageText = document.getElementById('successMessageText');
+    const errorMessageContainer = document.getElementById('dynamicErrorMessage');
+    const errorMessageText = document.getElementById('errorMessageText');
+
+    let isSubmitting = false;
+    let lastSubmissionTime = 0;
+    const SUBMISSION_COOLDOWN = 2000; // 2 seconds cooldown
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // Prevent duplicate submissions
+        if (isSubmitting || Date.now() - lastSubmissionTime < SUBMISSION_COOLDOWN) {
+            errorMessageText.textContent = 'Please wait before submitting again.';
+            errorMessageContainer.style.display = 'block';
+            return;
+        }
+
+        isSubmitting = true;
+        lastSubmissionTime = Date.now();
+
+        // Clear previous errors
+        ['name', 'room_name', 'password'].forEach(field => {
+            const input = form.querySelector(`[name="${field}"]`);
+            input.classList.remove('is-invalid');
+            const errorDiv = document.getElementById(`error-${field}`);
+            if (errorDiv) {
+                errorDiv.textContent = '';
+            }
+        });
+        errorMessageContainer.style.display = 'none';
+        successMessageContainer.style.display = 'none';
+
+        registerButton.disabled = true;
+        registerButton.textContent = 'Registering...';
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': formData.get('_token'),
+            },
+            body: formData,
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => {
+                    throw errData;
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                successMessageText.textContent = data.message || 'Profile registered successfully.';
+                successMessageContainer.style.display = 'block';
+
+                // Reset form
+                form.reset();
+
+                // Close modal after short delay
+                setTimeout(() => {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('profileRegistrationModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                    successMessageContainer.style.display = 'none';
+                }, 2000);
+            }
+        })
+        .catch(errorData => {
+            if (errorData.errors) {
+                Object.keys(errorData.errors).forEach(field => {
+                    const input = form.querySelector(`[name="${field}"]`);
+                    if (input) {
+                        input.classList.add('is-invalid');
+                    }
+                    const errorDiv = document.getElementById(`error-${field}`);
+                    if (errorDiv) {
+                        errorDiv.textContent = errorData.errors[field][0];
+                    }
+                });
+            } else {
+                errorMessageText.textContent = errorData.message || 'An error occurred.';
+                errorMessageContainer.style.display = 'block';
+            }
+        })
+        .finally(() => {
+            isSubmitting = false;
+            registerButton.disabled = false;
+            registerButton.textContent = 'Register';
+        });
+    });
+});
+
     </script>
+
+
 
     <style>
         .avatar-sm {

@@ -83,5 +83,16 @@ Route::middleware('auth')->group(function () {
         ->name('viewer.dashboard');
 });
 
+// Messages and Notifications routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/messages', function () {
+        return view('messages.index');
+    })->name('messages.index');
+    
+    Route::get('/notifications', function () {
+        return view('notifications.index');
+    })->name('notifications.index');
+});
+
 // Route::get()
 require __DIR__.'/auth.php';
