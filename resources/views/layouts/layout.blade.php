@@ -50,6 +50,7 @@
     <div class="preloader-backdrop">
         <div class="page-preloader">Loading</div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous">
     </script>
@@ -68,9 +69,12 @@
     <script src="{{ asset('assets/js/app.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/scripts/dashboard_1_demo.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/dropdown-fix.js') }}" type="text/javascript"></script>
+    
+    <!-- QRCode Library -->
+    
     <script src="{{ asset('js/profile-registration.js') }}" defer></script>
-<script src="{{ asset('assets/js/scanner-fix.js') }}"></script>
-<script src="{{ asset('assets/js/inventory-create.js') }}"></script>
+    <script src="{{ asset('assets/js/scanner-fix.js') }}"></script>
+    <script src="{{ asset('assets/js/inventory-create.js') }}"></script>
     @stack('scripts')
 </body>
 </html>

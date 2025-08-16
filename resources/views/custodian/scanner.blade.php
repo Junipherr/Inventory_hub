@@ -1,4 +1,5 @@
 <x-main-layout>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <div class="scanner-container">
         <!-- Success Notification -->
         <div id="dynamicSuccessMessage"
@@ -126,7 +127,8 @@
                                                     data-category="{{ ucwords(str_replace('_', ' ', $item->category_id)) }}"
                                                     data-item-description="{{ $item->description ?? '' }}"
                                                     data-item-quantity="{{ $item->quantity ?? '' }}"
-                                                    data-item-qr="{{ $item->qr_code ?? '' }}">
+                                                    data-item-qr="{{ $item->qr_code ?? '' }}"
+                                                    data-person-in-charge="{{ $personsInCharge[$item->room_id]->name ?? 'N/A' }}">
                                                     
                                                     <td>
                                                         <div class="item-info">
@@ -286,12 +288,22 @@
                                 </div>
                                 <div class="detail-item">
                                     <label>Person in Charge:</label>
-                                    <span id="modalPersonInCharge"></span>
+                                    <span id="modalPersonInCharge">
+                                        
+                                    </span>
                                 </div>
                                 <div class="detail-item">
                                     <label>QR Code:</label>
                                     <div id="modalQRCode">
-                                        <img id="qrCodeImage" src="" alt="QR Code" style="max-width: 150px; height: auto;">
+<div id="qrcode-container-{{ $item->id }}" class="d-flex justify-content-center">
+ <img src="data:image/svg+xml;base64,{{ base64_encode(QrCode::format('svg')->size(128)->margin(2)->generate($item->qr_code ?? 'N/A')) }}" 
+                                                     alt="QR Code for {{ $item->item_name }}" 
+                                                     class="border rounded p-2"
+                                                     style="width: 128px; height: 128px;">
+                                            </div>
+                                             <small class="text-muted d-flex justify-content-center">
+                                                Code: <code class="small">{{ $item->qr_code ?? 'N/A' }}</code>
+                                            </small>
                                     </div>
                                 </div>
                             </div>
@@ -681,7 +693,7 @@
                     const category = row.dataset.category;
                     const quantity = row.dataset.itemQuantity;
                     const status = row.querySelector('.status-select').value;
-                    const personInCharge = 'N/A';
+                    const personInCharge = row.dataset.personInCharge;
                     const qrCode = row.dataset.itemQr;
                     const description = row.dataset.itemDescription;
 

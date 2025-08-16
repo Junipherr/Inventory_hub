@@ -206,6 +206,45 @@ class InventoryController extends Controller
         }
     }
 
+    public function handleManualQrInput(Request $request)
+    {
+        $validated = $request->validate([
+            'qr_code' => 'required|string|max:255',
+        ]);
+
+        try {
+            $qrCode = $validated['qr_code'];
+            
+            // Find item by QR code
+            $item = Item::whereHas('units', function($query) use ($qrCode) {
+                $query->where('qr_code', $qrCode);
+            })->with(['units', 'room'])->first();
+
+            if (!$item) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Item not found with QR code: ' . $qrCode
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Item found successfully',
+                'item' => [
+                    'id' => $item->id,
+                    'item_name' => $item->item_name,
+                    'room' => $item->room->name ?? 'N/A',
+                    'qr_code' => $qrCode
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error processing QR code: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function generateQRCode($id)
     {
         try {

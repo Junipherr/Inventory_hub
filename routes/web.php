@@ -16,6 +16,7 @@ Route::get('/inventory/qrcode/{data}', [InventoryController::class, 'generateQRC
 Route::get('/scanner', [InventoryController::class, 'scanner'])->middleware(['auth', 'verified', 'role:Admin'])->name('scanner');
 
 Route::post('/scanner/update', [InventoryController::class, 'updateCheckedItems'])->middleware(['auth', 'verified', 'role:Admin'])->name('scanner.update');
+Route::post('/scanner/manual-qr', [InventoryController::class, 'handleManualQrInput'])->middleware(['auth', 'verified', 'role:Admin'])->name('scanner.manual-qr');
 
 Route::get('/welcome', function () {
     return view('welcome');

@@ -1,4 +1,7 @@
 <x-main-layout>
+    @push('head')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @endpush
     <div class="page-content fade-in-up">
         <!-- Dashboard Header -->
         <div class="row mb-4">
@@ -247,9 +250,14 @@
                                     <div class="col-md-4">
                                         <div class="text-center">
                                             <h6 class="text-muted mb-3">QR Code</h6>
-                                            <canvas id="qrcode-{{ $item->id }}" class="border rounded p-2"></canvas>
+                                            <div id="qrcode-container-{{ $item->id }}" class="d-flex justify-content-center">
+ <img src="data:image/svg+xml;base64,{{ base64_encode(QrCode::format('svg')->size(128)->margin(2)->generate($item->qr_code ?? 'N/A')) }}" 
+                                                     alt="QR Code for {{ $item->item_name }}" 
+                                                     class="border rounded p-2"
+                                                     style="width: 128px; height: 128px;">
+                                            </div>
                                             <small class="text-muted d-block mt-2">
-                                                Scan for quick access
+                                                Code: <code class="small">{{ $item->qr_code ?? 'N/A' }}</code>
                                             </small>
                                         </div>
                                     </div>
@@ -368,19 +376,6 @@
             printWindow.document.close();
             printWindow.print();
         }
-
-        // Generate QR codes
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('[data-qr]').forEach(element => {
-                const qrCode = element.getAttribute('data-qr');
-                const canvasId = element.querySelector('canvas').id;
-                if (qrCode && window.QRCode) {
-                    QRCode.toCanvas(document.getElementById(canvasId), qrCode, function (error) {
-                        if (error) console.error(error);
-                    });
-                }
-            });
-        });
     </script>
 
     <style>
