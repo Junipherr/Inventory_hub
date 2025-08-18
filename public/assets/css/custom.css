@@ -1,0 +1,33 @@
+/* .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+}
+
+.table-scrollable {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+thead.sticky-top th {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 1020;
+} */
+
+/* New class to hide scrollbar but keep scrolling */
+.scrollbar-hidden {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
+}

@@ -1,0 +1,65 @@
+.sidebar1 {
+position: fixed;
+}
+
+.custom-table {
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        width: 100%;
+        font-family: Arial, sans-serif;
+    }
+    .custom-table thead tr {
+        background-color: #007bff;
+        color: white;
+        text-align: left;
+        font-weight: bold;
+    }
+    .custom-table tbody tr {
+        background-color: #f9f9f9;
+        transition: background-color 0.3s ease;
+    }
+    .custom-table tbody tr:hover {
+        background-color: #e9ecef;
+    }
+    .custom-table th, .custom-table td {
+        padding: 12px 15px;
+        border: none;
+    }
+    .form-select {
+        min-width: 150px;
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        background-color: white;
+        transition: border-color 0.3s ease;
+    }
+    .form-select:focus {
+        border-color: #80bdff;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0,123,255,.5);
+    }
+    #submitCheckedUnitsButton {
+        margin-top: 15px;
+    }
+    .modal-content {
+        border-radius: 10px;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    .modal-header {
+        border-bottom: none;
+    }
+    .modal-title {
+        font-weight: bold;
+        font-size: 1.25rem;
+    }
+    .modal-body ul {
+        list-style-type: disc;
+        padding-left: 20px;
+    }
+    .modal-body ul li {
+        margin-bottom: 10px;
+        font-size: 1rem;
+    }
+
+    
