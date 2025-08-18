@@ -66,18 +66,8 @@
                             <span class="nav-label">Add New Item</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="{{ url('category') }}" class="{{ Request::is('category') ? 'active' : '' }}">
-                            <i class="sidebar-item-icon fa fa-tags"></i>
-                            <span class="nav-label">Item Categories</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="import_export.html">
-                            <i class="sidebar-item-icon fa fa-file-csv"></i>
-                            <span class="nav-label">Import/Export CSV</span>
-                        </a>
-                    </li>
+                    
+                   
                     <li class="heading">ACCOUNT</li>
                     <li>
                         <a href="{{ route('profile.index') }}">
@@ -85,12 +75,7 @@
                             <span class="nav-label">Profile</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="logout.html">
-                            <i class="sidebar-item-icon fa fa-sign-out"></i>
-                            <span class="nav-label">Logout</span>
-                        </a>
-                    </li>
+                   
                 </ul>
             @endif
         @endif

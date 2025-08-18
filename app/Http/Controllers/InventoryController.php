@@ -12,7 +12,7 @@ class InventoryController extends Controller
 {
     public function index()
     {
-        $items = Item::with('units')->get();
+        $items = Item::with('units')->paginate(10);
         return view('custodian.inventory.items', compact('items'));
     }
 
@@ -215,10 +215,21 @@ class InventoryController extends Controller
         try {
             $qrCode = $validated['qr_code'];
             
-            // Find item by QR code
-            $item = Item::whereHas('units', function($query) use ($qrCode) {
-                $query->where('qr_code', $qrCode);
-            })->with(['units', 'room'])->first();
+            // Search in both items table and item_units table for QR codes
+            $item = Item::where('qr_code', $qrCode)
+                        ->with(['room', 'units'])
+                        ->first();
+            
+            // If not found in items table, check item_units
+            if (!$item) {
+                $unit = \App\Models\ItemUnit::where('qr_code', $qrCode)
+                                           ->with('item.room')
+                                           ->first();
+                
+                if ($unit && $unit->item) {
+                    $item = $unit->item;
+                }
+            }
 
             if (!$item) {
                 return response()->json([
