@@ -63,9 +63,9 @@
                                                 {{ $item->condition ?? 'Unknown' }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex space-x-2">
-                                                <button onclick="openEditModal({{ $item->id }}, '{{ $item->item_name }}', '{{ $item->description }}', '{{ $item->quantity }}', '{{ $item->condition }}')" 
+                                                <button onclick="openEditModal({{ $item->id }}, '{{ $item->item_name }}', '{{ $item->description }}', '{{ $item->quantity }}', '{{ $item->condition }}', '{{ $item->room_id }}', '{{ $item->category_id }}')" 
                                                         class="text-indigo-600 hover:text-indigo-900 transition duration-200">
                                                     <i class="fas fa-edit"></i> Edit
                                                 </button>
@@ -136,6 +136,33 @@
                             <option value="Poor">Poor</option>
                         </select>
                     </div>
+
+                    <div>
+                        <label for="edit_room_id" class="block text-sm font-medium text-gray-700">Room Location</label>
+                        <select name="room_id" id="edit_room_id" 
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                            <option value="">-- Select Room --</option>
+                            @foreach($rooms as $room)
+                                <option value="{{ $room->id }}">{{ $room->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="edit_category_id" class="block text-sm font-medium text-gray-700">Category</label>
+                        <select name="category_id" id="edit_category_id" 
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                            <option value="">-- Select Category --</option>
+                            <option value="computer_hardware_peripherals">💻 Computer Hardware & Peripherals</option>
+                            <option value="office_classroom_furniture">🪑 Office and Classroom Furniture</option>
+                            <option value="appliances_electronics">📺 Appliances and Electronics</option>
+                            <option value="classroom_office_supplies">📚 Classroom/Office Supplies</option>
+                            <option value="networking_equipment">🌐 Networking Equipment</option>
+                            <option value="security_systems">🔒 Security Systems</option>
+                            <option value="laboratory_equipment">🧪 Laboratory Equipment</option>
+                            <option value="medical_equipment">🏥 Medical Equipment</option>
+                        </select>
+                    </div>
                     
                     <div class="flex space-x-3 pt-4">
                         <button type="submit" 
@@ -188,12 +215,14 @@
 
     <!-- JavaScript for Modal -->
     <script>
-        function openEditModal(itemId, itemName, description, quantity, condition) {
+        function openEditModal(itemId, itemName, description, quantity, condition, roomId, categoryId) {
             document.getElementById('editForm').action = `/inventory/items/${itemId}`;
             document.getElementById('edit_item_name').value = itemName;
             document.getElementById('edit_description').value = description || '';
             document.getElementById('edit_quantity').value = quantity || 1;
             document.getElementById('edit_condition').value = condition || 'Good';
+            document.getElementById('edit_room_id').value = roomId || '';
+            document.getElementById('edit_category_id').value = categoryId || '';
             document.getElementById('editModal').classList.remove('hidden');
         }
 
@@ -236,7 +265,6 @@
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 credentials: 'same-origin'
@@ -265,6 +293,12 @@
             e.preventDefault();
             
             const formData = new FormData(this);
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            
+            // Disable submit button to prevent double submission
+            submitButton.disabled = true;
+            submitButton.textContent = 'Saving...';
             
             fetch(this.action, {
                 method: 'POST',
@@ -275,17 +309,46 @@
                 },
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                // Clone response to read it twice if needed
+                const responseClone = response.clone();
+                
+                return response.json()
+                    .catch(() => {
+                        // If JSON parsing fails, read as text to debug
+                        return responseClone.text().then(text => {
+                            console.error('Server response:', text);
+                            throw new Error('Server returned HTML instead of JSON. Check console for details.');
+                        });
+                    })
+                    .then(data => {
+                        if (!response.ok) {
+                            throw new Error(data.message || 'Server error');
+                        }
+                        return data;
+                    });
+            })
             .then(data => {
                 if (data.success) {
                     location.reload();
                 } else {
-                    alert(data.message || 'Error updating item');
+                    // Handle validation errors
+                    if (data.errors) {
+                        let errorMessages = Object.values(data.errors).flat().join('\n');
+                        alert('Validation errors:\n' + errorMessages);
+                    } else {
+                        alert(data.message || 'Error updating item');
+                    }
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error updating item');
+                alert('Error updating item: ' + error.message);
+            })
+            .finally(() => {
+                // Re-enable submit button
+                submitButton.disabled = false;
+                submitButton.textContent = originalText;
             });
         });
     </script>

@@ -16,7 +16,8 @@
     <!-- <link href="{{ asset('assets/css/rtoolbar-responsive.css') }}" rel="stylesheet"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="{{ asset('assets/css/sidebar.css') }}" rel="stylesheet">
-     <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet">
+    
     @vite(['resources/css/app.css','resources/js/app.js', 'resources/js/sidebar_fix.js'])
 </head>
 
@@ -35,9 +36,9 @@
             @include('partials.startheader')
             <div class="flexbox flex-1">
                 @include('partials.toolbar')
-              @include('partials.rtoolbar')
-
+                @include('partials.rtoolbar')
             </div>
+            
         </header>
         @include('partials.sidebar')
         <div class="content-wrapper">
@@ -75,6 +76,7 @@
     <script src="{{ asset('js/profile-registration.js') }}" defer></script>
     <script src="{{ asset('assets/js/scanner-fix.js') }}"></script>
     <script src="{{ asset('assets/js/inventory-create.js') }}"></script>
+
     @stack('scripts')
 </body>
 </html>

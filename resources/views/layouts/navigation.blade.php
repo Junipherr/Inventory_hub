@@ -70,6 +70,44 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            
+            <!-- Sidebar Menu Items for Mobile -->
+            @php $user = auth()->user(); @endphp
+            @if($user)
+                @if($user->role === 'Viewer')
+                    <x-responsive-nav-link :href="route('viewer.dashboard')" :active="request()->is('viewer/dashboard')">
+                        {{ __('Viewer Dashboard') }}
+                    </x-responsive-nav-link>
+                @else
+                    <x-responsive-nav-link :href="url('dashboard')" :active="request()->is('dashboard')">
+                        {{ __('Dashboard') }}
+                    </x-responsive-nav-link>
+                    
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Inventory
+                    </div>
+                    
+                    <x-responsive-nav-link :href="url('scanner')" :active="request()->is('scanner')">
+                        {{ __('Scanner') }}
+                    </x-responsive-nav-link>
+                    
+                    <x-responsive-nav-link :href="url('inventory/items')" :active="request()->is('inventory/items')">
+                        {{ __('View Items') }}
+                    </x-responsive-nav-link>
+                    
+                    <x-responsive-nav-link :href="url('inventory/create')" :active="request()->is('inventory/create')">
+                        {{ __('Add New Item') }}
+                    </x-responsive-nav-link>
+                @endif
+                
+                <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Account
+                </div>
+                
+                <x-responsive-nav-link :href="route('profile.show', auth()->user()->id)">
+                    {{ __('Profile') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
@@ -80,10 +118,6 @@
             </div>
 
             <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.show', auth()->user()->id)">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

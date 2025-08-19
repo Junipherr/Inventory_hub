@@ -13,7 +13,8 @@ class InventoryController extends Controller
     public function index()
     {
         $items = Item::with('units')->paginate(10);
-        return view('custodian.inventory.items', compact('items'));
+        $rooms = Room::all();
+        return view('custodian.inventory.items', compact('items', 'rooms'));
     }
 
     public function scanner()
@@ -162,21 +163,55 @@ class InventoryController extends Controller
 
     public function update(Request $request, Item $item)
     {
-        $validated = $request->validate([
-            'item_name' => 'required|string|max:255',
-            'room_id' => 'required|integer|exists:rooms,id',
-            'category_id' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'quantity' => 'required|integer|min:1',
-            'qr_code' => 'nullable|string|max:255',
-            'purchase_date' => 'nullable|date',
-            'purchase_price' => 'nullable|numeric|min:0',
-            'warranty_expires' => 'nullable|date',
-            'condition' => 'nullable|string|max:255',
-        ]);
+        try {
+            $validated = $request->validate([
+                'item_name' => 'required|string|max:255',
+                'room_id' => 'required|integer|exists:rooms,id',
+                'category_id' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'quantity' => 'required|integer|min:1',
+                'qr_code' => 'nullable|string|max:255',
+                'purchase_date' => 'nullable|date',
+                'purchase_price' => 'nullable|numeric|min:0',
+                'warranty_expires' => 'nullable|date',
+                'condition' => 'nullable|string|max:255',
+            ]);
 
-        $item->update($validated);
-        return redirect()->route('inventory.items')->with('success', 'Item updated successfully.');
+            $item->update($validated);
+
+            // Always return JSON for AJAX requests
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Item updated successfully!',
+                    'item' => $item
+                ]);
+            }
+
+            return redirect()->route('inventory.items')->with('success', 'Item updated successfully.');
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Always return JSON for AJAX requests, even for validation errors
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            throw $e;
+        } catch (\Exception $e) {
+            // Always return JSON for AJAX requests, even for server errors
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error updating item: ' . $e->getMessage()
+                ], 500);
+            }
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Error updating item: ' . $e->getMessage());
+        }
     }
 
     public function updateCheckedItems(Request $request)
