@@ -98,6 +98,27 @@ Route::middleware('auth')->group(function () {
     Route::get('/viewer/borrow/history', [UserProfileController::class, 'borrowHistory'])
         ->middleware('role:Viewer')
         ->name('viewer.borrow.history');
+
+    // Admin Borrow Request Management Routes
+    Route::prefix('admin')->middleware(['auth', 'verified', 'role:Admin'])->group(function () {
+        Route::get('/borrow-requests', [UserProfileController::class, 'adminBorrowRequests'])
+            ->name('admin.borrow-requests');
+        
+        Route::get('/borrow-requests/pending', [UserProfileController::class, 'adminPendingRequests'])
+            ->name('admin.borrow-requests.pending');
+        
+        Route::get('/borrow-requests/{id}', [UserProfileController::class, 'adminShowBorrowRequest'])
+            ->name('admin.borrow-requests.show');
+        
+        Route::post('/borrow-requests/{id}/approve', [UserProfileController::class, 'adminApproveBorrowRequest'])
+            ->name('admin.borrow-requests.approve');
+        
+        Route::post('/borrow-requests/{id}/reject', [UserProfileController::class, 'adminRejectBorrowRequest'])
+            ->name('admin.borrow-requests.reject');
+        
+        Route::post('/borrow-requests/{id}/mark-returned', [UserProfileController::class, 'adminMarkReturned'])
+            ->name('admin.borrow-requests.mark-returned');
+    });
 });
 
 // Messages and Notifications routes

@@ -320,4 +320,150 @@ class UserProfileController extends Controller
 
         return view('viewer.borrow-history', compact('borrowRequests'));
     }
+
+    /**
+     * Display all borrow requests for admin
+     */
+    public function adminBorrowRequests()
+    {
+        $query = \App\Models\BorrowRequest::with(['user', 'item', 'item.room'])
+            ->orderBy('created_at', 'desc');
+
+        if (request('status')) {
+            $query->where('status', request('status'));
+        }
+
+        $borrowRequests = $query->paginate(20);
+        
+        $pendingCount = \App\Models\BorrowRequest::where('status', 'pending')->count();
+        $approvedCount = \App\Models\BorrowRequest::where('status', 'approved')->count();
+
+        return view('custodian.borrow-requests.index', compact('borrowRequests', 'pendingCount', 'approvedCount'));
+    }
+
+    /**
+     * Display pending borrow requests for admin
+     */
+    public function adminPendingRequests()
+    {
+        $pendingRequests = \App\Models\BorrowRequest::with(['user', 'item'])
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
+
+        return view('custodian.borrow-requests.pending', compact('pendingRequests'));
+    }
+
+    /**
+     * Display individual borrow request details for admin
+     */
+    public function adminShowBorrowRequest($id)
+    {
+        $borrowRequest = \App\Models\BorrowRequest::with(['user', 'item', 'item.room', 'item.units'])
+            ->findOrFail($id);
+
+        return view('custodian.borrow-requests.show', compact('borrowRequest'));
+    }
+
+    /**
+     * Approve a borrow request
+     */
+    public function adminApproveBorrowRequest($id)
+    {
+        try {
+            $borrowRequest = \App\Models\BorrowRequest::findOrFail($id);
+            
+            if ($borrowRequest->status !== 'pending') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This request has already been processed.'
+                ]);
+            }
+
+            $borrowRequest->update([
+                'status' => 'approved',
+                'approved_at' => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Borrow request approved successfully!'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error approving borrow request: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to approve request. Please try again.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Reject a borrow request
+     */
+    public function adminRejectBorrowRequest($id, Request $request)
+    {
+        try {
+            $borrowRequest = \App\Models\BorrowRequest::findOrFail($id);
+            
+            if ($borrowRequest->status !== 'pending') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This request has already been processed.'
+                ]);
+            }
+
+            $borrowRequest->update([
+                'status' => 'rejected',
+                'admin_notes' => $request->reason,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Borrow request rejected successfully!'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error rejecting borrow request: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to reject request. Please try again.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Mark a borrow request as returned
+     */
+    public function adminMarkReturned($id)
+    {
+        try {
+            $borrowRequest = \App\Models\BorrowRequest::findOrFail($id);
+            
+            if ($borrowRequest->status !== 'approved') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only approved requests can be marked as returned.'
+                ]);
+            }
+
+            $borrowRequest->update([
+                'status' => 'returned',
+                'returned_at' => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Item marked as returned successfully!'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error marking as returned: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to mark as returned. Please try again.'
+            ], 500);
+        }
+    }
 }
