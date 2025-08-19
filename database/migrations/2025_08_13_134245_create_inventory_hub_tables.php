@@ -127,19 +127,19 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-        Schema::dropIfExists('item_units');
-        Schema::dropIfExists('items');
-        Schema::dropIfExists('sessions');
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('rooms');
-        Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('migrations');
-        Schema::dropIfExists('job_batches');
-        Schema::dropIfExists('jobs');
-        Schema::dropIfExists('failed_jobs');
-        Schema::dropIfExists('cache_locks');
-        Schema::dropIfExists('cache');
-    }
+   public function down(): void
+{
+    Schema::dropIfExists('item_units');
+    Schema::dropIfExists('items');
+    Schema::dropIfExists('sessions');
+    Schema::dropIfExists('users');
+    Schema::dropIfExists('rooms');
+    Schema::dropIfExists('password_reset_tokens');
+    Schema::dropIfExists('job_batches');
+    Schema::dropIfExists('jobs');
+    Schema::dropIfExists('failed_jobs');
+    Schema::dropIfExists('cache_locks');
+    Schema::dropIfExists('cache');
+}
+
 };

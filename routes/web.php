@@ -82,6 +82,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/viewer/dashboard', [UserProfileController::class, 'viewerDashboard'])
         ->middleware('role:Viewer')
         ->name('viewer.dashboard');
+    
+    Route::post('/viewer/update-status', [UserProfileController::class, 'updateStatus'])
+        ->middleware('role:Viewer')
+        ->name('viewer.update-status');
+
+    Route::get('/viewer/borrow', [UserProfileController::class, 'showBorrowForm'])
+        ->middleware('role:Viewer')
+        ->name('viewer.borrow');
+
+    Route::post('/viewer/borrow', [UserProfileController::class, 'submitBorrowRequest'])
+        ->middleware('role:Viewer')
+        ->name('viewer.borrow.submit');
+
+    Route::get('/viewer/borrow/history', [UserProfileController::class, 'borrowHistory'])
+        ->middleware('role:Viewer')
+        ->name('viewer.borrow.history');
 });
 
 // Messages and Notifications routes

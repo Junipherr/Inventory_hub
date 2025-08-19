@@ -1,3 +1,5 @@
+
+   
 <nav class="page-sidebar overflow-hidden sidebar1" id="sidebar">
     <div id="sidebar-collapse">
         @php $user = auth()->user(); @endphp
@@ -19,15 +21,15 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('profile.index') }}">
-                            <i class="sidebar-item-icon fa fa-user"></i>
-                            <span class="nav-label">Profile</span>
+                        <a href="{{ route('viewer.borrow') }}" class="{{ Request::is('viewer/borrow') ? 'active' : '' }}">
+                            <i class="sidebar-item-icon fa fa-hand-holding"></i>
+                            <span class="nav-label">Borrow Item</span>
                         </a>
                     </li>
                     <li>
-                        <a href="logout.html">
-                            <i class="sidebar-item-icon fa fa-sign-out"></i>
-                            <span class="nav-label">Logout</span>
+                        <a href="{{ route('viewer.borrow.history') }}" class="{{ Request::is('viewer/borrow/history') ? 'active' : '' }}">
+                            <i class="sidebar-item-icon fa fa-history"></i>
+                            <span class="nav-label">Borrow History</span>
                         </a>
                     </li>
                 </ul>
@@ -67,6 +69,20 @@
                         </a>
                     </li>
                     
+                    <li class="heading">BORROW MANAGEMENT</li>
+                    <li>
+                        <a href="{{ route('admin.borrow-requests') }}" class="{{ Request::is('admin/borrow-requests') ? 'active' : '' }}">
+                            <i class="sidebar-item-icon fa fa-hand-holding"></i>
+                            <span class="nav-label">All Borrow Requests</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.borrow-requests.pending') }}" class="{{ Request::is('admin/borrow-requests/pending') ? 'active' : '' }}">
+                            <i class="sidebar-item-icon fa fa-clock"></i>
+                            <span class="nav-label">Pending Approvals</span>
+                            <span class="badge badge-warning ml-auto" id="pending-count">0</span>
+                        </a>
+                    </li>
                    
                     <li class="heading">ACCOUNT</li>
                     <li>

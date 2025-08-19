@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Room;
+use App\Models\ItemUnit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -186,5 +187,137 @@ class UserProfileController extends Controller
                 'message' => 'Failed to delete profile. Please try again.'
             ], 500);
         }
+    }
+
+    /**
+     * Display the viewer dashboard
+     */
+    public function viewerDashboard()
+    {
+        $user = auth()->user();
+        
+        // Fetch items for the user's assigned room
+        $room = \App\Models\Room::with(['items.units'])->find($user->room_id);
+        
+        if (!$room) {
+            $room = \App\Models\Room::with(['items.units'])->first();
+        }
+        
+        $items = $room ? $room->items : collect([]);
+        
+        return view('viewer.dashboard', compact('items', 'room'));
+    }
+
+    /**
+     * Update the status of item units for the viewer
+     */
+    public function updateStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|array',
+            'status.*' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $updatedCount = 0;
+            $statuses = $request->input('status', []);
+
+            foreach ($statuses as $unitId => $status) {
+                $unit = \App\Models\ItemUnit::find($unitId);
+                if ($unit) {
+                    $unit->status = $status;
+                    $unit->save();
+                    $updatedCount++;
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully updated {$updatedCount} item(s).",
+                'updated_count' => $updatedCount
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error updating item statuses: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update item statuses. Please try again.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Display the borrow item form for viewers
+     */
+    public function showBorrowForm()
+    {
+        $user = auth()->user();
+        
+        // Get all items from the database regardless of room or availability
+        $availableItems = \App\Models\Item::with(['room', 'units'])->get();
+
+        return view('viewer.borrow', compact('availableItems'));
+    }
+
+    /**
+     * Submit a borrow request
+     */
+    public function submitBorrowRequest(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'item_id' => 'required|exists:items,id',
+            'quantity' => 'required|integer|min:1',
+            'purpose' => 'required|string|max:500',
+            'return_date' => 'required|date|after:today',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        try {
+            $user = auth()->user();
+            $item = \App\Models\Item::findOrFail($request->item_id);
+
+            // Create borrow request
+            $borrowRequest = \App\Models\BorrowRequest::create([
+                'user_id' => $user->id,
+                'item_id' => $request->item_id,
+                'quantity' => $request->quantity,
+                'purpose' => $request->purpose,
+                'return_date' => $request->return_date,
+                'status' => 'pending',
+            ]);
+
+            return redirect()->route('viewer.borrow.history')
+                ->with('success', 'Borrow request submitted successfully!');
+
+        } catch (\Exception $e) {
+            \Log::error('Error submitting borrow request: ' . $e->getMessage());
+            return back()->with('error', 'Failed to submit borrow request. Please try again.');
+        }
+    }
+
+    /**
+     * Display borrow history for the viewer
+     */
+    public function borrowHistory()
+    {
+        $user = auth()->user();
+        
+        $borrowRequests = \App\Models\BorrowRequest::with(['item', 'item.room'])
+            ->where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('viewer.borrow-history', compact('borrowRequests'));
     }
 }
