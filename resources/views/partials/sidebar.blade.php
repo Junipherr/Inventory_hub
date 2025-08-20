@@ -80,7 +80,7 @@
                         <a href="{{ route('admin.borrow-requests.pending') }}" class="{{ Request::is('admin/borrow-requests/pending') ? 'active' : '' }}">
                             <i class="sidebar-item-icon fa fa-clock"></i>
                             <span class="nav-label">Pending Approvals</span>
-                            <span class="badge badge-warning ml-auto" id="pending-count">0</span>
+                            <!-- <span class="badge badge-warning ml-auto" id="pending-count">0</span> -->
                         </a>
                     </li>
                    

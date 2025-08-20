@@ -1,6 +1,6 @@
 <x-main-layout>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link href="{{ asset('assets/css/viewer-dashboard.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/css/custodian-borrow-requests.css') }}" rel="stylesheet">
     
     <div class="scanner-container">
         <!-- Success Notification -->
