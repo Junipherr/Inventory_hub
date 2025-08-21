@@ -63,6 +63,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ route('inventory.available-items') }}" class="{{ Request::is('inventory/available-items') ? 'active' : '' }}">
+                            <i class="sidebar-item-icon fa fa-boxes"></i>
+                            <span class="nav-label">Available Items</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ url('inventory/create') }}" class="{{ Request::is('inventory/create') ? 'active' : '' }}">
                             <i class="sidebar-item-icon fa fa-plus-circle"></i>
                             <span class="nav-label">Add New Item</span>

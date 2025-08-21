@@ -169,24 +169,24 @@
                             <div class="item-details mt-3">
                                 <h6>{{ $borrowRequest->item->item_name }}</h6>
                                 <p class="text-muted">{{ Str::limit($borrowRequest->item->description, 100) }}</p>
-                                <div class="item-stats">
-                                    <div class="stat">
-                                        <label>Total Units:</label>
-                                        <span>{{ $borrowRequest->item->units->count() }}</span>
-                                    </div>
-                                    <div class="stat">
-                                        <label>Available Units:</label>
-                                        <span>{{ $borrowRequest->item->units->where('status', '!=', 'Borrowed')->count() }}</span>
-                                    </div>
-                                    <div class="stat">
-                                        <label>Room:</label>
-                                        <span>{{ $borrowRequest->item->room->name ?? 'N/A' }}</span>
-                                    </div>
-                                    <div class="stat">
-                                        <label>Category:</label>
-                                        <span>{{ ucwords(str_replace('_', ' ', $borrowRequest->item->category_id)) }}</span>
-                                    </div>
+                            <div class="item-stats">
+                                <div class="stat">
+                                    <label>Total Units:</label>
+                                    <span>{{ $borrowRequest->item->quantity ?? 0 }}</span>
                                 </div>
+                                <div class="stat">
+                                    <label>Available Units:</label>
+                                    <span>{{ max(0, ($borrowRequest->item->quantity ?? 0) - \App\Models\BorrowRequest::where('item_id', $borrowRequest->item->id)->where('status', 'approved')->where('id', '!=', $borrowRequest->id)->sum('quantity')) }}</span>
+                                </div>
+                                <div class="stat">
+                                    <label>Room:</label>
+                                    <span>{{ $borrowRequest->item->room->name ?? 'N/A' }}</span>
+                                </div>
+                                <div class="stat">
+                                    <label>Category:</label>
+                                    <span>{{ ucwords(str_replace('_', ' ', $borrowRequest->item->category_id)) }}</span>
+                                </div>
+                            </div>
                             </div>
                         </div>
                     </div>

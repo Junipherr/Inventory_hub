@@ -315,4 +315,53 @@ class InventoryController extends Controller
             return response()->json(['error' => 'Failed to generate QR code'], 500);
         }
     }
+
+    /**
+     * Display available items with quantities for custodian/admin
+     * This function provides a comprehensive view of items available for borrowing
+     */
+    public function displayAvailableItems()
+    {
+        // Get all items with proper available quantity calculation
+        $availableItems = Item::with(['room', 'units'])
+            ->get()
+            ->map(function ($item) {
+                // Calculate total quantity from items table
+                $totalQuantity = $item->quantity ?? 0;
+                
+                // Calculate quantity that is already borrowed via approved requests
+                $approvedBorrowQuantity = \App\Models\BorrowRequest::where('item_id', $item->id)
+                    ->where('status', 'approved')
+                    ->sum('quantity');
+                
+                // Calculate actual available quantity
+                $availableQuantity = max(0, $totalQuantity - $approvedBorrowQuantity);
+                
+                // Count individual units that are available
+                $availableUnits = $item->units->where('status', 'available')->count();
+                
+                // Add calculated properties to the item
+                $item->available_quantity = $availableQuantity;
+                $item->total_quantity = $totalQuantity;
+                $item->available_units = $availableUnits;
+                $item->is_available = $availableQuantity > 0 || $availableUnits > 0;
+                
+                return $item;
+            })
+            ->filter(function ($item) {
+                return $item->is_available;
+            })
+            ->sortByDesc('available_quantity');
+
+        // Create summary statistics
+        $summary = [
+            'total_available_items' => $availableItems->count(),
+            'total_available_quantity' => $availableItems->sum('available_quantity'),
+            'total_available_units' => $availableItems->sum('available_units'),
+            'categories' => $availableItems->groupBy('category_id')->map->count(),
+            'rooms' => $availableItems->groupBy('room_id')->map->count(),
+        ];
+
+        return view('custodian.available-items', compact('availableItems', 'summary'));
+    }
 }

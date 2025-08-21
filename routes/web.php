@@ -54,13 +54,21 @@ Route::delete('/inventory/items/{item}', [InventoryController::class, 'destroy']
     ->middleware(['auth', 'verified', 'role:Admin'])
     ->name('inventory.destroy');
 
-Route::get('/inventory/items/{item}/edit', [InventoryController::class, 'edit'])
-    ->middleware(['auth', 'verified', 'role:Admin'])
-    ->name('inventory.edit');
+    Route::get('/inventory/items/{item}/edit', [InventoryController::class, 'edit'])
+        ->middleware(['auth', 'verified', 'role:Admin'])
+        ->name('inventory.edit');
 
-Route::put('/inventory/items/{item}', [InventoryController::class, 'update'])
+    Route::get('/inventory/items/{item}', [InventoryController::class, 'show'])
+        ->middleware(['auth', 'verified', 'role:Admin'])
+        ->name('inventory.items.show');
+
+    Route::put('/inventory/items/{item}', [InventoryController::class, 'update'])
+        ->middleware(['auth', 'verified', 'role:Admin'])
+        ->name('inventory.update');
+
+Route::get('/inventory/available-items', [InventoryController::class, 'displayAvailableItems'])
     ->middleware(['auth', 'verified', 'role:Admin'])
-    ->name('inventory.update');
+    ->name('inventory.available-items');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/qr/generate', [QRCodeController::class, 'showGenerator'])->name('qr.generate.form');

@@ -293,6 +293,52 @@ class UserProfileController extends Controller
     }
 
     /**
+     * Display available items with quantities for borrowing
+     * This function provides a focused view of items available to borrow
+     */
+    public function displayAvailableItems()
+    {
+        $user = auth()->user();
+        
+        // Get only available items with proper quantity calculations
+        $availableItems = \App\Models\Item::with(['room'])
+            ->where('is_available', true)
+            ->orWhere(function($query) {
+                $query->where('quantity', '>', 0);
+            })
+            ->get()
+            ->map(function ($item) {
+                // Calculate actual available quantity
+                $totalQuantity = $item->quantity ?? 0;
+                $approvedBorrowQuantity = \App\Models\BorrowRequest::where('item_id', $item->id)
+                    ->where('status', 'approved')
+                    ->sum('quantity');
+                $availableQuantity = max(0, $totalQuantity - $approvedBorrowQuantity);
+                
+                // Update item properties
+                $item->available_quantity = $availableQuantity;
+                $item->total_quantity = $totalQuantity;
+                $item->is_available = $availableQuantity > 0;
+                
+                return $item;
+            })
+            ->filter(function ($item) {
+                return $item->is_available && $item->available_quantity > 0;
+            })
+            ->sortByDesc('available_quantity');
+
+        // Create summary statistics
+        $summary = [
+            'total_available_items' => $availableItems->count(),
+            'total_available_quantity' => $availableItems->sum('available_quantity'),
+            'categories' => $availableItems->groupBy('category_id')->map->count(),
+            'rooms' => $availableItems->groupBy('room_id')->map->count(),
+        ];
+
+        return view('viewer.available-items', compact('availableItems', 'summary'));
+    }
+
+    /**
      * Submit a borrow request
      */
     public function submitBorrowRequest(Request $request)
@@ -415,6 +461,25 @@ class UserProfileController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'This request has already been processed.'
+                ]);
+            }
+
+            // Check if there's enough available quantity
+            $item = $borrowRequest->item;
+            $totalQuantity = $item->quantity ?? 0;
+            
+            // Calculate already approved quantity for this item
+            $approvedBorrowQuantity = \App\Models\BorrowRequest::where('item_id', $item->id)
+                ->where('status', 'approved')
+                ->where('id', '!=', $borrowRequest->id) // Exclude current request
+                ->sum('quantity');
+            
+            $availableQuantity = max(0, $totalQuantity - $approvedBorrowQuantity);
+            
+            if ($borrowRequest->quantity > $availableQuantity) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot approve: Insufficient quantity available. Only ' . $availableQuantity . ' unit(s) remaining.'
                 ]);
             }
 
