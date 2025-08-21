@@ -17,6 +17,11 @@ class UserProfileController extends Controller
      */
     public function index()
     {
+        // Redirect viewer users to their dashboard instead of showing 403
+        if (auth()->user()->role !== 'Admin') {
+            return redirect()->route('viewer.dashboard');
+        }
+
         try {
             // Load all user profiles with their rooms
             $profiles = User::with('room')->get();
@@ -261,8 +266,28 @@ class UserProfileController extends Controller
     {
         $user = auth()->user();
         
-        // Get all items from the database regardless of room or availability
-        $availableItems = \App\Models\Item::with(['room', 'units'])->get();
+        // Get all items with proper available quantity calculation
+        $availableItems = \App\Models\Item::with(['room'])
+            ->get()
+            ->map(function ($item) {
+                // Use the actual quantity field from items table
+                $totalQuantity = $item->quantity ?? 0;
+                
+                // Calculate quantity that is already borrowed via approved requests
+                $approvedBorrowQuantity = \App\Models\BorrowRequest::where('item_id', $item->id)
+                    ->where('status', 'approved')
+                    ->sum('quantity');
+                
+                // Calculate actual available quantity
+                $availableQuantity = max(0, $totalQuantity - $approvedBorrowQuantity);
+                
+                // Add calculated properties to the item
+                $item->available_quantity = $availableQuantity;
+                $item->total_quantity = $totalQuantity;
+                $item->is_available = $availableQuantity > 0;
+                
+                return $item;
+            });
 
         return view('viewer.borrow', compact('availableItems'));
     }
@@ -286,6 +311,19 @@ class UserProfileController extends Controller
         try {
             $user = auth()->user();
             $item = \App\Models\Item::findOrFail($request->item_id);
+            
+            // Calculate available quantity
+            $totalQuantity = $item->quantity ?? 0;
+            $approvedBorrowQuantity = \App\Models\BorrowRequest::where('item_id', $item->id)
+                ->where('status', 'approved')
+                ->sum('quantity');
+            $availableQuantity = max(0, $totalQuantity - $approvedBorrowQuantity);
+            
+            // Validate requested quantity against available quantity
+            if ($request->quantity > $availableQuantity) {
+                return back()->with('error', 'Requested quantity exceeds available quantity. Only ' . $availableQuantity . ' available.')
+                    ->withInput();
+            }
 
             // Create borrow request
             $borrowRequest = \App\Models\BorrowRequest::create([

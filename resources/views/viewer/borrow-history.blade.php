@@ -1,10 +1,7 @@
 <x-main-layout>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="{{ asset('assets/css/scannerblade.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/css/scannerblade-responsive.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/css/viewer-dashboard.css') }}" rel="stylesheet">
-    
+
     <div class="scanner-container">
         <!-- Success Notification -->
         @if(session('success'))

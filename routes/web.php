@@ -70,7 +70,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile', [UserProfileController::class, 'index'])
+        ->middleware(['auth', 'verified', 'role:Admin'])
+        ->name('profile.index');
     Route::get('/profile/{id}', [UserProfileController::class, 'show'])
          ->name('profile.show')
          ->where('id', '[0-9]+');  // Ensure ID is numeric
