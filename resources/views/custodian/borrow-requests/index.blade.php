@@ -75,15 +75,15 @@
                     <table class="table table-hover table-sm" id="borrowRequestsTable">
                         <thead class="table-light">
                             <tr>
-                                <th>ID</th>
-                                <th>User</th>
-                                <th>Item</th>
-                                <th>Quantity</th>
-                                <th>Purpose</th>
-                                <th>Return Date</th>
-                                <th>Status</th>
-                                <th>Requested</th>
-                                <th>Actions</th>
+                                <th data-priority="1">ID</th>
+                                <th data-priority="2">User</th>
+                                <th data-priority="3">Item</th>
+                                <th data-priority="6" class="d-none d-md-table-cell">Quantity</th>
+                                <th data-priority="7" class="d-none d-lg-table-cell">Purpose</th>
+                                <th data-priority="4" class="d-none d-sm-table-cell">Return Date</th>
+                                <th data-priority="5">Status</th>
+                                <th data-priority="8" class="d-none d-xl-table-cell">Requested</th>
+                                <th data-priority="1" class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -93,22 +93,22 @@
                                     <td>
                                         <div class="user-info">
                                             <strong>{{ $request->user->name }}</strong>
-                                            <small class="text-muted">{{ $request->user->email }}</small>
+                                            <small class="text-muted d-block d-md-none">{{ $request->user->email }}</small>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="item-info">
                                             <strong>{{ $request->item->item_name }}</strong>
-                                            <small class="text-muted">{{ $request->item->room->name ?? 'N/A' }}</small>
+                                            <small class="text-muted d-block d-md-none">{{ $request->item->room->name ?? 'N/A' }}</small>
                                         </div>
                                     </td>
-                                    <td>{{ $request->quantity }}</td>
-                                    <td>
-                                        <span class="text-truncate" style="max-width: 200px; display: inline-block;">
+                                    <td class="d-none d-md-table-cell">{{ $request->quantity }}</td>
+                                    <td class="d-none d-lg-table-cell">
+                                        <span class="text-truncate d-inline-block" style="max-width: 200px;">
                                             {{ Str::limit($request->purpose, 50) }}
                                         </span>
                                     </td>
-                                    <td>{{ $request->return_date->format('M d, Y') }}</td>
+                                    <td class="d-none d-sm-table-cell">{{ $request->return_date->format('M d, Y') }}</td>
                                     <td>
                                         <span class="badge {{ $request->getStatusBadgeClass() }}">
                                             {{ $request->getStatusText() }}
@@ -117,12 +117,13 @@
                                             <span class="badge badge-danger ml-1">Overdue</span>
                                         @endif
                                     </td>
-                                    <td>{{ $request->created_at->format('M d, Y') }}</td>
+                                    <td class="d-none d-xl-table-cell">{{ $request->created_at->format('M d, Y') }}</td>
                                     <td>
-                                        <div class="btn-group btn-group-sm">
+                                        <div class="btn-group btn-group-sm flex-nowrap">
                                             <a href="{{ route('admin.borrow-requests.show', $request->id) }}" 
                                                class="btn btn-info btn-sm" title="View Details">
                                                 <i class="fas fa-eye"></i>
+                                                <span class="d-none d-md-inline"> View</span>
                                             </a>
                                             @if($request->status === 'pending')
                                                 <button type="button" 
@@ -130,12 +131,14 @@
                                                         data-id="{{ $request->id }}"
                                                         title="Approve">
                                                     <i class="fas fa-check"></i>
+                                                    <span class="d-none d-md-inline"> Approve</span>
                                                 </button>
                                                 <button type="button" 
                                                         class="btn btn-danger btn-sm reject-request" 
                                                         data-id="{{ $request->id }}"
                                                         title="Reject">
                                                     <i class="fas fa-times"></i>
+                                                    <span class="d-none d-md-inline"> Reject</span>
                                                 </button>
                                             @endif
                                         </div>

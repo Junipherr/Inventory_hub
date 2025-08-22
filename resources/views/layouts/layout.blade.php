@@ -9,12 +9,11 @@
     <title>{{ config('Inventory', 'Inventory Hub') }}</title>
     <!-- GLOBAL MAINLY STYLES-->
     <link href="{{ asset('assets/vendors/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/vendors/themify-icons/css/themify-icons.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/vendors/jvectormap/jquery-jvectormap-2.0.3.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/main.min.css') }}" rel="stylesheet">
     <!-- <link href="{{ asset('assets/css/rtoolbar-responsive.css') }}" rel="stylesheet"> -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="{{ asset('assets/css/sidebar.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet">
     

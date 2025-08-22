@@ -1,12 +1,12 @@
 <x-main-layout>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ asset('assets/css/itemsdesign.css') }}">
     
     <div class="container-fluid py-4">
         <!-- Success/Error Notifications -->
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-                <i class="fas fa-check-circle me-2"></i>
                 <strong>Success!</strong> {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
@@ -14,7 +14,6 @@
 
         @if(session('error'))
             <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>
                 <strong>Error!</strong> {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
@@ -28,13 +27,13 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h1 class="h3 mb-1 text-primary">
-                                    <i class="fas fa-boxes me-2"></i>Available Items Inventory
+                                    Available Items Inventory
                                 </h1>
                                 <p class="text-muted mb-0">Browse and manage items available for borrowing</p>
                             </div>
                             <div class="d-none d-md-block">
                                 <span class="badge bg-primary fs-6">
-                                    <i class="fas fa-list me-1"></i>{{ $summary['total_available_items'] }} Items
+                                    {{ $summary['total_available_items'] }} Items
                                 </span>
                             </div>
                         </div>
@@ -44,7 +43,6 @@
                             <div class="col-md-3 col-6 mb-3">
                                 <div class="card bg-primary bg-opacity-10 border-0">
                                     <div class="card-body text-center">
-                                        <i class="fas fa-list fa-2x text-primary mb-2"></i>
                                         <h5 class="card-title mb-0">{{ $summary['total_available_items'] }}</h5>
                                         <small class="text-muted">Items Available</small>
                                     </div>
@@ -53,16 +51,14 @@
                             <div class="col-md-3 col-6 mb-3">
                                 <div class="card bg-success bg-opacity-10 border-0">
                                     <div class="card-body text-center">
-                                        <i class="fas fa-hashtag fa-2x text-success mb-2"></i>
-                                        <h5 class="card-title mb-0">{{ $summary['total_available_quantity'] }}</h5>
-                                        <small class="text-muted">Total Units</small>
+                                        <h5  class="card-title mb-0" style="color:aliceblue;">{{ $summary['total_available_quantity'] }}</h5>
+                                        <small class="text-muted" style="color:aliceblue;">Total Units</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-3 col-6 mb-3">
                                 <div class="card bg-info bg-opacity-10 border-0">
                                     <div class="card-body text-center">
-                                        <i class="fas fa-layer-group fa-2x text-info mb-2"></i>
                                         <h5 class="card-title mb-0">{{ $summary['categories']->count() }}</h5>
                                         <small class="text-muted">Categories</small>
                                     </div>
@@ -71,7 +67,6 @@
                             <div class="col-md-3 col-6 mb-3">
                                 <div class="card bg-warning bg-opacity-10 border-0">
                                     <div class="card-body text-center">
-                                        <i class="fas fa-door-open fa-2x text-warning mb-2"></i>
                                         <h5 class="card-title mb-0">{{ $summary['rooms']->count() }}</h5>
                                         <small class="text-muted">Rooms</small>
                                     </div>
@@ -86,24 +81,24 @@
         <!-- Filter Section -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-light">
+                <div class="card filter-card">
+                    <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="fas fa-filter me-2"></i>Filter & Search
+                            Filter & Search
                         </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body filter-inputs">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-bold">Search Items</label>
+                                <label class="form-label">Search Items</label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    <span class="input-group-text">🔍</span>
                                     <input type="text" class="form-control" id="searchItems" 
                                            placeholder="Search by name, description...">
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label fw-bold">Category</label>
+                                <label class="form-label">Category</label>
                                 <select class="form-select" id="categoryFilter">
                                     <option value="">All Categories</option>
                                     @foreach($summary['categories'] as $category => $count)
@@ -114,7 +109,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label fw-bold">Room</label>
+                                <label class="form-label">Room</label>
                                 <select class="form-select" id="roomFilter">
                                     <option value="">All Rooms</option>
                                     @foreach($availableItems->groupBy('room.name') as $roomName => $items)
@@ -127,7 +122,7 @@
                         </div>
                         <div class="row g-3 mt-2">
                             <div class="col-md-6">
-                                <label class="form-label fw-bold">Availability</label>
+                                <label class="form-label">Availability</label>
                                 <select class="form-select" id="availabilityFilter">
                                     <option value="">All Availability</option>
                                     <option value="high">High (5+ available)</option>
@@ -136,7 +131,7 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold">Sort By</label>
+                                <label class="form-label">Sort By</label>
                                 <select class="form-select" id="sortFilter">
                                     <option value="name">Name A-Z</option>
                                     <option value="quantity">Quantity (High to Low)</option>
@@ -154,11 +149,10 @@
             <div class="col-12">
                 @if($availableItems->isEmpty())
                     <div class="text-center py-5">
-                        <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
                         <h4 class="text-muted">No items available</h4>
                         <p class="text-muted">There are no items currently available for borrowing.</p>
                         <a href="{{ route('dashboard') }}" class="btn btn-primary">
-                            <i class="fas fa-home me-2"></i>Back to Dashboard
+                            Back to Dashboard
                         </a>
                     </div>
                 @else
@@ -180,11 +174,9 @@
                                     <div class="card-body">
                                         <div class="mb-3">
                                             <small class="text-muted d-block">
-                                                <i class="fas fa-map-marker-alt me-1"></i>
                                                 {{ $item->room->name ?? 'N/A' }}
                                             </small>
                                             <small class="text-muted d-block">
-                                                <i class="fas fa-tag me-1"></i>
                                                 {{ ucwords(str_replace('_', ' ', $item->category_id)) }}
                                             </small>
                                         </div>
@@ -207,13 +199,6 @@
                                                 @endif
                                             </div>
                                         </div>
-                                    </div>
-                                    
-                                    <div class="card-footer bg-transparent border-0">
-                                        <a href="{{ route('inventory.items.show', $item->id) }}" 
-                                           class="btn btn-outline-primary btn-sm w-100">
-                                            <i class="fas fa-eye me-1"></i>View Details
-                                        </a>
                                     </div>
                                 </div>
                             </div>

@@ -1,4 +1,8 @@
 <x-main-layout>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Link custom CSS for items styling -->
+    <link rel="stylesheet" href="{{ asset('assets/css/itemsdesign.css') }}">
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -354,8 +358,5 @@
     </script>
 
     <!-- Add Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- Link custom CSS for items styling -->
-    <link rel="stylesheet" href="{{ asset('assets/css/itemsdesign.css') }}">
+   
 </x-main-layout>

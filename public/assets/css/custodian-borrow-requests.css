@@ -330,47 +330,257 @@ body {
     color: white;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* Responsive Design - Mobile First Approach */
+@media (max-width: 575.98px) {
     .scanner-container {
-        padding: 1rem;
+        padding: 0.75rem;
     }
     
     .scanner-header {
-        padding: 1.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
     }
     
     .scanner-title {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
     }
     
     .header-content {
         flex-direction: column;
         align-items: flex-start;
+        gap: 0.75rem;
     }
     
     .header-stats {
         flex-direction: column;
         gap: 0.5rem;
+        width: 100%;
+    }
+    
+    .stat-item {
+        justify-content: space-between;
+        width: 100%;
+        padding: 0.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: var(--border-radius);
     }
     
     .items-header {
         flex-direction: column;
         align-items: flex-start;
+        gap: 1rem;
     }
     
-    .table-responsive {
-        border-radius: var(--border-radius);
-    }
-    
-    .btn-group {
+    .items-controls .btn-group {
         flex-direction: column;
         width: 100%;
     }
     
-    .btn-group .btn {
+    .items-controls .btn {
         border-radius: var(--border-radius) !important;
         margin-bottom: 0.25rem;
+        text-align: center;
+    }
+    
+    /* Mobile table enhancements */
+    .table-responsive {
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .table {
+        min-width: 600px; /* Minimum width for horizontal scrolling */
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    /* Mobile card view for table rows */
+    .mobile-card-view {
+        display: none;
+    }
+    
+    .btn-group-sm {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .btn-group-sm .btn {
+        margin: 0.125rem 0;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .scanner-container {
+        padding: 1rem;
+    }
+    
+    .scanner-header {
+        padding: 1.25rem;
+    }
+    
+    .scanner-title {
+        font-size: 1.375rem;
+    }
+    
+    .header-stats {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .stat-item {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .items-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .table th,
+    .table td {
+        padding: 0.875rem 0.75rem;
+    }
+    
+    .user-info strong,
+    .item-info strong {
+        font-size: 0.9rem;
+    }
+    
+    .user-info small,
+    .item-info small {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 1199.98px) {
+    .scanner-container {
+        padding: 1.25rem;
+    }
+}
+
+/* Enhanced mobile styles for better touch experience */
+@media (hover: none) and (pointer: coarse) {
+    .btn {
+        min-height: 44px;
+        min-width: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn-sm {
+        min-height: 36px;
+        min-width: 36px;
+    }
+    
+    .table-hover tbody tr {
+        border-bottom: 2px solid var(--border-color);
+    }
+}
+
+/* Improved table responsiveness */
+.table-responsive {
+    position: relative;
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+    border-radius: var(--border-radius);
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: var(--border-radius);
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* Mobile optimization for action buttons */
+@media (max-width: 767.98px) {
+    .btn-group.flex-nowrap {
+        flex-wrap: wrap !important;
+    }
+    
+    .btn-group .btn {
+        margin: 0.125rem;
+        flex: 1;
+        min-width: auto;
+    }
+    
+    .btn-group .btn .d-none.d-md-inline {
+        display: none !important;
+    }
+}
+
+/* Enhanced empty state for mobile */
+@media (max-width: 575.98px) {
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+    
+    .empty-state i {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .empty-state h4 {
+        font-size: 1.1rem;
+    }
+    
+    .empty-state p {
+        font-size: 0.9rem;
+    }
+}
+
+/* Improved pagination for mobile */
+@media (max-width: 767.98px) {
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.25rem;
+    }
+    
+    .page-item {
+        margin: 0.125rem;
+    }
+    
+    .page-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Focus styles for better accessibility */
+.btn:focus,
+.btn-sm:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Loading states for mobile */
+@media (max-width: 575.98px) {
+    .loading {
+        width: 16px;
+        height: 16px;
+        border-width: 2px;
     }
 }
 

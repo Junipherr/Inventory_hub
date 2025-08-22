@@ -20,10 +20,10 @@ Route::post('/scanner/manual-qr', [InventoryController::class, 'handleManualQrIn
 
 Route::get('/welcome', function () {
     return view('welcome');
-})->middleware(['auth', 'verified'])->name('welcome');
+})->name('welcome');
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('welcome');
 });
 
 Route::get('/category', function () {

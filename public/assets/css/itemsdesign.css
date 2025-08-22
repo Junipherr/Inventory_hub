@@ -3,31 +3,205 @@ Custom styles for inventory items page
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Table styling */
-.items-table {
-    border-collapse: separate;
-    border-spacing: 0;
+/* Enhanced Form Input Styling */
+.filter-inputs .form-control,
+.filter-inputs .form-select {
+    border: 2px solid #e2e8f0;
     border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    color: #2d3748;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.items-table th {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+.filter-inputs .form-control:focus,
+.filter-inputs .form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    outline: none;
+}
+
+.filter-inputs .form-control:hover,
+.filter-inputs .form-select:hover {
+    border-color: #a0aec0;
+}
+
+/* Input group styling */
+.filter-inputs .input-group {
+    position: relative;
+}
+
+.filter-inputs .input-group-text {
+    background-color: #f7fafc;
+    border: 2px solid #e2e8f0;
+    border-right: none;
+    color: #4a5568;
+    padding: 0.75rem 1rem;
+    border-radius: 8px 0 0 8px;
+}
+
+.filter-inputs .input-group .form-control {
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+}
+
+/* Label styling */
+.filter-inputs .form-label {
     font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    font-size: 0.75rem;
 }
 
-.items-table tbody tr {
-    transition: all 0.2s ease;
+/* Select dropdown styling */
+.filter-inputs .form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 16px 12px;
+    padding-right: 2.5rem;
 }
 
-.items-table tbody tr:hover {
-    background-color: #f8fafc;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Text color improvements for better contrast */
+.filter-inputs ::placeholder {
+    color: #6b7280;
+    opacity: 1;
+}
+
+.filter-inputs :-ms-input-placeholder {
+    color: #6b7280;
+}
+
+.filter-inputs ::-ms-input-placeholder {
+    color: #6b7280;
+}
+
+/* Statistics Cards Text Contrast Improvement */
+.card.bg-primary.bg-opacity-10 .card-body,
+.card.bg-success.bg-opacity-10 .card-body,
+.card.bg-info.bg-opacity-10 .card-body,
+.card.bg-warning.bg-opacity-10 .card-body {
+    color: #1f2937 !important;
+}
+
+.card.bg-primary.bg-opacity-10 .card-body h5,
+.card.bg-success.bg-opacity-10 .card-body h5,
+.card.bg-info.bg-opacity-10 .card-body h5,
+.card.bg-warning.bg-opacity-10 .card-body h5 {
+    color: #1f2937 !important;
+    font-weight: 700;
+}
+
+.card.bg-primary.bg-opacity-10 .card-body small,
+.card.bg-success.bg-opacity-10 .card-body small,
+.card.bg-info.bg-opacity-10 .card-body small,
+.card.bg-warning.bg-opacity-10 .card-body small {
+    color: #4b5563 !important;
+    font-weight: 500;
+}
+
+/* Item Cards Text Contrast */
+.item-card .card-body {
+    color: #1f2937;
+}
+
+.item-card .card-body .text-muted {
+    color: #4b5563 !important;
+}
+
+.item-card .card-body small.text-muted {
+    color: #4b5563 !important;
+    font-weight: 500;
+}
+
+/* Header Text Contrast */
+.text-primary {
+    color: #1d4ed8 !important;
+}
+
+.text-muted {
+    color: #4b5563 !important;
+}
+
+/* Ensure good contrast for all text elements */
+.card-title,
+.card-text,
+.form-label {
+    color: #1f2937;
+}
+
+/* Badge Styling with Better Contrast */
+.badge {
+    font-weight: 600;
+}
+
+.badge.bg-primary {
+    background-color: #1d4ed8 !important;
+    color: white !important;
+}
+
+.badge.bg-success {
+    background-color: #059669 !important;
+    color: white !important;
+}
+
+.badge.bg-warning {
+    background-color: #d97706 !important;
+    color: white !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc2626 !important;
+    color: white !important;
+}
+
+.badge.bg-info {
+    background-color: #0891b2 !important;
+    color: white !important;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .filter-inputs .form-control,
+    .filter-inputs .form-select {
+        border-color: #000;
+    }
+    
+    .filter-inputs .form-control:focus,
+    .filter-inputs .form-select:focus {
+        border-color: #1d4ed8;
+        outline: 2px solid #1d4ed8;
+    }
+    
+    .card.bg-primary.bg-opacity-10 .card-body,
+    .card.bg-success.bg-opacity-10 .card-body,
+    .card.bg-info.bg-opacity-10 .card-body,
+    .card.bg-warning.bg-opacity-10 .card-body {
+        color: #000 !important;
+    }
+}
+
+/* Card styling for filter section */
+.filter-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.filter-card .card-header {
+    background: linear-gradient(135deg, #3498db 0%, #2c81ba 100%);
+    color: white;
+    border: none;
+    border-radius: 12px 12px 0 0;
+}
+
+.filter-card .card-body {
+    padding: 1.5rem;
 }
 
 /* Status badges */
@@ -109,13 +283,18 @@ Custom styles for inventory items page
 
 /* Responsive design */
 @media (max-width: 768px) {
-    .items-table {
+    .filter-inputs .form-control,
+    .filter-inputs .form-select {
+        padding: 0.625rem 0.875rem;
         font-size: 0.875rem;
     }
     
-    .action-btn {
-        padding: 0.375rem 0.75rem;
-        font-size: 0.75rem;
+    .filter-inputs .input-group-text {
+        padding: 0.625rem 0.875rem;
+    }
+    
+    .filter-inputs .form-label {
+        font-size: 0.8rem;
     }
 }
 
