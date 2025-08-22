@@ -67,7 +67,7 @@
                     </div>
                 @else
                     <div class="items-table-container">
-                        <div class="table-responsive">
+                        <div class="table-responsive container">
                             <table class="table table-hover table-sm" id="itemsTable">
                                 <thead class="table-light">
                                     <tr>
@@ -90,36 +90,36 @@
                                             data-available-qty="{{ $item->available_quantity }}"
                                             data-total-qty="{{ $item->total_quantity }}">
                                             
-                                            <td>
+                                            <td data-label="Item">
                                                 <div class="item-info">
                                                     <strong class="d-block">{{ $item->item_name }}</strong>
                                                     <small class="text-muted">{{ Str::limit($item->description, 50) }}</small>
                                                 </div>
                                             </td>
-                                            <td>
+                                            <td data-label="Room">
                                                 <span class="badge bg-secondary">{{ $item->room->name ?? 'N/A' }}</span>
                                             </td>
-                                            <td>
+                                            <td data-label="Category">
                                                 <span class="badge bg-info">{{ ucwords(str_replace('_', ' ', $item->category_id)) }}</span>
                                             </td>
-                                            <td>
+                                            <td data-label="Total Qty">
                                                 <span class="badge bg-secondary">{{ $item->total_quantity }}</span>
                                             </td>
-                                            <td>
+                                            <td data-label="Available Qty">
                                                 @if($item->is_available)
                                                     <span class="badge bg-success">{{ $item->available_quantity }}</span>
                                                 @else
                                                     <span class="badge bg-danger">0</span>
                                                 @endif
                                             </td>
-                                            <td>
+                                            <td data-label="Status">
                                                 @if($item->is_available)
                                                     <span class="badge bg-success">Available</span>
                                                 @else
                                                     <span class="badge bg-warning">Not Available</span>
                                                 @endif
                                             </td>
-                                            <td>
+                                            <td data-label="Actions">
                                                 <button type="button" 
                                                         class="btn btn-sm {{ $item->is_available ? 'btn-success' : 'btn-secondary' }} request-borrow"
                                                         data-bs-toggle="modal" 

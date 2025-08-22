@@ -7,7 +7,7 @@
             @if($user->role === 'Viewer')
                 <div class="admin-block d-flex">
                     <div>
-                        <img src="{{ asset('assets/img/viewer-avatar.png') }}" width="45px" />
+                        <img src="{{ asset('assets/img/admin-avatar.png') }}" width="45px" />
                     </div>
                     <div class="admin-info">
                         <div class="font-strong">Viewer</div><small>User</small>

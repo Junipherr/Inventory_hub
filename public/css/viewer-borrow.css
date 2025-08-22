@@ -1246,6 +1246,37 @@
   }
 }
 
+/* Specific styles for borrow history table on mobile */
+@media (max-width: 768px) {
+  .borrow-history-table td[data-label="Status"] .badge-container {
+    flex-direction: column;
+    gap: var(--space-xs);
+    align-items: flex-start;
+  }
+  
+  .borrow-history-table td[data-label="Actions"] {
+    justify-content: center !important;
+  }
+  
+  .borrow-history-table td[data-label="Actions"] .btn {
+    width: auto;
+    min-width: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .borrow-history-table td[data-label="Actions"] .btn {
+    min-width: 70px;
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-xs);
+  }
+  
+  .borrow-history-table td[data-label="Status"] .badge {
+    font-size: var(--font-size-xs);
+    padding: var(--space-xs) var(--space-sm);
+  }
+}
+
 /* High DPI screens */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .scanner-container {

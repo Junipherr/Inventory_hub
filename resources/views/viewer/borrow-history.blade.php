@@ -1,6 +1,9 @@
 <x-main-layout>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Include the new CSS file -->
+    <link rel="stylesheet" href="{{ asset('css/viewer-borrow.css') }}">
 
     <div class="scanner-container">
         <!-- Success Notification -->
@@ -59,8 +62,8 @@
                     </div>
                 @else
                     <div class="items-table-container">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-sm" id="requestsTable">
+                        <div class="table-responsive container">
+                            <table class="table table-hover table-sm borrow-history-table" id="requestsTable">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Item</th>
@@ -79,36 +82,38 @@
                                             data-item-name="{{ $request->item->item_name }}"
                                             data-status="{{ $request->status }}">
                                             
-                                            <td>
+                                            <td data-label="Item">
                                                 <div class="item-info">
                                                     <strong class="d-block">{{ $request->item->item_name }}</strong>
                                                     <small class="text-muted">{{ Str::limit($request->item->description, 30) }}</small>
                                                 </div>
                                             </td>
-                                            <td>
+                                            <td data-label="Room">
                                                 <span class="badge bg-secondary">{{ $request->item->room->name ?? 'N/A' }}</span>
                                             </td>
-                                            <td>
+                                            <td data-label="Quantity">
                                                 <span class="badge bg-primary">{{ $request->quantity }}</span>
                                             </td>
-                                            <td>
+                                            <td data-label="Purpose">
                                                 <small>{{ Str::limit($request->purpose, 50) }}</small>
                                             </td>
-                                            <td>
+                                            <td data-label="Return Date">
                                                 <span class="badge bg-warning">{{ $request->return_date->format('M d, Y') }}</span>
                                             </td>
-                                            <td>
-                                                <span class="badge {{ $request->getStatusBadgeClass() }}">
-                                                    {{ $request->getStatusText() }}
-                                                </span>
-                                                @if($request->isOverdue())
-                                                    <span class="badge bg-danger ms-1">Overdue</span>
-                                                @endif
+                                            <td data-label="Status">
+                                                <div class="badge-container">
+                                                    <span class="badge {{ $request->getStatusBadgeClass() }}">
+                                                        {{ $request->getStatusText() }}
+                                                    </span>
+                                                    @if($request->isOverdue())
+                                                        <span class="badge bg-danger">Overdue</span>
+                                                    @endif
+                                                </div>
                                             </td>
-                                            <td>
+                                            <td data-label="Requested">
                                                 <small>{{ $request->created_at->format('M d, Y') }}</small>
                                             </td>
-                                            <td>
+                                            <td data-label="Actions">
                                                 <button type="button" 
                                                         class="btn btn-sm btn-outline-primary view-details"
                                                         data-bs-toggle="modal" 
@@ -136,7 +141,7 @@
 
         <!-- Request Details Modal -->
         <div class="modal fade" id="requestDetailsModal" tabindex="-1" aria-labelledby="requestDetailsModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="requestDetailsModalLabel">
@@ -146,38 +151,38 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <div class="detail-item">
                                     <label>Item Name:</label>
-                                    <span id="modalItemName"></span>
+                                    <span id="modalItemName" class="d-block"></span>
                                 </div>
                                 <div class="detail-item">
                                     <label>Quantity Requested:</label>
-                                    <span id="modalQuantity"></span>
+                                    <span id="modalQuantity" class="d-block"></span>
                                 </div>
                                 <div class="detail-item">
                                     <label>Return Date:</label>
-                                    <span id="modalReturnDate"></span>
+                                    <span id="modalReturnDate" class="d-block"></span>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <div class="detail-item">
                                     <label>Status:</label>
-                                    <span id="modalStatus"></span>
+                                    <span id="modalStatus" class="d-block"></span>
                                 </div>
                                 <div class="detail-item">
                                     <label>Requested Date:</label>
-                                    <span id="modalRequestedDate"></span>
+                                    <span id="modalRequestedDate" class="d-block"></span>
                                 </div>
                             </div>
                         </div>
                         <div class="detail-item">
                             <label>Purpose:</label>
-                            <p id="modalPurpose"></p>
+                            <p id="modalPurpose" class="mt-1"></p>
                         </div>
                         <div class="detail-item">
                             <label>Admin Notes:</label>
-                            <p id="modalAdminNotes"></p>
+                            <p id="modalAdminNotes" class="mt-1"></p>
                         </div>
                     </div>
                     <div class="modal-footer">
