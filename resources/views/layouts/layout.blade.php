@@ -36,9 +36,22 @@
             <div class="flexbox flex-1">
                 @include('partials.toolbar')
                 @include('partials.rtoolbar')
+                
+                <!-- Mobile Menu Toggle Button -->
+                <button class="navbar-toggler d-md-none mobile-menu-toggle" type="button" 
+                        aria-label="Toggle navigation">
+                    <i class="ti-menu"></i>
+                </button>
             </div>
-            
         </header>
+        
+        <!-- Mobile Navigation Menu -->
+        <div class="mobile-nav-container d-md-none" id="mobileNavMenu">
+            <div class="mobile-nav-content">
+                <!-- Mobile menu content will be populated by JavaScript -->
+            </div>
+        </div>
+        
         @include('partials.sidebar')
         <div class="content-wrapper">
             {{ $slot }}
@@ -69,8 +82,10 @@
     <script src="{{ asset('assets/js/app.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/scripts/dashboard_1_demo.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/dropdown-fix.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/js/mobile-nav-fix.js') }}" type="text/javascript"></script>
     
     <!-- QRCode Library -->
+    
     
     <script src="{{ asset('js/profile-registration.js') }}" defer></script>
     <script src="{{ asset('assets/js/scanner-fix.js') }}"></script>
