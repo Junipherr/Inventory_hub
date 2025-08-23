@@ -14,8 +14,7 @@
     <link href="{{ asset('assets/css/main.min.css') }}" rel="stylesheet">
     <!-- <link href="{{ asset('assets/css/rtoolbar-responsive.css') }}" rel="stylesheet"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="{{ asset('assets/css/sidebar.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet">
+    <!-- Sidebar and mobile menu CSS now loaded in their respective partials -->
     
     @vite(['resources/css/app.css','resources/js/app.js', 'resources/js/sidebar_fix.js'])
 </head>
@@ -80,7 +79,7 @@
     <script src="{{ asset('assets/js/app.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/scripts/dashboard_1_demo.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/dropdown-fix.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/js/mobile-nav-fix.js') }}" type="text/javascript"></script>
+    <!-- Mobile menu JS now loaded in its partial -->
     
     <!-- QRCode Library -->
     

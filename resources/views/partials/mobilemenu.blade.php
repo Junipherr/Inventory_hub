@@ -1,4 +1,7 @@
 <nav class="mobile-nav" id="mobileMenu">
+    <!-- Mobile menu CSS/JS links -->
+    <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}">
+    <script src="{{ asset('assets/js/mobile-nav-fix.js') }}" defer></script>
     @php $user = auth()->user(); @endphp
     @if($user)
         @if($user->role === 'Viewer')

@@ -1,6 +1,8 @@
 
    
 <nav class="page-sidebar overflow-hidden sidebar1" id="sidebar">
+    <!-- Sidebar CSS link -->
+    <link rel="stylesheet" href="{{ asset('assets/css/sidebar.css') }}">
     <div id="sidebar-collapse">
         @php $user = auth()->user(); @endphp
         @if($user)

@@ -199,7 +199,7 @@
                     <h3 class="text-lg font-semibold text-gray-900">Edit Item Details</h3>
                     <p class="text-sm text-gray-500 mt-1">Update the item information</p>
                 </div>
-                <form id="editForm" method="POST" class="space-y-4">
+<form id="editForm" method="POST" class="space-y-4">
                     @csrf
                     @method('PUT')
                     
@@ -402,12 +402,11 @@
                 
                 try {
                     const response = await fetch(this.action, {
-                        method: this.method,
+                        method: 'POST', // Always use POST for form submissions
                         headers: {
                             'X-CSRF-TOKEN': csrfToken,
                             'Accept': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-HTTP-Method-Override': this.method === 'POST' ? 'PUT' : this.method
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
                         body: formData
                     });
