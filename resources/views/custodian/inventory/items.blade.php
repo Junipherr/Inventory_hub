@@ -1,92 +1,162 @@
 <x-main-layout>
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Link custom CSS for items styling -->
+    <!-- Enable custom CSS for enhanced styling -->
     <link rel="stylesheet" href="{{ asset('assets/css/itemsdesign.css') }}">
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Inventory Items</h2>
-                        <a href="{{ route('inventory.create') }}" 
-                           class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
-                            <i class="fas fa-plus mr-2"></i>Add New Item
-                        </a>
+    
+    <div class="min-h-screen bg-gray-50 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Header Section -->
+            <div class="mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Inventory Management</h1>
+                        <p class="mt-2 text-sm text-gray-600">Manage all inventory items with ease</p>
                     </div>
+                    <a href="{{ route('inventory.create') }}" 
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105">
+                        <i class="fas fa-plus-circle mr-3"></i>
+                        Add New Item
+                    </a>
+                </div>
+            </div>
 
-                    <!-- Success Message -->
-                    @if(session('success'))
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                            {{ session('success') }}
+            <!-- Success Message -->
+            @if(session('success'))
+                <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-lg shadow-sm">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-green-500 text-xl"></i>
                         </div>
-                    @endif
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
-                    <!-- Items Table -->
+            <!-- Content Card -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+                <!-- Card Header -->
+                <div class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-semibold text-gray-800">All Inventory Items</h2>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                            {{ $items->total() }} items
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Items Table -->
+                <div class="overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                        <table class="w-full">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Condition</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        <div class="flex items-center">
+                                            <span>Item Details</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Location
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Category
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Quantity
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Condition
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Actions
+                                    </th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody class="bg-white divide-y divide-gray-100">
                                 @forelse($items as $item)
-                                    <tr class="hover:bg-gray-50 transition duration-200">
+                                    <tr class="hover:bg-gray-50 transition-colors duration-150 group">
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
+                                                    <i class="fas fa-box text-blue-600"></i>
+                                                </div>
                                                 <div class="ml-4">
-                                                    <div class="text-sm font-medium text-gray-900">{{ $item->item_name }}</div>
-                                                    <div class="text-sm text-gray-500">{{ Str::limit($item->description, 50) }}</div>
+                                                    <div class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                                        {{ $item->item_name }}
+                                                    </div>
+                                                    <div class="text-sm text-gray-500 mt-1 line-clamp-2">
+                                                        {{ $item->description ? Str::limit($item->description, 60) : 'No description' }}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">{{ $item->room->name ?? 'N/A' }}</div>
+                                            <div class="flex items-center">
+                                                <i class="fas fa-map-marker-alt text-gray-400 mr-2"></i>
+                                                <span class="text-sm font-medium text-gray-700">
+                                                    {{ $item->room->name ?? 'N/A' }}
+                                                </span>
+                                            </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                                                 {{ $item->category_id }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ $item->quantity }}
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm font-semibold text-gray-900 bg-gray-100 px-3 py-1 rounded-full">
+                                                    {{ $item->quantity }}
+                                                </span>
+                                            </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                @if($item->condition == 'Good') bg-green-100 text-green-800
-                                                @elseif($item->condition == 'Fair') bg-yellow-100 text-yellow-800
-                                                @elseif($item->condition == 'Poor') bg-red-100 text-red-800
-                                                @else bg-gray-100 text-gray-800
-                                                @endif">
-                                                {{ $item->condition ?? 'Unknown' }}
+                                            @php
+                                                $conditionColors = [
+                                                    'Good' => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'icon' => 'fa-check-circle'],
+                                                    'Fair' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'icon' => 'fa-exclamation-circle'],
+                                                    'Poor' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'icon' => 'fa-times-circle'],
+                                                ];
+                                                $condition = $item->condition ?? 'Unknown';
+                                                $colors = $conditionColors[$condition] ?? ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'icon' => 'fa-question-circle'];
+                                            @endphp
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $colors['bg'] }} {{ $colors['text'] }}">
+                                                <i class="fas {{ $colors['icon'] }} mr-1"></i>
+                                                {{ $condition }}
                                             </span>
                                         </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div class="flex space-x-2">
-                                                <button onclick="openEditModal({{ $item->id }}, '{{ $item->item_name }}', '{{ $item->description }}', '{{ $item->quantity }}', '{{ $item->condition }}', '{{ $item->room_id }}', '{{ $item->category_id }}')" 
-                                                        class="text-indigo-600 hover:text-indigo-900 transition duration-200">
-                                                    <i class="fas fa-edit"></i> Edit
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <div class="flex items-center space-x-2">
+                                                <button onclick="openEditModal({{ $item->id }}, '{{ addslashes($item->item_name) }}', '{{ addslashes($item->description) }}', '{{ $item->quantity }}', '{{ $item->condition }}', '{{ $item->room_id }}', '{{ $item->category_id }}')" 
+                                                        class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                                                    <i class="fas fa-edit mr-2 text-blue-600"></i>
+                                                    Edit
                                                 </button>
-                                                <button onclick="openDeleteModal({{ $item->id }}, '{{ $item->item_name }}')" 
-                                                        class="text-red-600 hover:text-red-900 transition duration-200">
-                                                    <i class="fas fa-trash"></i> Delete
+                                                <button onclick="openDeleteModal({{ $item->id }}, '{{ addslashes($item->item_name) }}')" 
+                                                        class="inline-flex items-center px-3 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200">
+                                                    <i class="fas fa-trash mr-2"></i>
+                                                    Delete
                                                 </button>
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="px-6 py-12 text-center">
-                                            <div class="text-gray-500">
-                                                <i class="fas fa-inbox text-4xl mb-4"></i>
-                                                <p class="text-lg">No items found</p>
-                                                <p class="text-sm">Get started by adding your first inventory item</p>
+                                        <td colspan="6" class="px-6 py-16 text-center">
+                                            <div class="text-center">
+                                                <div class="mx-auto h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                                    <i class="fas fa-inbox text-gray-400 text-2xl"></i>
+                                                </div>
+                                                <h3 class="text-lg font-medium text-gray-900 mb-2">No items found</h3>
+                                                <p class="text-sm text-gray-500 mb-4">Get started by adding your first inventory item</p>
+                                                <a href="{{ route('inventory.create') }}" 
+                                                   class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                                                    <i class="fas fa-plus mr-2"></i>
+                                                    Add First Item
+                                                </a>
                                             </div>
                                         </td>
                                     </tr>
@@ -94,47 +164,67 @@
                             </tbody>
                         </table>
                     </div>
-
-                    <!-- Pagination -->
-                    <div class="mt-4">
-                        {{ $items->links() }}
-                    </div>
                 </div>
+
+                <!-- Pagination -->
+                @if($items->hasPages())
+                    <div class="px-6 py-4 bg-gray-50 border-t border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm text-gray-700">
+                                Showing {{ $items->firstItem() }} to {{ $items->lastItem() }} of {{ $items->total() }} results
+                            </div>
+                            <div class="flex space-x-2">
+                                {{ $items->links() }}
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
 
     <!-- Edit Modal -->
-    <div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
-        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+    <div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden transition-opacity duration-300">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-xl rounded-xl bg-white transform transition-transform duration-300 scale-95 opacity-0 modal-content">
+            <div class="absolute top-4 right-4">
+                <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
             <div class="mt-3">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 text-center">Edit Item</h3>
-                <form id="editForm" method="POST" class="mt-4 space-y-4">
+                <div class="text-center mb-6">
+                    <div class="mx-auto h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                        <i class="fas fa-edit text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">Edit Item Details</h3>
+                    <p class="text-sm text-gray-500 mt-1">Update the item information</p>
+                </div>
+                <form id="editForm" method="POST" class="space-y-4">
                     @csrf
                     @method('PUT')
                     
                     <div>
-                        <label for="edit_item_name" class="block text-sm font-medium text-gray-700">Item Name</label>
+                        <label for="edit_item_name" class="block text-sm font-medium text-gray-700 mb-2">Item Name</label>
                         <input type="text" name="item_name" id="edit_item_name" 
-                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
                     </div>
                     
                     <div>
-                        <label for="edit_description" class="block text-sm font-medium text-gray-700">Description</label>
+                        <label for="edit_description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
                         <textarea name="description" id="edit_description" rows="3" 
-                                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"></textarea>
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"></textarea>
                     </div>
                     
                     <div>
-                        <label for="edit_quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
+                        <label for="edit_quantity" class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
                         <input type="number" name="quantity" id="edit_quantity" min="1"
-                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
                     </div>
                     
                     <div>
-                        <label for="edit_condition" class="block text-sm font-medium text-gray-700">Condition</label>
+                        <label for="edit_condition" class="block text-sm font-medium text-gray-700 mb-2">Condition</label>
                         <select name="condition" id="edit_condition" 
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
                             <option value="Good">Good</option>
                             <option value="Fair">Fair</option>
                             <option value="Poor">Poor</option>
@@ -142,9 +232,9 @@
                     </div>
 
                     <div>
-                        <label for="edit_room_id" class="block text-sm font-medium text-gray-700">Room Location</label>
+                        <label for="edit_room_id" class="block text-sm font-medium text-gray-700 mb-2">Room Location</label>
                         <select name="room_id" id="edit_room_id" 
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
                             <option value="">-- Select Room --</option>
                             @foreach($rooms as $room)
                                 <option value="{{ $room->id }}">{{ $room->name }}</option>
@@ -153,9 +243,9 @@
                     </div>
 
                     <div>
-                        <label for="edit_category_id" class="block text-sm font-medium text-gray-700">Category</label>
+                        <label for="edit_category_id" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
                         <select name="category_id" id="edit_category_id" 
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
                             <option value="">-- Select Category --</option>
                             <option value="computer_hardware_peripherals">💻 Computer Hardware & Peripherals</option>
                             <option value="office_classroom_furniture">🪑 Office and Classroom Furniture</option>
@@ -170,12 +260,13 @@
                     
                     <div class="flex space-x-3 pt-4">
                         <button type="submit" 
-                                class="flex-1 px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            Save Changes
+                                class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg shadow-md hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                            <span class="submit-text">Save Changes</span>
+                            <span class="loading-text hidden">Saving...</span>
                         </button>
                         <button type="button" 
                                 onclick="closeEditModal()"
-                                class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                                class="flex-1 px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200">
                             Cancel
                         </button>
                     </div>
@@ -185,30 +276,31 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden transition-opacity duration-300">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-xl rounded-xl bg-white transform transition-transform duration-300 scale-95 opacity-0 modal-content">
             <div class="mt-3 text-center">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
                 </div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Delete Item</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Confirm Deletion</h3>
                 <div class="mt-2 px-7 py-3">
-                    <p class="text-sm text-gray-500">
-                        Are you sure you want to delete <span id="deleteItemName" class="font-semibold"></span>? 
+                    <p class="text-sm text-gray-600">
+                        Are you sure you want to delete <span id="deleteItemName" class="font-semibold text-gray-900"></span>? 
                         This action cannot be undone.
                     </p>
                 </div>
-                <div class="items-center px-4 py-3">
+                <div class="items-center px-4 py-3 space-y-3">
                     <form id="deleteForm" method="POST">
                         @csrf
                         @method('DELETE')
                         <button type="submit" 
-                                class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                            Delete
+                                class="w-full px-6 py-3 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200">
+                            <span class="submit-text">Delete Item</span>
+                            <span class="loading-text hidden">Deleting...</span>
                         </button>
                         <button type="button" 
                                 onclick="closeDeleteModal()"
-                                class="mt-2 px-4 py-2 bg-gray-300 text-gray-700 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                                class="w-full px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200">
                             Cancel
                         </button>
                     </form>
@@ -217,31 +309,64 @@
         </div>
     </div>
 
-    <!-- JavaScript for Modal -->
     <script>
+        // Enhanced modal functions with animations
         function openEditModal(itemId, itemName, description, quantity, condition, roomId, categoryId) {
-            document.getElementById('editForm').action = `/inventory/items/${itemId}`;
+            const modal = document.getElementById('editModal');
+            const form = document.getElementById('editForm');
+            const content = modal.querySelector('.modal-content');
+            
+            form.action = `/inventory/items/${itemId}`;
             document.getElementById('edit_item_name').value = itemName;
             document.getElementById('edit_description').value = description || '';
             document.getElementById('edit_quantity').value = quantity || 1;
             document.getElementById('edit_condition').value = condition || 'Good';
             document.getElementById('edit_room_id').value = roomId || '';
             document.getElementById('edit_category_id').value = categoryId || '';
-            document.getElementById('editModal').classList.remove('hidden');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
         }
 
         function closeEditModal() {
-            document.getElementById('editModal').classList.add('hidden');
+            const modal = document.getElementById('editModal');
+            const content = modal.querySelector('.modal-content');
+            
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
         }
 
         function openDeleteModal(itemId, itemName) {
+            const modal = document.getElementById('deleteModal');
+            const content = modal.querySelector('.modal-content');
+            
             document.getElementById('deleteItemName').textContent = itemName;
             document.getElementById('deleteForm').action = `/inventory/items/${itemId}`;
-            document.getElementById('deleteModal').classList.remove('hidden');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
         }
 
         function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.add('hidden');
+            const modal = document.getElementById('deleteModal');
+            const content = modal.querySelector('.modal-content');
+            
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
         }
 
         // Close modals when clicking outside
@@ -257,106 +382,120 @@
             }
         }
 
-        // Handle delete form submission with AJAX
-        document.getElementById('deleteForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Enhanced AJAX form handling with better UX
+        function setupFormHandling(formId, successCallback) {
+            const form = document.getElementById(formId);
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const submitText = submitBtn.querySelector('.submit-text');
+            const loadingText = submitBtn.querySelector('.loading-text');
             
-            const formData = new FormData(this);
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-            
-            fetch(this.action, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                credentials: 'same-origin'
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                submitText.classList.add('hidden');
+                loadingText.classList.remove('hidden');
+                
+                const formData = new FormData(this);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+                
+                try {
+                    const response = await fetch(this.action, {
+                        method: this.method,
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-HTTP-Method-Override': this.method === 'POST' ? 'PUT' : this.method
+                        },
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        successCallback(data);
+                    } else {
+                        throw new Error(data.message || 'Operation failed');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error: ' + error.message);
+                } finally {
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    submitText.classList.remove('hidden');
+                    loadingText.classList.add('hidden');
                 }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert(data.message || 'Error deleting item');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error deleting item: ' + error.message);
             });
+        }
+
+        // Setup form handlers
+        setupFormHandling('deleteForm', function(data) {
+            if (data.success) {
+                closeDeleteModal();
+                location.reload();
+            }
         });
 
-        // Handle edit form submission with AJAX
-        document.getElementById('editForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            const submitButton = this.querySelector('button[type="submit"]');
-            const originalText = submitButton.textContent;
-            
-            // Disable submit button to prevent double submission
-            submitButton.disabled = true;
-            submitButton.textContent = 'Saving...';
-            
-            fetch(this.action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                    'X-HTTP-Method-Override': 'PUT'
-                },
-                body: formData
-            })
-            .then(response => {
-                // Clone response to read it twice if needed
-                const responseClone = response.clone();
-                
-                return response.json()
-                    .catch(() => {
-                        // If JSON parsing fails, read as text to debug
-                        return responseClone.text().then(text => {
-                            console.error('Server response:', text);
-                            throw new Error('Server returned HTML instead of JSON. Check console for details.');
-                        });
-                    })
-                    .then(data => {
-                        if (!response.ok) {
-                            throw new Error(data.message || 'Server error');
-                        }
-                        return data;
-                    });
-            })
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    // Handle validation errors
-                    if (data.errors) {
-                        let errorMessages = Object.values(data.errors).flat().join('\n');
-                        alert('Validation errors:\n' + errorMessages);
-                    } else {
-                        alert(data.message || 'Error updating item');
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error updating item: ' + error.message);
-            })
-            .finally(() => {
-                // Re-enable submit button
-                submitButton.disabled = false;
-                submitButton.textContent = originalText;
+        setupFormHandling('editForm', function(data) {
+            if (data.success) {
+                closeEditModal();
+                location.reload();
+            }
+        });
+
+        // Add smooth scrolling for better UX
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add subtle animations to page elements
+            const elements = document.querySelectorAll('.transform');
+            elements.forEach(el => {
+                el.style.transition = 'all 0.3s ease';
             });
         });
     </script>
 
-    <!-- Add Font Awesome for icons -->
-   
+    <style>
+        /* Custom styles for enhanced design */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .modal-content {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        /* Enhanced table styling */
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        th {
+            background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+        }
+        
+        /* Custom scrollbar for better aesthetics */
+        .overflow-x-auto::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .overflow-x-auto::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .overflow-x-auto::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
 </x-main-layout>

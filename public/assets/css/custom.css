@@ -34,13 +34,18 @@ thead.sticky-top th {
 
 /* Mobile Menu Styles */
 .mobile-menu-toggle {
-    display: none;
-    border: none;
+    display: block !important;
+    position: relative;
+    top: auto;
+    right: auto;
+    z-index: 1102;
     background: transparent;
     color: #6d7c85;
     font-size: 18px;
     padding: 15px;
     cursor: pointer;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .mobile-nav-container {
@@ -48,14 +53,16 @@ thead.sticky-top th {
     top: 56px;
     left: 0;
     right: 0;
-    z-index: 1035;
-    background: #253544;
+    z-index: 1050;
+    background: #fff;
+    height: auto;
     max-height: calc(100vh - 56px);
-    overflow-y: auto;
+    overflow: hidden;
     display: none; /* Hidden by default */
     transform: translateY(-20px);
     opacity: 0;
     transition: all 0.3s ease;
+    box-shadow: none;
 }
 
 .mobile-nav-container[style*="display: block"] {
@@ -63,8 +70,26 @@ thead.sticky-top th {
     opacity: 1;
 }
 
+.mobile-nav-container.mobile-menu-open {
+    z-index: 1050;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    /* No height, top, or max-height override */
+}
+
+.mobile-nav-container .mobile-menu-list {
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.mobile-nav-container .mobile-menu-list::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
+}
+
 .mobile-nav-content {
-    padding: 0;
+    padding: 0; 
 }
 
 /* Mobile menu styling that matches sidebar */
@@ -82,7 +107,7 @@ thead.sticky-top th {
 .mobile-nav-content .side-menu li a {
     display: block;
     padding: 12px 20px;
-    color: #b4bcc8;
+    color: #34495f;
     text-decoration: none;
     border-bottom: 1px solid #34495f;
     transition: all 0.2s ease;
@@ -106,6 +131,64 @@ thead.sticky-top th {
     font-size: 13px;
     border-bottom: 1px solid #34495f;
     margin: 0;
+}
+
+/* New mobile menu styles */
+.mobile-nav {
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    padding: 0;
+    z-index: 9999;
+}
+
+.mobile-menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mobile-menu-list li {
+    border-bottom: 1px solid #eee;
+}
+
+.mobile-menu-list li a {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    color: #34495f;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.mobile-menu-list li a i {
+    margin-right: 12px;
+    font-size: 18px;
+}
+
+.mobile-menu-list li a:hover {
+    background: #3498db;
+    color: #fff;
+}
+
+.mobile-menu-list .heading {
+    padding: 10px 20px;
+    color: #888;
+    font-size: 13px;
+    background: #f7f7f7;
+    font-weight: bold;
+}
+
+/* Header blur effect */
+.header.mobile-menu-blur {
+    background: none;
+    filter: none;
+    pointer-events: auto;
+    transition: none;
+}
+
+.header {
+    background: #fff !important;
 }
 
 /* Responsive behavior */
@@ -133,6 +216,31 @@ thead.sticky-top th {
     .mobile-nav-container {
         z-index: 1040;
     }
+
+    .brand-mini {
+        background: #fff !important;
+        color: #253544 !important;
+        border-radius: 4px;
+        padding: 2px 8px;
+        box-shadow: none !important;
+    }
+
+    .mobile-white-bg {
+        background: #fff !important;
+        border-radius: 8px;
+        box-shadow: none;
+        padding: 4px 12px;
+    }
+}
+
+@media (min-width: 768px) {
+    .mobile-nav, .mobile-nav-container {
+        display: none !important;
+    }
+    
+    .mobile-menu-toggle {
+        display: none !important;
+    }
 }
 
 /* Backdrop for mobile menu */
@@ -155,4 +263,32 @@ thead.sticky-top th {
 /* Ensure proper scrolling on mobile */
 body.mobile-menu-open {
     overflow: hidden;
+}
+
+.flexbox.flex-1 {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.mobile-logout-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    color: #34495f;
+    background: none;
+    border: none;
+    font-size: 16px;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.mobile-logout-btn i {
+    margin-right: 12px;
+    font-size: 18px;
+}
+.mobile-logout-btn:hover {
+    background: #3498db;
+    color: #fff;
 }

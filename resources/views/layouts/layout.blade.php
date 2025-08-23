@@ -46,10 +46,8 @@
         </header>
         
         <!-- Mobile Navigation Menu -->
-        <div class="mobile-nav-container d-md-none" id="mobileNavMenu">
-            <div class="mobile-nav-content">
-                <!-- Mobile menu content will be populated by JavaScript -->
-            </div>
+        <div class="d-md-none mobile-nav-container" id="mobileNavMenu">
+            @include('partials.mobilemenu')
         </div>
         
         @include('partials.sidebar')
@@ -92,5 +90,41 @@
     <script src="{{ asset('assets/js/inventory-create.js') }}"></script>
 
     @stack('scripts')
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            var mobileNavMenu = document.getElementById('mobileNavMenu');
+            var header = document.querySelector('.header');
+            var isOpen = false;
+            if (mobileMenuToggle && mobileNavMenu) {
+                mobileMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    isOpen = !isOpen;
+                    if (isOpen) {
+                        mobileNavMenu.style.display = 'block';
+                        mobileNavMenu.classList.add('mobile-menu-open');
+                        if (header) header.classList.add('mobile-menu-blur');
+                        mobileMenuToggle.style.zIndex = '1101';
+                    } else {
+                        mobileNavMenu.style.display = 'none';
+                        mobileNavMenu.classList.remove('mobile-menu-open');
+                        if (header) header.classList.remove('mobile-menu-blur');
+                        mobileMenuToggle.style.zIndex = '';
+                    }
+                });
+                // Optional: Hide menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (isOpen && !mobileNavMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                        mobileNavMenu.style.display = 'none';
+                        mobileNavMenu.classList.remove('mobile-menu-open');
+                        if (header) header.classList.remove('mobile-menu-blur');
+                        mobileMenuToggle.style.zIndex = '';
+                        isOpen = false;
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

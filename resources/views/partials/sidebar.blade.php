@@ -10,7 +10,8 @@
                         <img src="{{ asset('assets/img/admin-avatar.png') }}" width="45px" />
                     </div>
                     <div class="admin-info">
-                        <div class="font-strong">Viewer</div><small>User</small>
+                            <div class="font-strong text-center" style="width:100%">{{ $user->name }}</div>
+                            <small class="text-center d-block" style="width:100%">Person in Charge</small>
                     </div>
                 </div>
                 <ul class="side-menu metismenu">
