@@ -382,30 +382,29 @@
         .card.border-left-primary {
             border-left: 0.25rem solid #4e73df;
         }
-        
         .card.border-left-info {
             border-left: 0.25rem solid #36b9cc;
         }
-        
         .bg-gradient-primary {
             background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
         }
-        
         .item-card {
             transition: transform 0.2s;
         }
-        
         .item-card:hover {
             transform: translateY(-2px);
         }
-        
         .dropdown-menu {
             max-height: 300px;
             overflow-y: auto;
         }
-        
-        .room-selector:hover {
-            background-color: rgba(78, 115, 223, 0.1);
+        .dropdown-item.room-selector {
+            color: #212529 !important;
+            background-color: #f8f9fa !important;
+        }
+        .dropdown-item.room-selector:hover {
+            background-color: rgba(78, 115, 223, 0.1) !important;
+            color: #224abe !important;
         }
     </style>
 </x-main-layout>

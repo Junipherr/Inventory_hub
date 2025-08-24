@@ -1,8 +1,112 @@
 <x-main-layout>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- Enable custom CSS for enhanced styling -->
-    <link rel="stylesheet" href="{{ asset('assets/css/itemsdesign.css') }}">
+    <!-- Use Font Awesome CDN as in layout.blade.php -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Embedded important CSS from itemsdesign.css -->
+    <style>
+        /* Custom styles for enhanced design */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .modal-content {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+        th {
+            background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+        }
+        .overflow-x-auto::-webkit-scrollbar {
+            height: 6px;
+        }
+        .overflow-x-auto::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        .overflow-x-auto::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Responsive table: horizontal scroll on mobile */
+        @media (max-width: 640px) {
+            .overflow-x-auto {
+                -webkit-overflow-scrolling: touch;
+                overflow-x: auto;
+            }
+            table, thead, tbody, th, td, tr {
+                display: block;
+                width: 100%;
+            }
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            tr {
+                margin-bottom: 1rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+                background: #fff;
+                padding: 0.5rem 0;
+            }
+            td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+                min-height: 40px;
+                font-size: 0.95rem;
+            }
+            td:before {
+                position: absolute;
+                top: 0.75rem;
+                left: 1rem;
+                width: 45%;
+                white-space: nowrap;
+                font-weight: 600;
+                color: #6b7280;
+                font-size: 0.85rem;
+            }
+            td:nth-of-type(1):before { content: "Item Details"; }
+            td:nth-of-type(2):before { content: "Location"; }
+            td:nth-of-type(3):before { content: "Category"; }
+            td:nth-of-type(4):before { content: "Quantity"; }
+            td:nth-of-type(5):before { content: "Condition"; }
+            td:nth-of-type(6):before { content: "Actions"; }
+        }
+
+        /* Responsive modals */
+        @media (max-width: 640px) {
+            .modal-content {
+                width: 95vw !important;
+                max-width: 95vw !important;
+                left: 2.5vw;
+                right: 2.5vw;
+                top: 10vw;
+                padding: 1rem !important;
+            }
+        }
+
+        /* Responsive buttons and spacing */
+        @media (max-width: 640px) {
+            .px-6 { padding-left: 1rem !important; padding-right: 1rem !important; }
+            .py-4, .py-5, .py-8, .py-16 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+            .text-3xl { font-size: 1.5rem !important; }
+            .text-xl { font-size: 1.1rem !important; }
+            .rounded-lg, .rounded-xl { border-radius: 0.75rem !important; }
+            .space-x-2 > :not([hidden]) ~ :not([hidden]) { margin-left: 0.5rem !important; }
+            .flex-col { flex-direction: column !important; }
+            .gap-4 { gap: 0.75rem !important; }
+        }
+    </style>
     
     <div class="min-h-screen bg-gray-50 py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -455,46 +559,5 @@
         });
     </script>
 
-    <style>
-        /* Custom styles for enhanced design */
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        .modal-content {
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-        
-        /* Enhanced table styling */
-        table {
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-        
-        th {
-            background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
-        }
-        
-        /* Custom scrollbar for better aesthetics */
-        .overflow-x-auto::-webkit-scrollbar {
-            height: 6px;
-        }
-        
-        .overflow-x-auto::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-        
-        .overflow-x-auto::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-        
-        .overflow-x-auto::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-    </style>
+    <!-- Embedded CSS already above -->
 </x-main-layout>
