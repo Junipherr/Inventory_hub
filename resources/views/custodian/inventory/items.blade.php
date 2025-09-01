@@ -312,19 +312,16 @@
                         <input type="text" name="item_name" id="edit_item_name" 
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
                     </div>
-                    
                     <div>
                         <label for="edit_description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
                         <textarea name="description" id="edit_description" rows="3" 
                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"></textarea>
                     </div>
-                    
                     <div>
                         <label for="edit_quantity" class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
                         <input type="number" name="quantity" id="edit_quantity" min="1"
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
                     </div>
-                    
                     <div>
                         <label for="edit_condition" class="block text-sm font-medium text-gray-700 mb-2">Condition</label>
                         <select name="condition" id="edit_condition" 
@@ -334,7 +331,6 @@
                             <option value="Poor">Poor</option>
                         </select>
                     </div>
-
                     <div>
                         <label for="edit_room_id" class="block text-sm font-medium text-gray-700 mb-2">Room Location</label>
                         <select name="room_id" id="edit_room_id" 
@@ -345,7 +341,6 @@
                             @endforeach
                         </select>
                     </div>
-
                     <div>
                         <label for="edit_category_id" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
                         <select name="category_id" id="edit_category_id" 
@@ -360,6 +355,16 @@
                             <option value="laboratory_equipment">🧪 Laboratory Equipment</option>
                             <option value="medical_equipment">🏥 Medical Equipment</option>
                         </select>
+                    </div>
+                    <div>
+                        <label for="edit_purchase_date" class="block text-sm font-medium text-gray-700 mb-2">Purchase Date</label>
+                        <input type="date" name="purchase_date" id="edit_purchase_date"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
+                    </div>
+                    <div>
+                        <label for="edit_warranty_expires" class="block text-sm font-medium text-gray-700 mb-2">Warranty Expires</label>
+                        <input type="date" name="warranty_expires" id="edit_warranty_expires"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
                     </div>
                     
                     <div class="flex space-x-3 pt-4">

@@ -203,11 +203,11 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="purchase_date">Purchase Date</label>
-                                            <input type="date" 
-                                                   class="form-control @error('purchase_date') is-invalid @enderror" 
-                                                   name="purchase_date" 
-                                                   id="purchase_date"
-                                                   value="{{ old('purchase_date') }}" required>
+                              <input type="date" 
+                                  class="form-control @error('purchase_date') is-invalid @enderror" 
+                                  name="purchase_date" 
+                                  id="purchase_date"
+                                  value="{{ old('purchase_date') }}">
                                             @error('purchase_date')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -240,11 +240,11 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="warranty_expires">Warranty Expires</label>
-                                            <input type="date" 
-                                                   class="form-control @error('warranty_expires') is-invalid @enderror" 
-                                                   name="warranty_expires" 
-                                                   id="warranty_expires"
-                                                   value="{{ old('warranty_expires') }}">
+                              <input type="date" 
+                                  class="form-control @error('warranty_expires') is-invalid @enderror" 
+                                  name="warranty_expires" 
+                                  id="warranty_expires"
+                                  value="{{ old('warranty_expires') }}">
                                             @error('warranty_expires')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror

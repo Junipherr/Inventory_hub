@@ -143,4 +143,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Route::get()
+Route::get('/export/word/{roomId}', [InventoryController::class, 'exportWord'])->name('export.word');
 require __DIR__.'/auth.php';

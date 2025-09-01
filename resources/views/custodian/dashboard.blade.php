@@ -12,6 +12,10 @@
                         <p class="text-muted mb-0">Manage and monitor all items across your assigned rooms</p>
                     </div>
                     <div class="d-flex gap-2">
+                        <a href="{{ route('export.word', $rooms->isNotEmpty() ? $rooms->first()->id : 0) }}" 
+                           class="btn btn-success" id="exportWordBtn">
+                            <i class="fas fa-file-word"></i> Export as Word
+                        </a>
                         <div class="badge bg-primary fs-6 px-3 py-2">
                             <i class="fas fa-building mr-1"></i>
                             {{ $rooms->count() }} Rooms
@@ -348,6 +352,10 @@
                         grid.style.display = 'none';
                     }
                 });
+                
+                // Update export button URL with current room ID
+                const exportBtn = document.getElementById('exportWordBtn');
+                exportBtn.href = "{{ route('export.word', ':roomId') }}".replace(':roomId', roomId);
                 
                 // In a real implementation, you would load items via AJAX here
                 console.log(`Loading items for room ${roomId}: ${roomName}`);

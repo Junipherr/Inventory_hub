@@ -7,6 +7,11 @@ use App\Models\Item;
 use App\Models\Room;
 use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\Style\Font;
+use PhpOffice\PhpWord\TemplateProcessor;
+use PhpOffice\PhpWord\Style\Paper;
 
 class InventoryController extends Controller
 {
@@ -363,5 +368,213 @@ class InventoryController extends Controller
         ];
 
         return view('custodian.available-items', compact('availableItems', 'summary'));
+    }
+
+    /**
+     * Export inventory data for a specific room as Word document with pagination
+     */
+    public function exportWord($roomId)
+    {
+        // Get the same data as the dashboard
+        $user = auth()->user();
+        if ($user->role === 'Viewer') {
+            abort(403, 'Access denied. Viewers cannot access the custodian dashboard.');
+        }
+
+        // Get the specific room
+        $room = Room::with('users')->findOrFail($roomId);
+
+        // Get items for the specific room
+        $items = Item::with('units')->where('room_id', $room->id)->get();
+
+        // Get person in charge for the room
+        $custodian = $room->users->firstWhere('role', 'Custodian');
+        if (!$custodian) {
+            $custodian = $room->users->first();
+        }
+        $personInCharge = $custodian ?? null;
+
+        // Create new Word document
+        $phpWord = new PhpWord();
+
+        // Define font styles (Times New Roman, 12pt)
+        $titleFontStyle  = ['bold' => true, 'size' => 12, 'name' => 'Times New Roman'];
+        $boldFontStyle   = ['bold' => true, 'size' => 12, 'name' => 'Times New Roman'];
+        $normalFontStyle = ['size' => 12, 'name' => 'Times New Roman'];
+
+        // Section with margins and paper size (in twips: 1 inch = 1440 twips)
+        $section = $phpWord->addSection([
+            'paperSize' => 'Legal',
+            'marginTop'    => 1440, // 2.54 cm
+            'marginBottom' => 0,    // 0.0 cm
+            'marginLeft'   => 1440, // 2.54 cm
+            'marginRight'  => 1080, // 1.905 cm
+        ]);
+
+        // Title
+        $section->addText('MEMORANDUM RECEIPT OF PROPERTIES', $titleFontStyle, ['alignment' => 'center']);
+        $section->addText('First Semester, A.Y. 2025-2026', $boldFontStyle, ['alignment' => 'center']);
+        $section->addTextBreak(2);
+
+        // Room/Department
+        $section->addText('Room/Department: ' . $room->name, $normalFontStyle);
+        $section->addTextBreak(1);
+
+        // Items per page
+        $itemsPerPage = 15;
+        $itemChunks = $items->chunk($itemsPerPage);
+
+        foreach ($itemChunks as $chunkIndex => $chunk) {
+            if ($chunkIndex > 0) {
+                // Add page break for subsequent chunks
+                $section->addPageBreak();
+            }
+
+            // Create table for items (no borders)
+            $table = $section->addTable(['borderSize' => 0, 'borderColor' => 'ffffff']);
+
+            // Table headers
+            $table->addRow();
+            $table->addCell(2000)->addText('QUANTITY', $boldFontStyle);
+            $table->addCell(4000)->addText('PARTICULARS', $boldFontStyle);
+            $table->addCell(3000)->addText('REMARKS', $boldFontStyle);
+
+            // Add rows for each item in the chunk
+            foreach ($chunk as $item) {
+                // Determine item status/remarks based on condition or availability
+                $remarks = 'Good Condition'; // Default remark
+                if ($item->condition && strtolower($item->condition) !== 'good') {
+                    $remarks = ucfirst($item->condition);
+                }
+
+                $table->addRow();
+                $table->addCell()->addText($item->quantity, $normalFontStyle);
+                $table->addCell()->addText($item->item_name, $normalFontStyle);
+                $table->addCell()->addText($remarks, $normalFontStyle);
+            }
+
+            $section->addTextBreak(2);
+        }
+
+        // Footer text (paragraphs) - only after the last table
+        $section->addText(
+            "The properties listed above are dully-turned over to the undersigned for official use only. The undersigned binds himself/herself to take good care of the said properties while on his/her position/control or until this Memorandum Receipt is revoked. Any losses or damages resulting from negligence or improper use by the undersigned or the other parties under him/her will be charged to his/her account. The properties listed above shall not be used or brought outside the campus without permission from the Property Custodian and the College President.",
+            $normalFontStyle
+        );
+        $section->addTextBreak(1);
+
+        $section->addText(
+            "The above stated properties shall not be transferred to any office or brought outside the premises of the college compound except with the written permission from the Property Custodian and the College President.",
+            $normalFontStyle
+        );
+        $section->addTextBreak(2);
+
+        // Signatures
+        $section->addText("Properties received by:", $boldFontStyle);
+        $section->addText($personInCharge ? $personInCharge->name : 'N/A' . "\t\t\t\t\t\tDate received: " . date('F d, Y'), $normalFontStyle);
+        $section->addText("Classroom In-charge", $normalFontStyle);
+        $section->addTextBreak(2);
+
+        $section->addText("Endorsed by:", $boldFontStyle);
+        $section->addText("VERGELIO O. CABAHUG", $normalFontStyle);
+        $section->addText("Property Custodian", $normalFontStyle);
+        $section->addTextBreak(2);
+
+        $section->addText("Approved by:", $boldFontStyle);
+        $section->addText("MARIANO JOAQUIN C. MACIAS JR., Ed.D", $normalFontStyle);
+        $section->addText("College President/Chairman, BOT", $normalFontStyle);
+
+        // Save the document
+        $filename = 'memorandum_receipt_' . str_replace(' ', '_', $room->name) . '_' . date('Y-m-d_H-i-s') . '.docx';
+        $tempFile = tempnam(sys_get_temp_dir(), 'word_') . '.docx';
+
+        $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
+        $objWriter->save($tempFile);
+
+        // Return the file as download
+        return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Fallback export method when template processing fails
+     */
+    private function exportWordFallback($room, $items, $personInCharge)
+    {
+        // Create new Word document
+        $phpWord = new PhpWord();
+        $section = $phpWord->addSection();
+
+        // Add title
+        $section->addText(
+            'Inventory Report - ' . $room->name . ' - ' . date('Y-m-d'),
+            ['bold' => true, 'size' => 16],
+            ['alignment' => 'center']
+        );
+        $section->addTextBreak(2);
+
+        // Room header
+        $section->addText(
+            "Room: {$room->name}",
+            ['bold' => true, 'size' => 14]
+        );
+
+        // Person in charge
+        $section->addText(
+            "Person in Charge: " . ($personInCharge ? $personInCharge->name : 'N/A'),
+            ['size' => 12]
+        );
+
+        // Room statistics
+        $section->addText(
+            "Total Items: {$items->count()} | Total Quantity: {$items->sum('quantity')}",
+            ['size' => 12]
+        );
+        $section->addTextBreak(1);
+
+        // Items per page
+        $itemsPerPage = 15;
+        $itemChunks = $items->chunk($itemsPerPage);
+
+        foreach ($itemChunks as $chunkIndex => $chunk) {
+            if ($chunkIndex > 0) {
+                // Add page break for subsequent chunks
+                $section->addPageBreak();
+            }
+
+            // Add items table if room has items (no borders)
+            if ($chunk->isNotEmpty()) {
+                $table = $section->addTable(['borderSize' => 0, 'borderColor' => 'ffffff']);
+
+                // Table headers
+                $table->addRow();
+                $table->addCell(2000)->addText('Item Name', ['bold' => true]);
+                $table->addCell(1500)->addText('Category', ['bold' => true]);
+                $table->addCell(1000)->addText('Quantity', ['bold' => true]);
+                $table->addCell(3000)->addText('Description', ['bold' => true]);
+
+                // Table rows
+                foreach ($chunk as $item) {
+                    $table->addRow();
+                    $table->addCell()->addText($item->item_name);
+                    $table->addCell()->addText(ucwords(str_replace('_', ' ', $item->category_id)));
+                    $table->addCell()->addText($item->quantity);
+                    $table->addCell()->addText($item->description);
+                }
+            } else {
+                $section->addText('No items in this room.', ['italic' => true]);
+            }
+
+            $section->addTextBreak(2);
+        }
+
+        // Save the document
+        $filename = 'inventory_report_' . str_replace(' ', '_', $room->name) . '_' . date('Y-m-d_H-i-s') . '.docx';
+        $tempFile = tempnam(sys_get_temp_dir(), 'word_') . '.docx';
+
+        $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
+        $objWriter->save($tempFile);
+
+        // Return the file as download
+        return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
     }
 }
