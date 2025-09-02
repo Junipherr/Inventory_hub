@@ -375,124 +375,124 @@ class InventoryController extends Controller
      */
     public function exportWord($roomId)
     {
-        // Get the same data as the dashboard
-        $user = auth()->user();
-        if ($user->role === 'Viewer') {
-            abort(403, 'Access denied. Viewers cannot access the custodian dashboard.');
+        try {
+            // Get the same data as the dashboard
+            $user = auth()->user();
+            if ($user->role === 'Viewer') {
+                abort(403, 'Access denied. Viewers cannot access the custodian dashboard.');
+            }
+
+            // Get the specific room
+            $room = Room::with('users')->findOrFail($roomId);
+
+            // Get items for the specific room
+            $items = Item::with('units')->where('room_id', $room->id)->get();
+
+            // Get person in charge for the room
+            $custodian = $room->users->firstWhere('role', 'Custodian');
+            if (!$custodian) {
+                $custodian = $room->users->first();
+            }
+            $personInCharge = $custodian ?? null;
+
+            // Generate HTML content that can be opened in Word
+            $html = $this->generateWordHtml($room, $items, $personInCharge);
+
+            // Create temporary file
+            $sanitizedRoomName = preg_replace('/[\/\\\\]/', '_', $room->name);
+            $filename = 'memorandum_receipt_' . str_replace(' ', '_', $sanitizedRoomName) . '_' . date('Y-m-d_H-i-s') . '.doc';
+            $tempFile = tempnam(sys_get_temp_dir(), 'word_') . '.doc';
+
+            // Write HTML content to file
+            file_put_contents($tempFile, $html);
+
+            // Return the file as download
+            return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            \Log::error('Export Word Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to export Word document. Please try again later.');
         }
+    }
 
-        // Get the specific room
-        $room = Room::with('users')->findOrFail($roomId);
-
-        // Get items for the specific room
-        $items = Item::with('units')->where('room_id', $room->id)->get();
-
-        // Get person in charge for the room
-        $custodian = $room->users->firstWhere('role', 'Custodian');
-        if (!$custodian) {
-            $custodian = $room->users->first();
-        }
-        $personInCharge = $custodian ?? null;
-
-        // Create new Word document
-        $phpWord = new PhpWord();
-
-        // Define font styles (Times New Roman, 12pt)
-        $titleFontStyle  = ['bold' => true, 'size' => 12, 'name' => 'Times New Roman'];
-        $boldFontStyle   = ['bold' => true, 'size' => 12, 'name' => 'Times New Roman'];
-        $normalFontStyle = ['size' => 12, 'name' => 'Times New Roman'];
-
-        // Section with margins and paper size (in twips: 1 inch = 1440 twips)
-        $section = $phpWord->addSection([
-            'paperSize' => 'Legal',
-            'marginTop'    => 1440, // 2.54 cm
-            'marginBottom' => 0,    // 0.0 cm
-            'marginLeft'   => 1440, // 2.54 cm
-            'marginRight'  => 1080, // 1.905 cm
-        ]);
+    private function generateWordHtml($room, $items, $personInCharge)
+    {
+        $html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">';
+        $html .= '<head>';
+        $html .= '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
+        $html .= '<title>Memorandum Receipt</title>';
+        $html .= '<style>';
+        $html .= '@page { size: legal; margin: 1in; }';
+        $html .= 'body { font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.2; }';
+        $html .= 'table { border-collapse: collapse; width: 100%; border: none; }';
+        $html .= 'td { padding: 2px; vertical-align: top; border: none; }';
+        $html .= 'th { border: none; }';
+        $html .= '.center { text-align: center; }';
+        $html .= '.bold { font-weight: bold; }';
+        $html .= '.header-cell { width: 20%; }';
+        $html .= '.item-cell { width: 40%; }';
+        $html .= '.remarks-cell { width: 30%; }';
+        $html .= '</style>';
+        $html .= '</head>';
+        $html .= '<body>';
 
         // Title
-        $section->addText('MEMORANDUM RECEIPT OF PROPERTIES', $titleFontStyle, ['alignment' => 'center']);
-        $section->addText('First Semester, A.Y. 2025-2026', $boldFontStyle, ['alignment' => 'center']);
-        $section->addTextBreak(2);
+        $html .= '<div class="center bold">MEMORANDUM RECEIPT OF PROPERTIES</div>';
+        $html .= '<div class="center bold">First Semester, A.Y. 2025-2026</div>';
+        $html .= '<br><br>';
 
         // Room/Department
-        $section->addText('Room/Department: ' . $room->name, $normalFontStyle);
-        $section->addTextBreak(1);
+        $html .= '<p>Room/Department: ' . htmlspecialchars($room->name) . '</p>';
+        $html .= '<br>';
 
-        // Items per page
-        $itemsPerPage = 15;
-        $itemChunks = $items->chunk($itemsPerPage);
+        // Items table
+        $html .= '<table>';
+        $html .= '<tr>';
+        $html .= '<td class="header-cell bold">QUANTITY</td>';
+        $html .= '<td class="item-cell bold">PARTICULARS</td>';
+        $html .= '<td class="remarks-cell bold">REMARKS</td>';
+        $html .= '</tr>';
 
-        foreach ($itemChunks as $chunkIndex => $chunk) {
-            if ($chunkIndex > 0) {
-                // Add page break for subsequent chunks
-                $section->addPageBreak();
+        foreach ($items as $item) {
+            $remarks = 'Good Condition';
+            if ($item->condition && strtolower($item->condition) !== 'good') {
+                $remarks = ucfirst($item->condition);
             }
 
-            // Create table for items (no borders)
-            $table = $section->addTable(['borderSize' => 0, 'borderColor' => 'ffffff']);
-
-            // Table headers
-            $table->addRow();
-            $table->addCell(2000)->addText('QUANTITY', $boldFontStyle);
-            $table->addCell(4000)->addText('PARTICULARS', $boldFontStyle);
-            $table->addCell(3000)->addText('REMARKS', $boldFontStyle);
-
-            // Add rows for each item in the chunk
-            foreach ($chunk as $item) {
-                // Determine item status/remarks based on condition or availability
-                $remarks = 'Good Condition'; // Default remark
-                if ($item->condition && strtolower($item->condition) !== 'good') {
-                    $remarks = ucfirst($item->condition);
-                }
-
-                $table->addRow();
-                $table->addCell()->addText($item->quantity, $normalFontStyle);
-                $table->addCell()->addText($item->item_name, $normalFontStyle);
-                $table->addCell()->addText($remarks, $normalFontStyle);
-            }
-
-            $section->addTextBreak(2);
+            $html .= '<tr>';
+            $html .= '<td>' . htmlspecialchars($item->quantity) . '</td>';
+            $html .= '<td>' . htmlspecialchars($item->item_name) . '</td>';
+            $html .= '<td>' . htmlspecialchars($remarks) . '</td>';
+            $html .= '</tr>';
         }
 
-        // Footer text (paragraphs) - only after the last table
-        $section->addText(
-            "The properties listed above are dully-turned over to the undersigned for official use only. The undersigned binds himself/herself to take good care of the said properties while on his/her position/control or until this Memorandum Receipt is revoked. Any losses or damages resulting from negligence or improper use by the undersigned or the other parties under him/her will be charged to his/her account. The properties listed above shall not be used or brought outside the campus without permission from the Property Custodian and the College President.",
-            $normalFontStyle
-        );
-        $section->addTextBreak(1);
+        $html .= '</table>';
+        $html .= '<br><br>';
 
-        $section->addText(
-            "The above stated properties shall not be transferred to any office or brought outside the premises of the college compound except with the written permission from the Property Custodian and the College President.",
-            $normalFontStyle
-        );
-        $section->addTextBreak(2);
+        // Footer text
+        $html .= '<p>The properties listed above are dully-turned over to the undersigned for official use only. The undersigned binds himself/herself to take good care of the said properties while on his/her position/control or until this Memorandum Receipt is revoked. Any losses or damages resulting from negligence or improper use by the undersigned or the other parties under him/her will be charged to his/her account. The properties listed above shall not be used or brought outside the campus without permission from the Property Custodian and the College President.</p>';
+
+        $html .= '<p>The above stated properties shall not be transferred to any office or brought outside the premises of the college compound except with the written permission from the Property Custodian and the College President.</p>';
+        $html .= '<br><br>';
 
         // Signatures
-        $section->addText("Properties received by:", $boldFontStyle);
-        $section->addText($personInCharge ? $personInCharge->name : 'N/A' . "\t\t\t\t\t\tDate received: " . date('F d, Y'), $normalFontStyle);
-        $section->addText("Classroom In-charge", $normalFontStyle);
-        $section->addTextBreak(2);
+        $html .= '<p class="bold">Properties received by:</p>';
+        $html .= '<p>' . htmlspecialchars($personInCharge ? $personInCharge->name : 'N/A') . str_repeat('&nbsp;', 50) . 'Date received: </p>';
+        $html .= '<p>Classroom In-charge</p>';
+        $html .= '<br><br>';
 
-        $section->addText("Endorsed by:", $boldFontStyle);
-        $section->addText("VERGELIO O. CABAHUG", $normalFontStyle);
-        $section->addText("Property Custodian", $normalFontStyle);
-        $section->addTextBreak(2);
+        $html .= '<p class="bold">Endorsed by:</p>';
+        $html .= '<p>VERGELIO O. CABAHUG</p>';
+        $html .= '<p>Property Custodian</p>';
+        $html .= '<br><br>';
 
-        $section->addText("Approved by:", $boldFontStyle);
-        $section->addText("MARIANO JOAQUIN C. MACIAS JR., Ed.D", $normalFontStyle);
-        $section->addText("College President/Chairman, BOT", $normalFontStyle);
+        $html .= '<p class="bold">Approved by:</p>';
+        $html .= '<p>MARIANO JOAQUIN C. MACIAS JR., Ed.D</p>';
+        $html .= '<p>College President/Chairman, BOT</p>';
 
-        // Save the document
-        $filename = 'memorandum_receipt_' . str_replace(' ', '_', $room->name) . '_' . date('Y-m-d_H-i-s') . '.docx';
-        $tempFile = tempnam(sys_get_temp_dir(), 'word_') . '.docx';
+        $html .= '</body>';
+        $html .= '</html>';
 
-        $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
-        $objWriter->save($tempFile);
-
-        // Return the file as download
-        return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
+        return $html;
     }
 
     /**
@@ -568,7 +568,8 @@ class InventoryController extends Controller
         }
 
         // Save the document
-        $filename = 'inventory_report_' . str_replace(' ', '_', $room->name) . '_' . date('Y-m-d_H-i-s') . '.docx';
+        $sanitizedRoomName = preg_replace('/[\/\\\\]/', '_', $room->name);
+        $filename = 'inventory_report_' . str_replace(' ', '_', $sanitizedRoomName) . '_' . date('Y-m-d_H-i-s') . '.docx';
         $tempFile = tempnam(sys_get_temp_dir(), 'word_') . '.docx';
 
         $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
