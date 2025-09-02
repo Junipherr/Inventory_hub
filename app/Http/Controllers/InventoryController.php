@@ -15,9 +15,21 @@ use PhpOffice\PhpWord\Style\Paper;
 
 class InventoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $items = Item::with('units')->paginate(10);
+        $query = Item::with('units');
+
+        // Handle search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('item_name', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%')
+                  ->orWhere('category_id', 'like', '%' . $search . '%');
+            });
+        }
+
+        $items = $query->paginate(10);
         $rooms = Room::all();
         return view('custodian.inventory.items', compact('items', 'rooms'));
     }

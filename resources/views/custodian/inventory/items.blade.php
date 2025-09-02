@@ -3,84 +3,460 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Embedded important CSS from itemsdesign.css -->
     <style>
+        .items-container {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        }
+
+        /* Enhanced Form Input Styling */
+        .filter-inputs .form-control,
+        .filter-inputs .form-select {
+            border: 2px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            padding: 0.75rem 1rem !important;
+            font-size: 0.95rem !important;
+            color: #2d3748 !important;
+            background-color: #ffffff !important;
+            transition: all 0.2s ease !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        .filter-inputs .form-control:focus,
+        .filter-inputs .form-select:focus {
+            border-color: #3498db !important;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1) !important;
+            outline: none !important;
+        }
+
+        .filter-inputs .form-control:hover,
+        .filter-inputs .form-select:hover {
+            border-color: #a0aec0 !important;
+        }
+
+        /* Input group styling */
+        .filter-inputs .input-group {
+            position: relative !important;
+        }
+
+        .filter-inputs .input-group-text {
+            background-color: #f7fafc !important;
+            border: 2px solid #e2e8f0 !important;
+            border-right: none !important;
+            color: #4a5568 !important;
+            padding: 0.75rem 1rem !important;
+            border-radius: 8px 0 0 8px !important;
+        }
+
+        .filter-inputs .input-group .form-control {
+            border-left: none !important;
+            border-radius: 0 8px 8px 0 !important;
+        }
+
+        /* Label styling */
+        .filter-inputs .form-label {
+            font-weight: 600 !important;
+            color: #2d3748 !important;
+            margin-bottom: 0.5rem !important;
+            font-size: 0.9rem !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.05em !important;
+        }
+
+        /* Select dropdown styling */
+        .filter-inputs .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+            background-position: right 0.75rem center !important;
+            background-repeat: no-repeat !important;
+            background-size: 16px 12px !important;
+            padding-right: 2.5rem !important;
+        }
+
+        /* Text color improvements for better contrast */
+        .filter-inputs ::placeholder {
+            color: #6b7280 !important;
+            opacity: 1 !important;
+        }
+
+        .filter-inputs :-ms-input-placeholder {
+            color: #6b7280 !important;
+        }
+
+        .filter-inputs ::-ms-input-placeholder {
+            color: #6b7280 !important;
+        }
+
+        /* Statistics Cards Text Contrast Improvement */
+        .card.bg-primary.bg-opacity-10 .card-body,
+        .card.bg-success.bg-opacity-10 .card-body,
+        .card.bg-info.bg-opacity-10 .card-body,
+        .card.bg-warning.bg-opacity-10 .card-body {
+            color: #1f2937 !important;
+        }
+
+        .card.bg-primary.bg-opacity-10 .card-body h5,
+        .card.bg-success.bg-opacity-10 .card-body h5,
+        .card.bg-info.bg-opacity-10 .card-body h5,
+        .card.bg-warning.bg-opacity-10 .card-body h5 {
+            color: #1f2937 !important;
+            font-weight: 700 !important;
+        }
+
+        .card.bg-primary.bg-opacity-10 .card-body small,
+        .card.bg-success.bg-opacity-10 .card-body small,
+        .card.bg-info.bg-opacity-10 .card-body small,
+        .card.bg-warning.bg-opacity-10 .card-body small {
+            color: #4b5563 !important;
+            font-weight: 500 !important;
+        }
+
+        /* Item Cards Text Contrast */
+        .item-card .card-body {
+            color: #1f2937 !important;
+        }
+
+        .item-card .card-body .text-muted {
+            color: #4b5563 !important;
+        }
+
+        .item-card .card-body small.text-muted {
+            color: #4b5563 !important;
+            font-weight: 500 !important;
+        }
+
+        /* Header Text Contrast */
+        .text-primary {
+            color: #1d4ed8 !important;
+        }
+
+        .text-muted {
+            color: #4b5563 !important;
+        }
+
+        /* Ensure good contrast for all text elements */
+        .card-title,
+        .card-text,
+        .form-label {
+            color: #1f2937 !important;
+        }
+
+        /* Badge Styling with Better Contrast */
+        .badge {
+            font-weight: 600 !important;
+        }
+
+        .badge.bg-primary {
+            background-color: #1d4ed8 !important;
+            color: white !important;
+        }
+
+        .badge.bg-success {
+            background-color: #059669 !important;
+            color: white !important;
+        }
+
+        .badge.bg-warning {
+            background-color: #d97706 !important;
+            color: white !important;
+        }
+
+        .badge.bg-danger {
+            background-color: #dc2626 !important;
+            color: white !important;
+        }
+
+        .badge.bg-info {
+            background-color: #0891b2 !important;
+            color: white !important;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .filter-inputs .form-control,
+            .filter-inputs .form-select {
+                border-color: #000 !important;
+            }
+
+            .filter-inputs .form-control:focus,
+            .filter-inputs .form-select:focus {
+                border-color: #1d4ed8 !important;
+                outline: 2px solid #1d4ed8 !important;
+            }
+
+            .card.bg-primary.bg-opacity-10 .card-body,
+            .card.bg-success.bg-opacity-10 .card-body,
+            .card.bg-info.bg-opacity-10 .card-body,
+            .card.bg-warning.bg-opacity-10 .card-body {
+                color: #000 !important;
+            }
+        }
+
+        /* Card styling for filter section */
+        .filter-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        .filter-card .card-header {
+            background: linear-gradient(135deg, #3498db 0%, #2c81ba 100%) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 12px 12px 0 0 !important;
+        }
+
+        .filter-card .card-body {
+            padding: 1.5rem !important;
+        }
+
+        /* Status badges */
+        .status-badge {
+            padding: 0.25rem 0.75rem !important;
+            border-radius: 9999px !important;
+            font-size: 0.75rem !important;
+            font-weight: 600 !important;
+        }
+
+        .status-good {
+            background-color: #dcfce7 !important;
+            color: #166534 !important;
+        }
+
+        .status-fair {
+            background-color: #fef3c7 !important;
+            color: #92400e !important;
+        }
+
+        .status-poor {
+            background-color: #fee2e2 !important;
+            color: #991b1b !important;
+        }
+
+        /* Action buttons */
+        .action-btn {
+            padding: 0.5rem 1rem !important;
+            border-radius: 0.375rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
+            text-decoration: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+        }
+
+        .edit-btn {
+            background-color: #3b82f6 !important;
+            color: white !important;
+        }
+
+        .edit-btn:hover {
+            background-color: #2563eb !important;
+            transform: translateY(-1px) !important;
+        }
+
+        .delete-btn {
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
+
+        .delete-btn:hover {
+            background-color: #dc2626 !important;
+            transform: translateY(-1px) !important;
+        }
+
+        /* Modal animations */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            backdrop-filter: blur(4px) !important;
+        }
+
+        .modal-content {
+            animation: modalSlideIn 0.3s ease-out !important;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0 !important;
+                transform: translateY(-50px) !important;
+            }
+            to {
+                opacity: 1 !important;
+                transform: translateY(0) !important;
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .filter-inputs .form-control,
+            .filter-inputs .form-select {
+                padding: 0.625rem 0.875rem !important;
+                font-size: 0.875rem !important;
+            }
+
+            .filter-inputs .input-group-text {
+                padding: 0.625rem 0.875rem !important;
+            }
+
+            .filter-inputs .form-label {
+                font-size: 0.8rem !important;
+            }
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.6 !important;
+            pointer-events: none !important;
+        }
+
+        /* Empty state styling */
+        .empty-state {
+            text-align: center !important;
+            padding: 3rem !important;
+        }
+
+        .empty-state i {
+            font-size: 3rem !important;
+            color: #9ca3af !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .empty-state p {
+            color: #6b7280 !important;
+            margin-bottom: 0.5rem !important;
+        }
+
+        /* Pagination styling */
+        .pagination {
+            display: flex !important;
+            justify-content: center !important;
+            margin-top: 2rem !important;
+        }
+
+        .pagination a {
+            padding: 0.5rem 1rem !important;
+            margin: 0 0.25rem !important;
+            border: 1px solid #e5e7eb !important;
+            border-radius: 0.375rem !important;
+            text-decoration: none !important;
+            color: #374151 !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .pagination a:hover {
+            background-color: #f3f4f6 !important;
+        }
+
+        .pagination .active {
+            background-color: #3b82f6 !important;
+            color: white !important;
+            border-color: #3b82f6 !important;
+        }
+
+        /* Card styling */
+        .card {
+            background: white !important;
+            border-radius: 8px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+            overflow: hidden !important;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+            padding: 1.5rem !important;
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+
+        .card-body {
+            padding: 1.5rem !important;
+        }
+
         /* Custom styles for enhanced design */
         .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            display: -webkit-box !important;
+            -webkit-line-clamp: 2 !important;
+            -webkit-box-orient: vertical !important;
+            overflow: hidden !important;
         }
-        .modal-content {
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
+
         table {
-            border-collapse: separate;
-            border-spacing: 0;
-            width: 100%;
+            border-collapse: separate !important;
+            border-spacing: 0 !important;
+            width: 100% !important;
         }
+
         th {
-            background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+            background: linear-gradient(to bottom, #f9fafb, #f3f4f6) !important;
         }
+
         .overflow-x-auto::-webkit-scrollbar {
-            height: 6px;
+            height: 6px !important;
         }
+
         .overflow-x-auto::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
+            background: #f1f1f1 !important;
+            border-radius: 3px !important;
         }
+
         .overflow-x-auto::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
+            background: #c1c1c1 !important;
+            border-radius: 3px !important;
         }
+
         .overflow-x-auto::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
+            background: #a8a8a8 !important;
         }
 
         /* Responsive table: horizontal scroll on mobile */
         @media (max-width: 640px) {
             .overflow-x-auto {
-                -webkit-overflow-scrolling: touch;
-                overflow-x: auto;
+                -webkit-overflow-scrolling: touch !important;
+                overflow-x: auto !important;
             }
+
             table, thead, tbody, th, td, tr {
-                display: block;
-                width: 100%;
+                display: block !important;
+                width: 100% !important;
             }
+
             thead tr {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
+                position: absolute !important;
+                top: -9999px !important;
+                left: -9999px !important;
             }
+
             tr {
-                margin-bottom: 1rem;
-                border-radius: 0.5rem;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-                background: #fff;
-                padding: 0.5rem 0;
+                margin-bottom: 1rem !important;
+                border-radius: 0.5rem !important;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.03) !important;
+                background: #fff !important;
+                padding: 0.5rem 0 !important;
             }
+
             td {
-                border: none;
-                position: relative;
-                padding-left: 50%;
-                min-height: 40px;
-                font-size: 0.95rem;
+                border: none !important;
+                position: relative !important;
+                padding-left: 50% !important;
+                min-height: 40px !important;
+                font-size: 0.95rem !important;
             }
+
             td:before {
-                position: absolute;
-                top: 0.75rem;
-                left: 1rem;
-                width: 45%;
-                white-space: nowrap;
-                font-weight: 600;
-                color: #6b7280;
-                font-size: 0.85rem;
+                position: absolute !important;
+                top: 0.75rem !important;
+                left: 1rem !important;
+                width: 45% !important;
+                white-space: nowrap !important;
+                font-weight: 600 !important;
+                color: #6b7280 !important;
+                font-size: 0.85rem !important;
             }
-            td:nth-of-type(1):before { content: "Item Details"; }
-            td:nth-of-type(2):before { content: "Location"; }
-            td:nth-of-type(3):before { content: "Category"; }
-            td:nth-of-type(4):before { content: "Quantity"; }
-            td:nth-of-type(5):before { content: "Condition"; }
-            td:nth-of-type(6):before { content: "Actions"; }
+
+            td:nth-of-type(1):before { content: "Item Details" !important; }
+            td:nth-of-type(2):before { content: "Location" !important; }
+            td:nth-of-type(3):before { content: "Category" !important; }
+            td:nth-of-type(4):before { content: "Quantity" !important; }
+            td:nth-of-type(5):before { content: "Condition" !important; }
+            td:nth-of-type(6):before { content: "Actions" !important; }
         }
 
         /* Responsive modals */
@@ -88,10 +464,11 @@
             .modal-content {
                 width: 95vw !important;
                 max-width: 95vw !important;
-                left: 2.5vw;
-                right: 2.5vw;
-                top: 10vw;
+                left: 2.5vw !important;
+                right: 2.5vw !important;
+                top: 10vw !important;
                 padding: 1rem !important;
+                transition: transform 0.3s ease, opacity 0.3s ease !important;
             }
         }
 
@@ -112,16 +489,33 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Header Section -->
             <div class="mb-8">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="flex flex-col gap-4">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900">Inventory Management</h1>
                         <p class="mt-2 text-sm text-gray-600">Manage all inventory items with ease</p>
                     </div>
-                    <a href="{{ route('inventory.create') }}" 
-                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105">
-                        <i class="fas fa-plus-circle mr-3"></i>
-                        Add New Item
-                    </a>
+                    <!-- Search Form -->
+                    <form method="GET" action="{{ route('inventory.items') }}" class="flex flex-col sm:flex-row gap-4">
+                        <div class="flex-1">
+                            <div class="relative">
+                                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search items by name, description, or category..."
+                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit"
+                                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105">
+                            <i class="fas fa-search mr-3"></i>
+                            Search Items
+                        </button>
+                        <a href="{{ route('inventory.create') }}"
+                           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105">
+                            <i class="fas fa-plus-circle mr-3"></i>
+                            Add New Item
+                        </a>
+                    </form>
                 </div>
             </div>
 
