@@ -365,17 +365,17 @@
         // Print function
         function printItem(itemId) {
             const modal = document.getElementById(`itemInfoModal${itemId}`);
-            const printContent = modal.querySelector('.modal-body').innerHTML;
+            const printContent = modal.querySelector('.modal-body .col-md-4').innerHTML;
             const printWindow = window.open('', '_blank');
             printWindow.document.write(`
                 <html>
                     <head>
-                        <title>Item Details</title>
+                        <title>QR Code</title>
                         <link href="{{ asset('assets/vendors/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
                     </head>
                     <body>
                         <div class="container mt-4">
-                            <h2>Item Details</h2>
+                            <h2>QR Code</h2>
                             ${printContent}
                         </div>
                     </body>

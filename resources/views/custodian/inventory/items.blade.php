@@ -485,193 +485,179 @@
         }
     </style>
     
-    <div class="min-h-screen bg-gray-50 py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="container-fluid py-4">
+        <div class="container">
             <!-- Header Section -->
-            <div class="mb-8">
-                <div class="flex flex-col gap-4">
-                    <div>
-                        <h1 class="text-3xl font-bold text-gray-900">Inventory Management</h1>
-                        <p class="mt-2 text-sm text-gray-600">Manage all inventory items with ease</p>
+            <div class="mb-4">
+                <div class="row">
+                    <div class="col-12">
+                        <h1 class="h2 fw-bold text-dark">Inventory Management</h1>
+                        <p class="text-muted small">Manage all inventory items with ease</p>
                     </div>
-                    <!-- Search Form -->
-                    <form method="GET" action="{{ route('inventory.items') }}" class="flex flex-col sm:flex-row gap-4">
-                        <div class="flex-1">
-                            <div class="relative">
-                                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search items by name, description, or category..."
-                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-sm">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="fas fa-search text-gray-400"></i>
-                                </div>
-                            </div>
+                </div>
+                <!-- Search Form -->
+                <form method="GET" action="{{ route('inventory.items') }}" class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search items by name, description, or category..."
+                                   class="form-control">
                         </div>
-                        <button type="submit"
-                                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105">
-                            <i class="fas fa-search mr-3"></i>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-search me-2"></i>
                             Search Items
                         </button>
-                        <a href="{{ route('inventory.create') }}"
-                           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105">
-                            <i class="fas fa-plus-circle mr-3"></i>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <a href="{{ route('inventory.create') }}" class="btn btn-primary w-100">
+                            <i class="fas fa-plus-circle me-2"></i>
                             Add New Item
                         </a>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
 
             <!-- Success Message -->
             @if(session('success'))
-                <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-lg shadow-sm">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-check-circle text-green-500 text-xl"></i>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
-                        </div>
-                    </div>
+                <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
             <!-- Content Card -->
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+            <div class="card shadow">
                 <!-- Card Header -->
-                <div class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-xl font-semibold text-gray-800">All Inventory Items</h2>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="h5 mb-0">All Inventory Items</h2>
+                        <span class="badge bg-primary">
                             {{ $items->total() }} items
                         </span>
                     </div>
                 </div>
 
                 <!-- Items Table -->
-                <div class="overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-gray-50">
+                <div class="overflow-x-auto">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light text-uppercase small">
+                            <tr>
+                                <th>Item Details</th>
+                                <th>Location</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Condition</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($items as $item)
                                 <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        <div class="flex items-center">
-                                            <span>Item Details</span>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0 bg-primary bg-opacity-10 rounded p-2 me-3">
+                                                <i class="fas fa-box text-primary fs-5"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold text-primary">{{ $item->item_name }}</div>
+                                                <div class="text-muted small text-truncate" style="max-width: 250px;">
+                                                    {{ $item->description ? Str::limit($item->description, 60) : 'No description' }}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Location
-                                    </th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Category
-                                    </th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Quantity
-                                    </th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Condition
-                                    </th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Actions
-                                    </th>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-map-marker-alt text-muted me-2"></i>
+                                            <span class="small text-muted">
+                                                {{ $item->room->name ?? 'N/A' }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary text-wrap small">
+                                            {{ $item->category_id }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark small px-3 py-1">
+                                            {{ $item->quantity }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @php
+                                            $conditionColors = [
+                                                'Good' => ['bg' => 'bg-success', 'text' => 'text-white', 'icon' => 'fa-check-circle'],
+                                                'Fair' => ['bg' => 'bg-warning', 'text' => 'text-dark', 'icon' => 'fa-exclamation-circle'],
+                                                'Poor' => ['bg' => 'bg-danger', 'text' => 'text-white', 'icon' => 'fa-times-circle'],
+                                            ];
+                                            $condition = $item->condition ?? 'Unknown';
+                                            $colors = $conditionColors[$condition] ?? ['bg' => 'bg-secondary', 'text' => 'text-white', 'icon' => 'fa-question-circle'];
+                                        @endphp
+                                        <span class="badge {{ $colors['bg'] }} {{ $colors['text'] }}">
+                                            <i class="fas {{ $colors['icon'] }} me-1"></i>
+                                            {{ $condition }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <button onclick="openEditModal(this)"
+                                                    data-item-id="{{ $item->id }}"
+                                                    data-item-name="{{ $item->item_name ?? '' }}"
+                                                    data-description="{{ $item->description ?? '' }}"
+                                                    data-quantity="{{ $item->quantity ?? 1 }}"
+                                                    data-condition="{{ $item->condition ?? 'Good' }}"
+                                                    data-room-id="{{ $item->room_id ?? '' }}"
+                                                    data-category-id="{{ $item->category_id ?? '' }}"
+                                                    data-purchase-date="{{ $item->purchase_date ?? '' }}"
+                                                    data-warranty-expires="{{ $item->warranty_expires ?? '' }}"
+                                                    class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1">
+                                                <i class="fas fa-edit"></i>
+                                                Edit
+                                            </button>
+                                            <button onclick="openDeleteModal(this)"
+                                                    data-item-id="{{ $item->id }}"
+                                                    data-item-name="{{ $item->item_name ?? '' }}"
+                                                    class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1">
+                                                <i class="fas fa-trash"></i>
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-100">
-                                @forelse($items as $item)
-                                    <tr class="hover:bg-gray-50 transition-colors duration-150 group">
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
-                                                    <i class="fas fa-box text-blue-600"></i>
-                                                </div>
-                                                <div class="ml-4">
-                                                    <div class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                                                        {{ $item->item_name }}
-                                                    </div>
-                                                    <div class="text-sm text-gray-500 mt-1 line-clamp-2">
-                                                        {{ $item->description ? Str::limit($item->description, 60) : 'No description' }}
-                                                    </div>
-                                                </div>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center py-5">
+                                        <div>
+                                            <div class="mx-auto bg-light rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+                                                <i class="fas fa-inbox text-muted fs-2"></i>
                                             </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <i class="fas fa-map-marker-alt text-gray-400 mr-2"></i>
-                                                <span class="text-sm font-medium text-gray-700">
-                                                    {{ $item->room->name ?? 'N/A' }}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                                {{ $item->category_id }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <span class="text-sm font-semibold text-gray-900 bg-gray-100 px-3 py-1 rounded-full">
-                                                    {{ $item->quantity }}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            @php
-                                                $conditionColors = [
-                                                    'Good' => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'icon' => 'fa-check-circle'],
-                                                    'Fair' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'icon' => 'fa-exclamation-circle'],
-                                                    'Poor' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'icon' => 'fa-times-circle'],
-                                                ];
-                                                $condition = $item->condition ?? 'Unknown';
-                                                $colors = $conditionColors[$condition] ?? ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'icon' => 'fa-question-circle'];
-                                            @endphp
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $colors['bg'] }} {{ $colors['text'] }}">
-                                                <i class="fas {{ $colors['icon'] }} mr-1"></i>
-                                                {{ $condition }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div class="flex items-center space-x-2">
-                                                <button onclick="openEditModal({{ $item->id }}, '{{ addslashes($item->item_name) }}', '{{ addslashes($item->description) }}', '{{ $item->quantity }}', '{{ $item->condition }}', '{{ $item->room_id }}', '{{ $item->category_id }}')" 
-                                                        class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
-                                                    <i class="fas fa-edit mr-2 text-blue-600"></i>
-                                                    Edit
-                                                </button>
-                                                <button onclick="openDeleteModal({{ $item->id }}, '{{ addslashes($item->item_name) }}')" 
-                                                        class="inline-flex items-center px-3 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200">
-                                                    <i class="fas fa-trash mr-2"></i>
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="px-6 py-16 text-center">
-                                            <div class="text-center">
-                                                <div class="mx-auto h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                                    <i class="fas fa-inbox text-gray-400 text-2xl"></i>
-                                                </div>
-                                                <h3 class="text-lg font-medium text-gray-900 mb-2">No items found</h3>
-                                                <p class="text-sm text-gray-500 mb-4">Get started by adding your first inventory item</p>
-                                                <a href="{{ route('inventory.create') }}" 
-                                                   class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                                                    <i class="fas fa-plus mr-2"></i>
-                                                    Add First Item
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                                            <h3 class="h5 mb-2">No items found</h3>
+                                            <p class="text-muted mb-4">Get started by adding your first inventory item</p>
+                                            <a href="{{ route('inventory.create') }}" class="btn btn-primary">
+                                                <i class="fas fa-plus me-2"></i>
+                                                Add First Item
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
                 <!-- Pagination -->
                 @if($items->hasPages())
-                    <div class="px-6 py-4 bg-gray-50 border-t border-gray-100">
-                        <div class="flex items-center justify-between">
-                            <div class="text-sm text-gray-700">
+                    <div class="card-footer bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="small text-muted">
                                 Showing {{ $items->firstItem() }} to {{ $items->lastItem() }} of {{ $items->total() }} results
                             </div>
-                            <div class="flex space-x-2">
+                            <div>
                                 {{ $items->links() }}
                             </div>
                         </div>
@@ -682,63 +668,48 @@
     </div>
 
     <!-- Edit Modal -->
-    <div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden transition-opacity duration-300">
-        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-xl rounded-xl bg-white transform transition-transform duration-300 scale-95 opacity-0 modal-content">
-            <div class="absolute top-4 right-4">
-                <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            <div class="mt-3">
-                <div class="text-center mb-6">
-                    <div class="mx-auto h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-                        <i class="fas fa-edit text-blue-600 text-xl"></i>
-                    </div>
-                    <h3 class="text-lg font-semibold text-gray-900">Edit Item Details</h3>
-                    <p class="text-sm text-gray-500 mt-1">Update the item information</p>
+    <div id="editModal" class="modal fade" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Item Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-<form id="editForm" method="POST" class="space-y-4">
+                <form id="editForm" method="POST" action="" class="p-3">
                     @csrf
                     @method('PUT')
-                    
-                    <div>
-                        <label for="edit_item_name" class="block text-sm font-medium text-gray-700 mb-2">Item Name</label>
-                        <input type="text" name="item_name" id="edit_item_name" 
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
+                    <div class="mb-3">
+                        <label for="edit_item_name" class="form-label">Item Name</label>
+                        <input type="text" name="item_name" id="edit_item_name" class="form-control">
                     </div>
-                    <div>
-                        <label for="edit_description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                        <textarea name="description" id="edit_description" rows="3" 
-                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"></textarea>
+                    <div class="mb-3">
+                        <label for="edit_description" class="form-label">Description</label>
+                        <textarea name="description" id="edit_description" rows="3" class="form-control"></textarea>
                     </div>
-                    <div>
-                        <label for="edit_quantity" class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
-                        <input type="number" name="quantity" id="edit_quantity" min="1"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
+                    <div class="mb-3">
+                        <label for="edit_quantity" class="form-label">Quantity</label>
+                        <input type="number" name="quantity" id="edit_quantity" min="1" class="form-control">
                     </div>
-                    <div>
-                        <label for="edit_condition" class="block text-sm font-medium text-gray-700 mb-2">Condition</label>
-                        <select name="condition" id="edit_condition" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
+                    <div class="mb-3">
+                        <label for="edit_condition" class="form-label">Condition</label>
+                        <select name="condition" id="edit_condition" class="form-select">
                             <option value="Good">Good</option>
                             <option value="Fair">Fair</option>
                             <option value="Poor">Poor</option>
                         </select>
                     </div>
-                    <div>
-                        <label for="edit_room_id" class="block text-sm font-medium text-gray-700 mb-2">Room Location</label>
-                        <select name="room_id" id="edit_room_id" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
+                    <div class="mb-3">
+                        <label for="edit_room_id" class="form-label">Room Location</label>
+                        <select name="room_id" id="edit_room_id" class="form-select">
                             <option value="">-- Select Room --</option>
                             @foreach($rooms as $room)
                                 <option value="{{ $room->id }}">{{ $room->name }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div>
-                        <label for="edit_category_id" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                        <select name="category_id" id="edit_category_id" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
+                    <div class="mb-3">
+                        <label for="edit_category_id" class="form-label">Category</label>
+                        <select name="category_id" id="edit_category_id" class="form-select">
                             <option value="">-- Select Category --</option>
                             <option value="computer_hardware_peripherals">💻 Computer Hardware & Peripherals</option>
                             <option value="office_classroom_furniture">🪑 Office and Classroom Furniture</option>
@@ -750,26 +721,20 @@
                             <option value="medical_equipment">🏥 Medical Equipment</option>
                         </select>
                     </div>
-                    <div>
-                        <label for="edit_purchase_date" class="block text-sm font-medium text-gray-700 mb-2">Purchase Date</label>
-                        <input type="date" name="purchase_date" id="edit_purchase_date"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
+                    <div class="mb-3">
+                        <label for="edit_purchase_date" class="form-label">Purchase Date</label>
+                        <input type="date" name="purchase_date" id="edit_purchase_date" class="form-control">
                     </div>
-                    <div>
-                        <label for="edit_warranty_expires" class="block text-sm font-medium text-gray-700 mb-2">Warranty Expires</label>
-                        <input type="date" name="warranty_expires" id="edit_warranty_expires"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
+                    <div class="mb-3">
+                        <label for="edit_warranty_expires" class="form-label">Warranty Expires</label>
+                        <input type="date" name="warranty_expires" id="edit_warranty_expires" class="form-control">
                     </div>
-                    
-                    <div class="flex space-x-3 pt-4">
-                        <button type="submit" 
-                                class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg shadow-md hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                    <div class="d-flex gap-3 pt-3">
+                        <button type="submit" class="btn btn-primary flex-fill">
                             <span class="submit-text">Save Changes</span>
-                            <span class="loading-text hidden">Saving...</span>
+                            <span class="loading-text visually-hidden">Saving...</span>
                         </button>
-                        <button type="button" 
-                                onclick="closeEditModal()"
-                                class="flex-1 px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200">
+                        <button type="button" onclick="closeEditModal()" class="btn btn-secondary flex-fill" data-bs-dismiss="modal">
                             Cancel
                         </button>
                     </div>
@@ -779,33 +744,33 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden transition-opacity duration-300">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-xl rounded-xl bg-white transform transition-transform duration-300 scale-95 opacity-0 modal-content">
-            <div class="mt-3 text-center">
-                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
-                    <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+    <div id="deleteModal" class="modal fade" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Confirm Deletion</h3>
-                <div class="mt-2 px-7 py-3">
-                    <p class="text-sm text-gray-600">
-                        Are you sure you want to delete <span id="deleteItemName" class="font-semibold text-gray-900"></span>? 
+                <div class="modal-body text-center">
+                    <div class="mx-auto bg-danger bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+                        <i class="fas fa-exclamation-triangle text-danger fs-2"></i>
+                    </div>
+                    <p class="mb-4">
+                        Are you sure you want to delete <span id="deleteItemName" class="fw-bold"></span>?
                         This action cannot be undone.
                     </p>
-                </div>
-                <div class="items-center px-4 py-3 space-y-3">
                     <form id="deleteForm" method="POST">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" 
-                                class="w-full px-6 py-3 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200">
-                            <span class="submit-text">Delete Item</span>
-                            <span class="loading-text hidden">Deleting...</span>
-                        </button>
-                        <button type="button" 
-                                onclick="closeDeleteModal()"
-                                class="w-full px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200">
-                            Cancel
-                        </button>
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-danger flex-fill">
+                                <span class="submit-text">Delete Item</span>
+                                <span class="loading-text visually-hidden">Deleting...</span>
+                            </button>
+                            <button type="button" onclick="closeDeleteModal()" class="btn btn-secondary flex-fill" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -813,75 +778,107 @@
     </div>
 
     <script>
-        // Enhanced modal functions with animations
-        function openEditModal(itemId, itemName, description, quantity, condition, roomId, categoryId) {
-            const modal = document.getElementById('editModal');
+        // Modal functions using Bootstrap
+        function openEditModal(button) {
+            const itemId = button.dataset.itemId;
+            const itemName = button.dataset.itemName;
+            const description = button.dataset.description;
+            const quantity = button.dataset.quantity;
+            const condition = button.dataset.condition;
+            const roomId = button.dataset.roomId;
+            const categoryId = button.dataset.categoryId;
+            const purchaseDate = button.dataset.purchaseDate;
+            const warrantyExpires = button.dataset.warrantyExpires;
+
             const form = document.getElementById('editForm');
-            const content = modal.querySelector('.modal-content');
-            
+
+            // Set the form action dynamically for the specific item
             form.action = `/inventory/items/${itemId}`;
-            document.getElementById('edit_item_name').value = itemName;
+
+            // Clear any previous values first
+            form.reset();
+
+            // Set new values with proper validation
+            document.getElementById('edit_item_name').value = itemName || '';
             document.getElementById('edit_description').value = description || '';
             document.getElementById('edit_quantity').value = quantity || 1;
             document.getElementById('edit_condition').value = condition || 'Good';
             document.getElementById('edit_room_id').value = roomId || '';
             document.getElementById('edit_category_id').value = categoryId || '';
-            
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-            }, 10);
+
+            // Handle date fields - ensure they're in YYYY-MM-DD format for HTML date inputs
+            if (purchaseDate && purchaseDate.trim() !== '') {
+                try {
+                    // If it's already in YYYY-MM-DD format, use it as-is
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(purchaseDate)) {
+                        document.getElementById('edit_purchase_date').value = purchaseDate;
+                    } else {
+                        // Try to parse and format the date
+                        const purchaseDateObj = new Date(purchaseDate);
+                        if (!isNaN(purchaseDateObj.getTime())) {
+                            document.getElementById('edit_purchase_date').value = purchaseDateObj.toISOString().split('T')[0];
+                        } else {
+                            document.getElementById('edit_purchase_date').value = purchaseDate;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Error parsing purchase date:', purchaseDate, e);
+                    document.getElementById('edit_purchase_date').value = purchaseDate || '';
+                }
+            } else {
+                document.getElementById('edit_purchase_date').value = '';
+            }
+
+            if (warrantyExpires && warrantyExpires.trim() !== '') {
+                try {
+                    // If it's already in YYYY-MM-DD format, use it as-is
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(warrantyExpires)) {
+                        document.getElementById('edit_warranty_expires').value = warrantyExpires;
+                    } else {
+                        // Try to parse and format the date
+                        const warrantyDateObj = new Date(warrantyExpires);
+                        if (!isNaN(warrantyDateObj.getTime())) {
+                            document.getElementById('edit_warranty_expires').value = warrantyDateObj.toISOString().split('T')[0];
+                        } else {
+                            document.getElementById('edit_warranty_expires').value = warrantyExpires;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Error parsing warranty date:', warrantyExpires, e);
+                    document.getElementById('edit_warranty_expires').value = warrantyExpires || '';
+                }
+            } else {
+                document.getElementById('edit_warranty_expires').value = '';
+            }
+
+            console.log('Opening edit modal for item:', itemId);
+            console.log('Item data:', {
+                itemName, description, quantity, condition, roomId, categoryId, purchaseDate, warrantyExpires
+            });
+
+            const modal = new bootstrap.Modal(document.getElementById('editModal'));
+            modal.show();
         }
 
         function closeEditModal() {
-            const modal = document.getElementById('editModal');
-            const content = modal.querySelector('.modal-content');
-            
-            content.classList.remove('scale-100', 'opacity-100');
-            content.classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300);
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+            if (modal) {
+                modal.hide();
+            }
         }
 
         function openDeleteModal(itemId, itemName) {
-            const modal = document.getElementById('deleteModal');
-            const content = modal.querySelector('.modal-content');
-            
             document.getElementById('deleteItemName').textContent = itemName;
             document.getElementById('deleteForm').action = `/inventory/items/${itemId}`;
-            
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-            }, 10);
+
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            modal.show();
         }
 
         function closeDeleteModal() {
-            const modal = document.getElementById('deleteModal');
-            const content = modal.querySelector('.modal-content');
-            
-            content.classList.remove('scale-100', 'opacity-100');
-            content.classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300);
-        }
-
-        // Close modals when clicking outside
-        window.onclick = function(event) {
-            const deleteModal = document.getElementById('deleteModal');
-            const editModal = document.getElementById('editModal');
-            
-            if (event.target === deleteModal) {
-                closeDeleteModal();
-            }
-            if (event.target === editModal) {
-                closeEditModal();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+            if (modal) {
+                modal.hide();
             }
         }
 
@@ -891,18 +888,25 @@
             const submitBtn = form.querySelector('button[type="submit"]');
             const submitText = submitBtn.querySelector('.submit-text');
             const loadingText = submitBtn.querySelector('.loading-text');
-            
+
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                
+
                 // Show loading state
                 submitBtn.disabled = true;
-                submitText.classList.add('hidden');
-                loadingText.classList.remove('hidden');
-                
+                submitText.classList.add('visually-hidden');
+                loadingText.classList.remove('visually-hidden');
+
                 const formData = new FormData(this);
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-                
+
+                // Debug: Log form data
+                console.log('Form action:', this.action);
+                console.log('Form data:');
+                for (let [key, value] of formData.entries()) {
+                    console.log(key, value);
+                }
+
                 try {
                     const response = await fetch(this.action, {
                         method: 'POST', // Always use POST for form submissions
@@ -913,9 +917,19 @@
                         },
                         body: formData
                     });
-                    
-                    const data = await response.json();
-                    
+
+                    console.log('Response status:', response.status);
+                    const responseText = await response.text();
+                    console.log('Response text:', responseText);
+
+                    let data;
+                    try {
+                        data = JSON.parse(responseText);
+                    } catch (parseError) {
+                        console.error('JSON parse error:', parseError);
+                        throw new Error('Invalid response format from server');
+                    }
+
                     if (response.ok && data.success) {
                         successCallback(data);
                     } else {
@@ -923,12 +937,20 @@
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Error: ' + error.message);
+                    // If AJAX fails, try submitting the form normally
+                    if (confirm('AJAX submission failed. Would you like to submit the form normally? Error: ' + error.message)) {
+                        // Remove the event listener temporarily and submit normally
+                        form.removeEventListener('submit', arguments.callee);
+                        form.submit();
+                        return;
+                    } else {
+                        alert('Error: ' + error.message);
+                    }
                 } finally {
                     // Reset button state
                     submitBtn.disabled = false;
-                    submitText.classList.remove('hidden');
-                    loadingText.classList.add('hidden');
+                    submitText.classList.remove('visually-hidden');
+                    loadingText.classList.add('visually-hidden');
                 }
             });
         }
@@ -948,13 +970,9 @@
             }
         });
 
-        // Add smooth scrolling for better UX
+        // Initialize when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
-            // Add subtle animations to page elements
-            const elements = document.querySelectorAll('.transform');
-            elements.forEach(el => {
-                el.style.transition = 'all 0.3s ease';
-            });
+            // Any additional initialization can go here
         });
     </script>
 
