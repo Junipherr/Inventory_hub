@@ -1,3 +1,4 @@
+<!-- Sample page for qr code -->
 <div id="reader" style="width:300px;"></div>
 <p id="result">Scan result will show here</p>
 
