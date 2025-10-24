@@ -108,6 +108,11 @@
                                             <th class="border-0">
                                                 <i class="fas fa-envelope me-2"></i>Email
                                             </th>
+                                            @if($profiles->where('role', '!=', 'Admin')->count() > 0)
+                                            <th class="border-0">
+                                                <i class="fas fa-toggle-on me-2"></i>Allow Status Updates
+                                            </th>
+                                            @endif
                                             <th class="border-0">
                                                 <i class="fas fa-door-open me-2"></i>Room
                                             </th>
@@ -134,11 +139,32 @@
                                                 <td>
                                                     <span class="text-muted">{{ $profile->email }}</span>
                                                 </td>
+                                                @if($profiles->where('role', '!=', 'Admin')->count() > 0)
+                                                @if($profile->role !== 'Admin')
+                                                <td>
+                                                    <button type="button"
+                                                            class="btn btn-sm status-toggle-btn {{ $profile->can_update_status ? 'btn-success' : 'btn-secondary' }}"
+                                                            id="status-toggle-{{ $profile->id }}"
+                                                            data-user-id="{{ $profile->id }}"
+                                                            data-current-status="{{ $profile->can_update_status }}">
+                                                        <i class="fas {{ $profile->can_update_status ? 'fa-toggle-on' : 'fa-toggle-off' }} me-1"></i>
+                                                        {{ $profile->can_update_status ? 'Enabled' : 'Disabled' }}
+                                                    </button>
+                                                </td>
+                                                @else
+                                                <td></td>
+                                                @endif
+                                                @endif
                                                 <td>
                                                     @if($profile->room)
                                                         <span class="text-dark">
                                                             <i class="fas fa-door-open text-success me-1"></i>
                                                             {{ $profile->room->name }}
+                                                        </span>
+                                                    @elseif($profile->role === 'Admin')
+                                                        <span class="text-primary">
+                                                            <i class="fas fa-crown me-1"></i>
+                                                            admin
                                                         </span>
                                                     @else
                                                         <span class="text-secondary">
@@ -154,17 +180,24 @@
                                                 </td>
                                                 <td class="text-end">
                                                     <div class="btn-group" role="group">
-                                                    <button type="button" 
-                                                            class="btn btn-sm btn-outline-info" 
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-outline-info"
                                                             onclick="showProfileInfo({{ $profile->id }})"
-                                                            data-bs-toggle="tooltip" 
+                                                            data-bs-toggle="tooltip"
                                                             title="View Profile Info">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
-                                                        <button type="button" 
-                                                                class="btn btn-sm btn-outline-danger" 
+                                                        <button type="button"
+                                                                class="btn btn-sm btn-outline-primary"
+                                                                onclick="openEditModal({{ $profile->id }})"
+                                                                data-bs-toggle="tooltip"
+                                                                title="Edit Profile">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button type="button"
+                                                                class="btn btn-sm btn-outline-danger"
                                                                 onclick="deleteProfile({{ $profile->id }})"
-                                                                data-bs-toggle="tooltip" 
+                                                                data-bs-toggle="tooltip"
                                                                 title="Delete Profile">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
@@ -199,6 +232,11 @@
                                                             <i class="fas fa-door-open text-success me-1"></i>
                                                             {{ $profile->room->name }}
                                                         </span>
+                                                    @elseif($profile->role === 'Admin')
+                                                        <span class="text-primary">
+                                                            <i class="fas fa-crown me-1"></i>
+                                                            admin
+                                                        </span>
                                                     @else
                                                         <span class="text-secondary">
                                                             <i class="fas fa-minus-circle me-1"></i>
@@ -206,14 +244,36 @@
                                                         </span>
                                                     @endif
                                                 </div>
-                                                <div class="col-6 text-end">
+                                                @if($profiles->where('role', '!=', 'Admin')->count() > 0)
+                                                @if($profile->role !== 'Admin')
+                                                <div class="col-4">
+                                                    <small class="text-muted d-block">Allow Status Updates</small>
+                                                    <button type="button"
+                                                            class="btn btn-sm status-toggle-btn {{ $profile->can_update_status ? 'btn-success' : 'btn-secondary' }}"
+                                                            id="status-toggle-mobile-{{ $profile->id }}"
+                                                            data-user-id="{{ $profile->id }}"
+                                                            data-current-status="{{ $profile->can_update_status }}">
+                                                        <i class="fas {{ $profile->can_update_status ? 'fa-toggle-on' : 'fa-toggle-off' }} me-1"></i>
+                                                        {{ $profile->can_update_status ? 'Enabled' : 'Disabled' }}
+                                                    </button>
+                                                </div>
+                                                @else
+                                                <div class="col-4"></div>
+                                                @endif
+                                                @endif
+                                                <div class="col-4 text-end">
                                                     <small class="text-muted d-block">Created</small>
                                                     <span>{{ $profile->created_at->format('M d, Y') }}</span>
                                                 </div>
                                             </div>
                                             
                                             <div class="d-flex gap-2">
-                                                <button type="button" 
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-primary flex-fill"
+                                                        onclick="openEditModal({{ $profile->id }})">
+                                                    <i class="fas fa-edit me-1"></i>Edit
+                                                </button>
+                                                <button type="button"
                                                         class="btn btn-sm btn-outline-danger flex-fill"
                                                         onclick="deleteProfile({{ $profile->id }})">
                                                     <i class="fas fa-trash me-1"></i>Delete
@@ -274,7 +334,7 @@
                                     <span class="input-group-text">
                                         <i class="fas fa-lock"></i>
                                     </span>
-                                    <input id="password" type="password" class="form-control" name="password" required 
+                                    <input id="password" type="password" class="form-control" name="password" required
                                            placeholder="Enter secure password">
                                     <button class="btn btn-outline-secondary" type="button" id="togglePassword">
                                         <i class="fas fa-eye"></i>
@@ -282,6 +342,8 @@
                                 </div>
                                 <div class="invalid-feedback" id="error-password"></div>
                             </div>
+
+
 
                             <div class="mb-0">
                                 <label for="password_confirmation" class="form-label fw-semibold">Confirm Password</label>
@@ -312,7 +374,91 @@
             </div>
         </div>
 
-        <!-- Edit Profile Modal removed - edit profile functionality no longer available -->
+        <!-- Edit Profile Modal -->
+        <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-primary text-white border-0">
+                        <h5 class="modal-title" id="editProfileModalLabel">
+                            <i class="fas fa-user-edit me-2"></i>
+                            Edit Profile
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <form id="profileEditForm" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-body">
+                            <div class="mb-4">
+                                <label for="edit_name" class="form-label fw-semibold">Full Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                    <input id="edit_name" type="text" class="form-control" name="name" required autofocus
+                                           placeholder="Enter full name">
+                                </div>
+                                <div class="invalid-feedback" id="error-edit-name"></div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="edit_room_name" class="form-label fw-semibold">Room Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-door-open"></i>
+                                    </span>
+                                    <input id="edit_room_name" type="text" class="form-control" name="room_name" required
+                                           placeholder="Enter room name">
+                                </div>
+                                <div class="invalid-feedback" id="error-edit-room_name"></div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="edit_password" class="form-label fw-semibold">New Password (Optional)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input id="edit_password" type="password" class="form-control" name="password"
+                                           placeholder="Leave blank to keep current password">
+                                    <button class="btn btn-outline-secondary" type="button" id="toggleEditPassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback" id="error-edit-password"></div>
+                            </div>
+
+
+
+                            <div class="mb-0">
+                                <label for="edit_password_confirmation" class="form-label fw-semibold">Confirm New Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input id="edit_password_confirmation" type="password" class="form-control" name="password_confirmation"
+                                           placeholder="Confirm new password">
+                                    <button class="btn btn-outline-secondary" type="button" id="toggleEditPasswordConfirm">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback" id="error-edit-password_confirmation"></div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer border-0">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </button>
+                            <button type="submit" id="updateButton" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Enhanced JavaScript -->
@@ -584,10 +730,10 @@
                     const profile = data.profile;
                     document.getElementById('edit_name').value = profile.name;
                     document.getElementById('edit_room_name').value = profile.room ? profile.room.name : '';
-                    
+
                     // Update form action URL
                     document.getElementById('profileEditForm').action = `/profile/${profileId}`;
-                    
+
                     // Show modal
                     const editModal = new bootstrap.Modal(document.getElementById('editProfileModal'));
                     editModal.show();
@@ -728,6 +874,8 @@
             }
         });
 
+
+
         // Ensure CSRF token is available
         if (!document.querySelector('meta[name="csrf-token"]')) {
             const meta = document.createElement('meta');
@@ -744,11 +892,66 @@
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
                 card.style.transition = 'all 0.3s ease';
-                
+
                 setTimeout(() => {
                     card.style.opacity = '1';
                     card.style.transform = 'translateY(0)';
                 }, index * 100);
+            });
+
+            // Handle status toggle button clicks
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('status-toggle-btn') || e.target.closest('.status-toggle-btn')) {
+                    const button = e.target.classList.contains('status-toggle-btn') ? e.target : e.target.closest('.status-toggle-btn');
+                    const userId = button.getAttribute('data-user-id');
+                    const currentStatus = button.getAttribute('data-current-status') === 'true';
+
+                    // Disable button to prevent multiple clicks
+                    button.disabled = true;
+                    button.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span>Updating...';
+
+                    // Send AJAX request to toggle status
+                    fetch(`/profile/${userId}/toggle-status`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update button appearance
+                            const newStatus = data.can_update_status;
+                            button.setAttribute('data-current-status', newStatus.toString());
+
+                            if (newStatus) {
+                                button.classList.remove('btn-secondary');
+                                button.classList.add('btn-success');
+                                button.innerHTML = '<i class="fas fa-toggle-on me-1"></i>Enabled';
+                            } else {
+                                button.classList.remove('btn-success');
+                                button.classList.add('btn-secondary');
+                                button.innerHTML = '<i class="fas fa-toggle-off me-1"></i>Disabled';
+                            }
+
+                            // Show success message
+                            showSuccessMessage(data.message);
+                        } else {
+                            showErrorMessage(data.message || 'Failed to update status');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showErrorMessage('An error occurred while updating the status');
+                    })
+                    .finally(() => {
+                        // Re-enable button
+                        button.disabled = false;
+                    });
+                }
             });
         });
 

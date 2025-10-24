@@ -80,19 +80,34 @@ class UserProfileController extends Controller
             // Auto-generate email if not provided
             $email = $request->email;
             if (!$email) {
-                // Generate email based on name and unique identifier
-                $baseName = strtolower(preg_replace('/[^a-z0-9]/', '', str_replace(' ', '', $request->name)));
-                $uniqueId = uniqid() . rand(1000, 9999);
-                $email = $baseName . '.' . $uniqueId . '@inventory.local';
-                
-                // Ensure uniqueness with a more robust approach
+                // Generate email based on name parts
+                $nameParts = explode(' ', trim($request->name));
+                $firstName = strtolower($nameParts[0]);
+                $lastName = isset($nameParts[1]) ? strtolower($nameParts[1]) : '';
+
+                // Clean names to remove special characters
+                $firstName = preg_replace('/[^a-z0-9]/', '', $firstName);
+                $lastName = preg_replace('/[^a-z0-9]/', '', $lastName);
+
+                // Generate base email
+                if ($lastName) {
+                    $baseEmail = $firstName . '.' . $lastName . '@email.com';
+                } else {
+                    $baseEmail = $firstName . '@email.com';
+                }
+
+                // Check uniqueness and add number if needed
+                $email = $baseEmail;
                 $counter = 1;
-                $originalEmail = $email;
                 while (User::where('email', $email)->exists()) {
-                    $email = $baseName . '.' . $uniqueId . '_' . $counter . '@inventory.local';
+                    if ($lastName) {
+                        $email = $firstName . '.' . $lastName . $counter . '@email.com';
+                    } else {
+                        $email = $firstName . $counter . '@email.com';
+                    }
                     $counter++;
                     if ($counter > 100) { // Prevent infinite loops
-                        $email = 'user.' . uniqid() . '@inventory.local';
+                        $email = 'user.' . uniqid() . '@email.com';
                         break;
                     }
                 }
@@ -104,6 +119,7 @@ class UserProfileController extends Controller
                 'email' => $email,
                 'password' => Hash::make($request->password),
                 'room_id' => $room->id,
+                'can_update_status' => false, // Default to false for new users
             ]);
 
             return response()->json([
@@ -154,6 +170,7 @@ class UserProfileController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'room' => $user->room,
+                    'can_update_status' => $user->can_update_status,
                     'created_at' => $user->created_at->format('M d, Y'),
                     'password_info' => [
                         'has_password' => $hasPassword,
@@ -173,6 +190,124 @@ class UserProfileController extends Controller
     }
 
     /**
+     * Show the form for editing the specified profile
+     */
+    public function edit($id)
+    {
+        try {
+            $user = User::with(['room'])->findOrFail($id);
+
+            return response()->json([
+                'success' => true,
+                'profile' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'room' => $user->room,
+                    'can_update_status' => $user->can_update_status,
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error loading profile for edit: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load profile information'
+            ], 500);
+        }
+    }
+
+    /**
+     * Update the specified profile
+     */
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'room_name' => 'required|string|max:255',
+            'password' => 'nullable|string|min:8|confirmed',
+        ], [
+            'name.required' => 'Full name is required.',
+            'name.string' => 'Name must be a valid text.',
+            'name.max' => 'Name must not exceed 255 characters.',
+            'room_name.required' => 'Room name is required.',
+            'room_name.string' => 'Room name must be a valid text.',
+            'room_name.max' => 'Room name must not exceed 255 characters.',
+            'password.string' => 'Password must be a valid text.',
+            'password.min' => 'Password must be at least 8 characters long.',
+            'password.confirmed' => 'Password confirmation does not match the password.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+                'error_type' => 'validation'
+            ], 422);
+        }
+
+        try {
+            $user = User::findOrFail($id);
+
+            // Create or find room
+            $room = Room::firstOrCreate(['name' => $request->room_name]);
+
+            // Update user data
+            $updateData = [
+                'name' => $request->name,
+                'room_id' => $room->id,
+            ];
+
+            // Only update password if provided
+            if ($request->filled('password')) {
+                $updateData['password'] = Hash::make($request->password);
+            }
+
+            $user->update($updateData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Profile updated successfully!',
+                'user' => $user->load('room')
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Update failed. Please try again.',
+                'errors' => ['general' => [$e->getMessage()]]
+            ], 500);
+        }
+    }
+
+    /**
+     * Toggle the status update permission for a user
+     */
+    public function toggleStatus($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+
+            // Toggle the can_update_status field
+            $user->can_update_status = !$user->can_update_status;
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status update permission ' . ($user->can_update_status ? 'enabled' : 'disabled') . ' successfully!',
+                'can_update_status' => $user->can_update_status
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to toggle status permission. Please try again.'
+            ], 500);
+        }
+    }
+
+    /**
      * Remove the specified profile
      */
     public function destroy($id)
@@ -180,12 +315,12 @@ class UserProfileController extends Controller
         try {
             $user = User::findOrFail($id);
             $user->delete();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Profile deleted successfully!'
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -218,6 +353,15 @@ class UserProfileController extends Controller
      */
     public function updateStatus(Request $request)
     {
+        // Check if user has permission to update item status
+        $user = auth()->user();
+        if (!$user || !$user->canUpdateStatus()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to update item statuses. Please contact your administrator to grant you access.'
+            ], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'status' => 'required|array',
             'status.*' => 'required|string|max:255',
@@ -239,6 +383,7 @@ class UserProfileController extends Controller
                 $unit = \App\Models\ItemUnit::find($unitId);
                 if ($unit) {
                     $unit->status = $status;
+                    $unit->last_checked_at = now();
                     $unit->save();
                     $updatedCount++;
                 }

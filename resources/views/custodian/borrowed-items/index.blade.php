@@ -69,15 +69,12 @@
                                class="btn btn-sm {{ request('filter') == 'returned' ? 'btn-primary' : 'btn-secondary' }}">
                                 Returned
                             </a>
-                            <a href="{{ route('custodian.borrowed-items', ['filter' => 'due-today') }}" 
-                               class="btn btn-sm {{ request('filter') == 'due-today' ? 'btn-primary' : 'btn-secondary' }}">
-                                Due Today
-                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Borrowed Items Table -->
+            <!-- Borrowed Items Table -->
             <div class="items-table-container">
                 <div class="table-responsive">
                     <table class="table table-hover">
@@ -86,35 +83,35 @@
                                 <th>Item</th>
                                 <th>Borrower</th>
                                 <th>Quantity</th>
-                        <th>Due Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($borrowedItems as $item)
-                        <tr>
-                            <td>
-                                <strong>{{ $item->item_name }}</strong>
-                                <small>{{ $item->room_name ?? 'N/A' }}</small>
-                            </td>
-                            <td>{{ $item->borrower_name }}</td>
-                            <td>{{ $item->quantity }}</td>
-                            <td>{{ $item->due_date->format('M d, Y') }}</td>
-                            <td>
-                                <span class="badge {{ $item->getStatusBadgeClass() }}">
-                                    {{ $item->getStatusText() }}
-                                </span>
-                            </td>
-                            <td>
-                                <a href="{{ route('custodian.borrow-requests.show', $item->id) }}" 
-                                   class="btn btn-sm btn-info">
-                                    View
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($borrowedItems as $item)
+                                <tr>
+                                    <td>
+                                        <strong>{{ $item->item_name }}</strong>
+                                        <small>{{ $item->room_name ?? 'N/A' }}</small>
+                                    </td>
+                                    <td>{{ $item->borrower_name }}</td>
+                                    <td>{{ $item->quantity }}</td>
+                                    <td>{{ $item->due_date->format('M d, Y') }}</td>
+                                    <td>
+                                        <span class="badge {{ $item->getStatusBadgeClass() }}">
+                                            {{ $item->getStatusText() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('custodian.borrow-requests.show', $item->id) }}" 
+                                           class="btn btn-sm btn-info">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
                     </table>
                 </div>
             </div>

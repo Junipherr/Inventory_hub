@@ -28,6 +28,7 @@ class User extends Authenticatable
         'custodian_id',
         'room_id',
         'password_updated_at',
+        'can_update_status',
     ];
 
     /**
@@ -82,6 +83,16 @@ class User extends Authenticatable
     public function isViewer(): bool
     {
         return $this->role === 'Viewer';
+    }
+
+    /**
+     * Check if the user can update item status.
+     *
+     * @return bool
+     */
+    public function canUpdateStatus(): bool
+    {
+        return $this->role === 'Admin' || $this->can_update_status;
     }
 
     /**

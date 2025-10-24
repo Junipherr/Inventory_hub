@@ -1,3 +1,6 @@
+@php
+    use SimpleSoftwareIO\QrCode\Facades\QrCode;
+@endphp
 <x-main-layout>
     @push('head')
     <meta name="csrf-token" content="{{ csrf_token() }}">

@@ -233,6 +233,15 @@ class InventoryController extends Controller
 
     public function updateCheckedItems(Request $request)
     {
+        // Check if user has permission to update item status
+        $user = auth()->user();
+        if (!$user || !$user->canUpdateStatus()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to update item statuses. Please contact your administrator.'
+            ], 403);
+        }
+
         $validated = $request->validate([
             'status' => 'required|array',
             'status.*' => 'required|string|max:255',
@@ -319,13 +328,13 @@ class InventoryController extends Controller
                 $qrData = $item->qr_code;
             }
 
-            $qrCode = QrCode::format('png')
+            $qrCode = QrCode::format('svg')
                            ->size(300)
                            ->margin(2)
                            ->generate($qrData);
 
             return response($qrCode)
-                   ->header('Content-Type', 'image/png')
+                   ->header('Content-Type', 'image/svg+xml')
                    ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
         } catch (\Exception $e) {
             \Log::error('QR Code Generation Error: ' . $e->getMessage());

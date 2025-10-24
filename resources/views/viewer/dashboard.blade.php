@@ -1,3 +1,6 @@
+@php
+    use SimpleSoftwareIO\QrCode\Facades\QrCode;
+@endphp
 <x-main-layout>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +18,7 @@
         </div>
 
         <!-- Error Notification -->
-        <div id="errorMessage" class="alert alert-danger" style="display: none;">
+        <div id="errorMessage" class="alert alert-danger" style="position: fixed; top: 10px; right: 10px; z-index: 1050; width: auto; max-width: 300px; display: none;">
             <span id="errorText"></span>
         </div>
 
@@ -112,53 +115,38 @@
                 @else
                     <form method="POST" action="{{ route('viewer.update-status') }}" id="viewerForm">
                         @csrf
-                        <div class="items-table-container">
-                            <div class="table-responsive">
-                                <table class="table table-hover table-sm" id="itemsTable">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th class="d-none d-md-table-cell">Item</th>
-                                            <th class="d-table-cell d-md-none">Item</th>
-                                            <th class="d-none d-sm-table-cell">Room</th>
-                                            <th class="d-none d-sm-table-cell">Category</th>
-                                            <th class="d-none d-sm-table-cell">Qty</th>
-                                            <th>Status</th>
-                                            <th class="text-center">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($items as $item)
-                                            @foreach ($item->units as $unit)
-                                                <tr class="item-row" 
-                                                    data-item-id="{{ $item->id }}"
-                                                    data-unit-id="{{ $unit->id }}"
-                                                    data-qr-code="{{ $unit->qr_code ?? '' }}"
-                                                    data-item-name="{{ $item->item_name }}"
-                                                    data-room="{{ $item->room->name ?? 'N/A' }}"
-                                                    data-category="{{ ucwords(str_replace('_', ' ', $item->category_id)) }}"
-                                                    data-item-description="{{ $item->description ?? '' }}"
-                                                    data-item-quantity="{{ $item->quantity ?? '' }}"
-                                                    data-item-qr="{{ $item->qr_code ?? '' }}">
-                                                    
-                                                <td>
-                                                    <div class="item-info">
-                                                        <strong class="d-block">{{ $item->item_name }}</strong>
-                                                        <small class="text-muted d-none d-md-block">{{ Str::limit($item->description, 50) }}</small>
-                                                        <small class="text-muted d-block d-sm-none">{{ Str::limit($item->description, 20) }}</small>
-                                                    </div>
-                                                </td>
-                                                <td class="d-none d-sm-table-cell">
-                                                    <span class="badge bg-secondary">{{ $item->room->name ?? 'N/A' }}</span>
-                                                </td>
-                                                <td class="d-none d-sm-table-cell">
-                                                    <span class="badge bg-info">{{ ucwords(str_replace('_', ' ', $item->category_id)) }}</span>
-                                                </td>
-                                                <td class="d-none d-sm-table-cell">
-                                                    <span class="badge bg-primary">{{ $item->quantity }}</span>
-                                                </td>
-                                                <td>
-                                                    <select name="status[{{ $unit->id }}]" 
-                                                            class="form-select form-select-sm status-select"
+                        <div class="row" id="itemsGrid">
+                            @foreach ($items as $item)
+                                <div class="col-lg-4 col-md-6 mb-4 item-card">
+                                    <div class="card border-left-info shadow-sm h-100">
+                                        <div class="card-header bg-light py-2">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h6 class="mb-0 font-weight-bold text-primary">
+                                                    {{ $item->item_name }}
+                                                </h6>
+                                                <span class="badge bg-info text-white">
+                                                    {{ $item->quantity }}x
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="text-muted small mb-2">
+                                                <i class="fas fa-tag mr-1"></i>
+                                                {{ ucwords(str_replace('_', ' ', $item->category_id)) }}
+                                            </p>
+                                            <p class="text-muted small mb-2">
+                                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                                {{ $room->name ?? 'N/A' }}
+                                            </p>
+                                            <p class="text-muted small mb-3">
+                                                {{ Str::limit($item->description, 50) }}
+                                            </p>
+
+                                            <div class="mb-3">
+                                                <label class="form-label small">Status</label>
+                                                @foreach ($item->units as $unit)
+                                                    <select name="status[{{ $unit->id }}]"
+                                                            class="form-select form-select-sm status-select mb-1"
                                                             data-unit-id="{{ $unit->id }}">
                                                         @php
                                                             $statuses = [
@@ -174,38 +162,43 @@
                                                             ];
                                                         @endphp
                                                         @foreach ($statuses as $value => $label)
-                                                            <option value="{{ $value }}" 
+                                                            <option value="{{ $value }}"
                                                                 {{ ($unit->status ?? '') == $value ? 'selected' : '' }}>
                                                                 {{ $label }}
                                                             </option>
                                                         @endforeach
                                                     </select>
-                                                </td>
-                                                <td class="text-center">
-                                                    <button type="button" 
-                                                            class="btn btn-sm btn-outline-primary view-details"
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#itemInfoModal">
-                                                        <i class="fas fa-eye"></i> View
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                                                @endforeach
+                                            </div>
 
-                    <div class="submit-section">
-                        <div id="errorMessage" class="alert alert-danger" style="display: none;">
-                            <span id="errorText"></span>
+                                            <div class="d-flex gap-1">
+                                                <button type="button"
+                                                        class="btn btn-primary btn-sm flex-fill view-details"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#itemInfoModal"
+                                                        data-item-id="{{ $item->id }}"
+                                                        data-item-name="{{ $item->item_name }}"
+                                                        data-room="{{ $item->room->name ?? 'N/A' }}"
+                                                        data-category="{{ ucwords(str_replace('_', ' ', $item->category_id)) }}"
+                                                        data-quantity="{{ $item->quantity }}"
+                                                        data-description="{{ $item->description ?? '' }}"
+                                                        data-qr="{{ $item->qr_code ?? '' }}">
+                                                    <i class="fas fa-eye mr-1"></i>
+                                                    Details
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
-                        <button type="submit" form="viewerForm" class="btn btn-success btn-lg" id="submitBtn">
-                            <i class="fas fa-save"></i> Save Changes
-                        </button>
-                    </div>
-                </form>
+
+                        <div class="submit-section mt-4">
+                            <button type="submit" form="viewerForm" class="btn btn-success btn-lg" id="submitBtn">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
                 @endif
             </div>
         </div>
@@ -300,14 +293,17 @@
                                 <div class="detail-item">
                                     <label>QR Code:</label>
                                    <div id="modalQRCode">
-                                        <div id="qrcode-container-{{ $item->id }}" class="d-flex justify-content-center">
-                                            <img src="data:image/svg+xml;base64,{{ base64_encode(QrCode::format('svg')->size(128)->margin(2)->generate($item->qr_code ?? 'N/A')) }}" 
-                                                 alt="QR Code for {{ $item->item_name }}" 
+                                        <div id="qrcode-container" class="d-flex justify-content-center">
+                                            <img id="modalQRImage" src=""
+                                                 alt="QR Code"
                                                  class="border rounded p-2"
-                                                 style="width: 128px; height: 128px;">
+                                                 style="width: 128px; height: 128px; display: none;">
+                                            <div id="qrLoading" class="text-center">
+                                                <i class="fas fa-spinner fa-spin"></i> Loading QR Code...
+                                            </div>
                                         </div>
                                         <small class="text-muted d-flex justify-content-center">
-                                            Code: <code class="small">{{ $item->qr_code ?? 'N/A' }}</code>
+                                            Code: <code class="small" id="modalQRText"></code>
                                         </small>
                                     </div>
                                 </div>

@@ -1,3 +1,6 @@
+@php
+    use SimpleSoftwareIO\QrCode\Facades\QrCode;
+@endphp
 <x-main-layout>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -299,14 +302,17 @@
                                 <div class="detail-item">
                                     <label>QR Code:</label>
                                     <div id="modalQRCode">
-                                        <div id="qrcode-container-{{ $item->id }}" class="d-flex justify-content-center">
-                                            <img src="data:image/svg+xml;base64,{{ base64_encode(QrCode::format('svg')->size(128)->margin(2)->generate($item->qr_code ?? 'N/A')) }}" 
-                                                 alt="QR Code for {{ $item->item_name }}" 
+                                        <div id="qrcode-container" class="d-flex justify-content-center">
+                                            <img id="modalQRImage" src=""
+                                                 alt="QR Code"
                                                  class="border rounded p-2"
-                                                 style="width: 128px; height: 128px;">
+                                                 style="width: 128px; height: 128px; display: none;">
+                                            <div id="qrLoading" class="text-center">
+                                                <i class="fas fa-spinner fa-spin"></i> Loading QR Code...
+                                            </div>
                                         </div>
                                         <small class="text-muted d-flex justify-content-center">
-                                            Code: <code class="small">{{ $item->qr_code ?? 'N/A' }}</code>
+                                            Code: <code class="small" id="modalQRText"></code>
                                         </small>
                                     </div>
                                 </div>

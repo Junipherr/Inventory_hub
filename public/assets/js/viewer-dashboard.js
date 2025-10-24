@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Search functionality
     const searchInput = document.getElementById('searchItems');
-    const tableRows = document.querySelectorAll('.item-row');
+    const itemCards = document.querySelectorAll('.item-card');
     const totalItemsSpan = document.getElementById('totalItems');
 
     // Status legend modal
@@ -26,22 +26,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const searchTerm = this.value.toLowerCase();
             let visibleCount = 0;
 
-            tableRows.forEach(row => {
-                const itemName = row.dataset.itemName.toLowerCase();
-                const room = row.dataset.room.toLowerCase();
-                const category = row.dataset.category.toLowerCase();
-                const description = row.dataset.itemDescription.toLowerCase();
-                
-                const matches = itemName.includes(searchTerm) || 
-                               room.includes(searchTerm) || 
-                               category.includes(searchTerm) || 
+            itemCards.forEach(card => {
+                const itemName = card.querySelector('.card-header h6').textContent.toLowerCase();
+                const category = card.querySelector('.card-body p:nth-child(1)').textContent.toLowerCase();
+                const room = card.querySelector('.card-body p:nth-child(2)').textContent.toLowerCase();
+                const description = card.querySelector('.card-body p:nth-child(3)').textContent.toLowerCase();
+
+                const matches = itemName.includes(searchTerm) ||
+                               category.includes(searchTerm) ||
+                               room.includes(searchTerm) ||
                                description.includes(searchTerm);
 
                 if (matches) {
-                    row.style.display = '';
+                    card.style.display = '';
                     visibleCount++;
                 } else {
-                    row.style.display = 'none';
+                    card.style.display = 'none';
                 }
             });
 
@@ -61,36 +61,66 @@ document.addEventListener('DOMContentLoaded', function() {
     // View item details
     document.querySelectorAll('.view-details').forEach(button => {
         button.addEventListener('click', function() {
-            const row = this.closest('.item-row');
-            const itemName = row.dataset.itemName;
-            const room = row.dataset.room;
-            const category = row.dataset.category;
-            const quantity = row.dataset.itemQuantity;
-            const description = row.dataset.itemDescription;
-            const qrCode = row.dataset.qrCode || row.dataset.itemQr;
-            const status = row.querySelector('.status-select').value;
+            const itemName = this.dataset.itemName;
+            const room = this.dataset.room;
+            const category = this.dataset.category;
+            const quantity = this.dataset.quantity;
+            const description = this.dataset.description;
+            const qrCode = this.dataset.qr;
 
             modalItemName.textContent = itemName;
             modalRoom.textContent = room;
             modalCategory.textContent = category;
             modalQuantity.textContent = quantity;
-            modalStatus.textContent = status;
             modalDescription.textContent = description || 'No description available';
 
-            // Update QR code
-            if (qrCode && qrCode !== 'N/A') {
-                const qrImage = qrcodeContainer.querySelector('img');
-                qrImage.src = `/inventory/qrcode/${encodeURIComponent(qrCode)}`;
-                qrImage.alt = `QR Code for ${itemName}`;
-            } else {
-                const qrImage = qrcodeContainer.querySelector('img');
-                qrImage.src = '';
-                qrImage.alt = 'No QR Code available';
-            }
+            // Update QR code dynamically
+            updateModalQRCode(qrCode, itemName);
 
             itemInfoModal.show();
         });
     });
+
+    // Function to update QR code in modal
+    function updateModalQRCode(qrCode, itemName) {
+        const qrImage = document.getElementById('modalQRImage');
+        const qrLoading = document.getElementById('qrLoading');
+        const modalQRText = document.getElementById('modalQRText');
+
+        if (qrCode && qrCode !== 'N/A') {
+            // Show loading
+            qrLoading.style.display = 'block';
+            qrImage.style.display = 'none';
+            modalQRText.textContent = qrCode;
+
+            // Generate QR code via AJAX
+            fetch(`/inventory/qrcode/${encodeURIComponent(qrCode)}`)
+                .then(response => response.text())
+                .then(svgText => {
+                    const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
+                    const url = URL.createObjectURL(svgBlob);
+                    qrImage.src = url;
+                    qrImage.alt = `QR Code for ${itemName}`;
+                    qrImage.style.display = 'block';
+                    qrLoading.style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error loading QR code:', error);
+                    qrImage.src = '';
+                    qrImage.alt = 'Error loading QR Code';
+                    qrImage.style.display = 'none';
+                    qrLoading.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error loading QR Code';
+                    qrLoading.style.display = 'block';
+                });
+        } else {
+            qrImage.src = '';
+            qrImage.alt = 'No QR Code available';
+            qrImage.style.display = 'none';
+            qrLoading.innerHTML = '<i class="fas fa-info-circle"></i> No QR Code available';
+            qrLoading.style.display = 'block';
+            modalQRText.textContent = 'N/A';
+        }
+    }
 
     // Form submission for status updates
     const viewerForm = document.getElementById('viewerForm');
@@ -122,18 +152,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     showSuccessMessage(data.message || 'Changes saved successfully!');
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
-                    
-                    // Update the status badges in the modal to reflect changes
-                    document.querySelectorAll('.status-select').forEach(select => {
-                        const row = select.closest('.item-row');
-                        const unitId = select.dataset.unitId;
-                        const newStatus = select.value;
-                        
-                        // Update modal status if it's open
-                        if (modalItemName.textContent === row.dataset.itemName) {
-                            modalStatus.textContent = newStatus;
-                        }
-                    });
                 } else {
                     showErrorMessage(data.message || 'Error saving changes. Please try again.');
                     submitBtn.disabled = false;
@@ -410,26 +428,27 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!codeToFind) return;
 
         let found = false;
-        let foundRow = null;
+        let foundCard = null;
 
-        tableRows.forEach(row => {
-            const rowQrCode = row.dataset.qrCode || row.dataset.itemQr;
-            if (rowQrCode && rowQrCode.toLowerCase() === codeToFind.toLowerCase()) {
+        itemCards.forEach(card => {
+            const cardQrCode = card.querySelector('.view-details').dataset.qr;
+            if (cardQrCode && cardQrCode.toLowerCase() === codeToFind.toLowerCase()) {
                 found = true;
-                foundRow = row;
-                
-                // Highlight the found row
-                row.style.backgroundColor = '#d4edda';
-                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
+                foundCard = card;
+
+                // Highlight the found card
+                card.style.backgroundColor = '#d4edda';
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
                 // Show success message
-                showSuccessMessage(`Found item: ${row.dataset.itemName}`);
-                
+                const itemName = card.querySelector('.card-header h6').textContent;
+                showSuccessMessage(`Found item: ${itemName}`);
+
                 // Remove highlight after 3 seconds
                 setTimeout(() => {
-                    row.style.backgroundColor = '';
+                    card.style.backgroundColor = '';
                 }, 3000);
-                
+
                 return;
             }
         });

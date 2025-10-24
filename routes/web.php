@@ -13,10 +13,10 @@ Route::get('/inventory/qrcode/{data}', [InventoryController::class, 'generateQRC
     ->name('inventory.qrcode')
     ->where('data', '.*'); // Allow any characters in the data parameter
 
-Route::get('/scanner', [InventoryController::class, 'scanner'])->middleware(['auth', 'verified', 'role:Admin'])->name('scanner');
+Route::get('/scanner', [InventoryController::class, 'scanner'])->middleware(['auth', 'verified', 'can.update.status'])->name('scanner');
 
-Route::post('/scanner/update', [InventoryController::class, 'updateCheckedItems'])->middleware(['auth', 'verified', 'role:Admin'])->name('scanner.update');
-Route::post('/scanner/manual-qr', [InventoryController::class, 'handleManualQrInput'])->middleware(['auth', 'verified', 'role:Admin'])->name('scanner.manual-qr');
+Route::post('/scanner/update', [InventoryController::class, 'updateCheckedItems'])->middleware(['auth', 'verified', 'can.update.status'])->name('scanner.update');
+Route::post('/scanner/manual-qr', [InventoryController::class, 'handleManualQrInput'])->middleware(['auth', 'verified', 'can.update.status'])->name('scanner.manual-qr');
 
 Route::get('/welcome', function () {
     return view('welcome');
@@ -84,9 +84,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/{id}', [UserProfileController::class, 'show'])
          ->name('profile.show')
          ->where('id', '[0-9]+');  // Ensure ID is numeric
-    // Edit profile functionality removed - no edit route needed
+    Route::get('/profile/{id}/edit', [UserProfileController::class, 'edit'])
+         ->name('profile.edit')
+         ->where('id', '[0-9]+');  // Ensure ID is numeric
     Route::post('/profile', [UserProfileController::class, 'store'])->name('profile.store');
-    // Update route removed - edit profile functionality no longer available
+    Route::put('/profile/{id}', [UserProfileController::class, 'update'])
+         ->name('profile.update')
+         ->where('id', '[0-9]+');  // Ensure ID is numeric
+    Route::post('/profile/{id}/toggle-status', [UserProfileController::class, 'toggleStatus'])
+         ->name('profile.toggle-status')
+         ->where('id', '[0-9]+');  // Ensure ID is numeric
     Route::delete('/profile/{id}', [UserProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/viewer/dashboard', [UserProfileController::class, 'viewerDashboard'])
@@ -94,7 +101,7 @@ Route::middleware('auth')->group(function () {
         ->name('viewer.dashboard');
     
     Route::post('/viewer/update-status', [UserProfileController::class, 'updateStatus'])
-        ->middleware('role:Viewer')
+        ->middleware(['role:Viewer', 'can.update.status'])
         ->name('viewer.update-status');
 
     Route::get('/viewer/borrow', [UserProfileController::class, 'showBorrowForm'])
