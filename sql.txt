@@ -1,5 +1,0 @@
-INSERT INTO users (name, email, password, role, created_at, updated_at)
-VALUES ('admin', 'junipherjunipher@gmail.com', '$2y$12$oC8LAaY2YEYtuurAHeTGfeMJGfdA0oQjdCkfOyQWctkMvDLtNrSnC', 'Admin', NOW(), NOW());
-php artisan tinker
-
->>> bcrypt('11111111')
