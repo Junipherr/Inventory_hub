@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>PAC Inventory | Philippine Advent College Inc.</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <style>
         body {
             font-family: 'Poppins', sans-serif;
         }
         .hero-gradient {
             background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
-        }
-        .no-click {
-            pointer-events: none;
         }
     </style>
 </head>
@@ -23,18 +20,18 @@
     <header class="bg-white shadow-sm">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center">
-                <img src="{{ asset('assets/img/logos/pac.png') }}" alt="PAC Logo" class="w-10 h-10 mr-3 object-contain">
+                <img src="{{ asset('assets/img/logos/pac.png') }}" alt="PAC Logo" class="w-10 h-10 mr-3 object-contain" />
                 <h1 class="text-xl font-bold text-blue-800"><span class="text-blue-600">Inventory</span></h1>
             </div>
-            <div class="hidden md:flex items-center space-x-8">
-                <span class="text-gray-600 no-click">Home</span>
-                <span class="text-gray-600 no-click">About</span>
-                <span class="text-gray-600 no-click">Inventory</span>
-                <span class="text-gray-600 no-click">Contact</span>
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="{{ url('/') }}" class="text-gray-600 font-semibold hover:text-blue-600 transition">Home</a>
+                <a href="#about" class="text-gray-600 font-semibold hover:text-blue-600 transition">About</a>
+                <a href="{{ route('inventory.items') }}" class="text-gray-600 font-semibold hover:text-blue-600 transition">Inventory</a>
+                <a href="#contact" class="text-gray-600 font-semibold hover:text-blue-600 transition">Contact</a>
                 <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition">
                     Login
                 </a>
-            </div>
+            </nav>
             <button class="md:hidden text-gray-600 focus:outline-none" id="mobile-menu-button">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -42,15 +39,15 @@
             </button>
         </div>
         <div class="md:hidden" id="mobile-menu" style="display: none;">
-            <div class="flex flex-col items-center space-y-4 py-4">
-                <span class="text-gray-600 no-click">Home</span>
-                <span class="text-gray-600 no-click">About</span>
-                <span class="text-gray-600 no-click">Inventory</span>
-                <span class="text-gray-600 no-click">Contact</span>
+            <nav class="flex flex-col items-center space-y-4 py-4">
+                <a href="{{ url('/') }}" class="text-gray-600 font-semibold hover:text-blue-600 transition">Home</a>
+                <a href="#about" class="text-gray-600 font-semibold hover:text-blue-600 transition">About</a>
+                <a href="{{ route('inventory.items') }}" class="text-gray-600 font-semibold hover:text-blue-600 transition">Inventory</a>
+                <a href="#contact" class="text-gray-600 font-semibold hover:text-blue-600 transition">Contact</a>
                 <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition">
                     Login
                 </a>
-            </div>
+            </nav>
         </div>
     </header>
 
@@ -61,19 +58,19 @@
                 <h1 class="text-4xl md:text-5xl font-bold mb-4">Streamline Your School Inventory</h1>
                 <p class="text-xl mb-8 opacity-90">Philippine Advent College Inc. presents an efficient digital inventory management system for all your academic resources.</p>
                 <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-                    <span class="bg-white text-blue-700 px-6 py-3 rounded-lg font-medium shadow-md no-click inline-block">
+                    <a href="{{ route('inventory.items') }}" class="bg-white text-blue-700 px-6 py-3 rounded-lg font-medium shadow-md inline-block text-center transition hover:bg-gray-100">
                         Explore Inventory
-                    </span>
-                    <span class="border-2 border-white text-white px-6 py-3 rounded-lg font-medium no-click inline-block">
+                    </a>
+                    <a href="#about" class="border-2 border-white text-white px-6 py-3 rounded-lg font-medium inline-block text-center transition hover:bg-white hover:text-blue-700">
                         Learn More
-                    </span>
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section class="py-16 bg-white">
+    <section class="py-16 bg-white" id="about">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Inventory Management Features</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -109,7 +106,7 @@
     </section>
 
     <!-- Login CTA Section -->
-    <section class="py-16 bg-gray-100">
+    <section class="py-16 bg-gray-100" id="contact">
         <div class="container mx-auto px-6 text-center">
             <h2 class="text-3xl font-bold text-gray-800 mb-6">Ready to Manage Your Inventory?</h2>
             <p class="text-gray-600 max-w-2xl mx-auto mb-8">
@@ -138,30 +135,30 @@
                     <div>
                         <h4 class="font-semibold mb-3">Quick Links</h4>
                         <ul class="space-y-2">
-                            <li><span class="text-gray-400 no-click">Home</span></li>
-                            <li><span class="text-gray-400 no-click">About</span></li>
-                            <li><span class="text-gray-400 no-click">Inventory</span></li>
+                            <li><a href="{{ url('/') }}" class="text-gray-400 hover:text-white">Home</a></li>
+                            <li><a href="#about" class="text-gray-400 hover:text-white">About</a></li>
+                            <li><a href="{{ route('inventory.items') }}" class="text-gray-400 hover:text-white">Inventory</a></li>
                         </ul>
                     </div>
                     <div>
                         <h4 class="font-semibold mb-3">Support</h4>
                         <ul class="space-y-2">
-                            <li><span class="text-gray-400 no-click">Help Center</span></li>
-                            <li><span class="text-gray-400 no-click">Contact Us</span></li>
-                            <li><span class="text-gray-400 no-click">FAQ</span></li>
+                            <li><a href="#contact" class="text-gray-400 hover:text-white">Help Center</a></li>
+                            <li><a href="#contact" class="text-gray-400 hover:text-white">Contact Us</a></li>
+                            <li><a href="#contact" class="text-gray-400 hover:text-white">FAQ</a></li>
                         </ul>
                     </div>
                     <div>
                         <h4 class="font-semibold mb-3">Legal</h4>
                         <ul class="space-y-2">
-                            <li><span class="text-gray-400 no-click">Privacy Policy</span></li>
-                            <li><span class="text-gray-400 no-click">Terms of Service</span></li>
+                            <li><span class="text-gray-400">Privacy Policy</span></li>
+                            <li><span class="text-gray-400">Terms of Service</span></li>
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400">
-                <p>© 2023 Philippine Advent College Inc. All rights reserved.</p>
+                <p>© 2025 Philippine Advent College Inc. All rights reserved.</p>
             </div>
         </div>
     </footer>

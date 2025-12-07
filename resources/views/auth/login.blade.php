@@ -57,6 +57,7 @@
             padding: 40px 30px;
             text-align: center;
             color: white;
+            user-select: none;
         }
         
         .login-header h1 {
@@ -82,30 +83,49 @@
             display: block;
             font-size: 14px;
             font-weight: 600;
-            color: #374151;
+            color: #2d3748; /* increased contrast */
             margin-bottom: 8px;
+            user-select: none;
         }
         
         .form-input {
             width: 100%;
             padding: 12px 48px; /* space for both left and right icons */
-            border: 1px solid #d1d5db;
+            border: 1px solid #cbd5e0;
             border-radius: 8px;
             font-size: 16px;
             transition: all 0.3s ease;
             background: #f9fafb;
+            color: #1a202c;
+        }
+        
+        .form-input::placeholder {
+            color: #a0aec0; /* better readability */
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        
+        .form-input:focus::placeholder {
+            opacity: 0.5;
         }
         
         .form-input:focus {
-            outline: none;
-            border-color: #667eea;
+            outline: 3px solid #667eea; /* enhanced focus outline for accessibility */
             background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
         }
         
         .form-input.error {
             border-color: #ef4444;
             background: #fef2f2;
+            animation: shake 0.3s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
         }
         
         .input-icon {
@@ -121,6 +141,7 @@
             color: #9ca3af;
             font-size: 16px;
             z-index: 2;
+            pointer-events: none;
         }
 
         /* Right-side show/hide password icon */
@@ -151,12 +172,14 @@
             height: 16px;
             margin-right: 8px;
             accent-color: #667eea;
+            cursor: pointer;
         }
         
         .checkbox-label {
             font-size: 14px;
-            color: #6b7280;
+            color: #4a5568;
             cursor: pointer;
+            user-select: none;
         }
         
         .forgot-password {
@@ -166,9 +189,11 @@
             transition: color 0.3s ease;
         }
         
-        .forgot-password:hover {
+        .forgot-password:hover,
+        .forgot-password:focus {
             color: #5a67d8;
             text-decoration: underline;
+            outline: none;
         }
         
         .login-button {
@@ -181,18 +206,26 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s ease, background-color 0.4s ease;
             position: relative;
             overflow: hidden;
+            user-select: none;
         }
         
-        .login-button:hover {
+        .login-button:focus-visible {
+            outline: 3px solid #5a67d8;
+            outline-offset: 2px;
+        }
+        
+        .login-button:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            background-color: #5a67d8;
         }
         
-        .login-button:active {
+        .login-button:active:not(:disabled) {
             transform: translateY(0);
+            box-shadow: none;
         }
         
         .login-button:disabled {
@@ -222,6 +255,14 @@
             color: #ef4444;
             margin-top: 4px;
             display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            user-select: none;
+        }
+        
+        .error-message.show {
+            display: block;
+            opacity: 1;
         }
         
         .system-info {
@@ -229,12 +270,9 @@
             margin-top: 24px;
             padding-top: 24px;
             border-top: 1px solid #e5e7eb;
-        }
-        
-        .system-info p {
             font-size: 12px;
             color: #9ca3af;
-            margin: 0;
+            user-select: none;
         }
         
         .role-hint {
@@ -245,23 +283,41 @@
             padding: 8px;
             background: #f3f4f6;
             border-radius: 4px;
+            user-select: none;
         }
         
         @media (max-width: 480px) {
             .login-container {
                 margin: 10px;
                 border-radius: 15px;
+                padding: 25px 20px !important;
             }
             
             .login-header {
                 padding: 30px 20px;
+                font-size: 90%;
             }
             
             .login-form {
-                padding: 30px 20px;
+                padding: 30px 20px !important;
+            }
+            
+            .role-hint {
+                font-size: 11px;
+                padding: 6px;
+            }
+            
+            .form-label {
+                font-size: 13px;
+            }
+            
+            .login-button {
+                font-size: 14px;
+                padding: 12px 20px;
             }
         }
     </style>
+        
 </head>
 <body>
     <div class="login-container">
@@ -332,7 +388,7 @@
                 
                 <div class="system-info">
                     <p><i class="fas fa-shield-alt"></i> Secure login for School Inventory Management System</p>
-                    <p>© 2024 School Inventory System. All rights reserved.</p>
+                    <p>© 2025 School Inventory System. All rights reserved.</p>
                 </div>
             </form>
         </div>

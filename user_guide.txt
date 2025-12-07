@@ -1,0 +1,117 @@
+Custodian Inventory Management System - User Guide
+===============================================
+
+This guide provides instructions for using the Custodian Inventory Management System. The system supports two main user roles: Admin and Viewer. Admins have full access to manage items, users, and borrow requests. Viewers can view items, update statuses (if permitted), and submit borrow requests.
+
+1. How to Log In
+================
+
+To access the system:
+
+1. Open your web browser and navigate to https://paccustodian.online/.
+2. Click on the "Login" link or navigate to /login.
+3. Enter your registered email address and password.
+4. Click the "Log In" button.
+5. If email verification is required, check your email and click the verification link.
+
+Note: If you don't have an account, contact your administrator to create one for you. Password reset is available via the "Forgot Password" link.
+
+2. How to Add Items (Admin Only)
+=================================
+
+Admins can add new items to the inventory:
+
+1. Log in as an Admin user.
+2. Navigate to the Dashboard (/dashboard).
+3. Click on "Inventory" in the navigation menu, then select "Create Item" (/inventory/create).
+4. Fill in the required fields:
+   - Item Name: The name of the item
+   - Room: Select the room where the item is located
+   - Category: Choose or enter a category (e.g., furniture, equipment)
+   - Description: Optional detailed description
+   - Quantity: Number of items
+   - QR Code: Optional, will be auto-generated if left blank
+   - Purchase Date: Optional
+   - Purchase Price: Optional
+   - Warranty Expires: Optional
+   - Condition: Optional (e.g., good, fair, poor)
+5. Click "Save" to add the item.
+6. The system will create a default unit for the item and redirect you back to the items list.
+
+Note: All fields except QR code are required. The system validates input and shows error messages if validation fails.
+
+3. How to Update Items (Admin Only)
+====================================
+
+Admins can edit existing items:
+
+1. Log in as an Admin user.
+2. Go to the Inventory Items page (/inventory/items).
+3. Find the item you want to update in the list (use search if needed).
+4. Click the "Edit" button (pencil icon) next to the item (/inventory/items/{id}/edit).
+5. Modify the fields as needed (same as add item form).
+6. Click "Update" to save changes.
+7. The system will validate and update the item, then redirect to the items list.
+
+Note: You can also update items directly from the dashboard by clicking on room categories and selecting items.
+
+4. How to Manage Room Inventories
+==================================
+
+Managing room inventories involves viewing, scanning, and updating item statuses:
+
+For Admins:
+1. Log in as an Admin.
+2. Access the Dashboard (/dashboard) to see an overview of all rooms and their items.
+3. Click on a room to view its categories and items.
+4. Use the Scanner feature (/scanner) to physically check items:
+   - Scan QR codes using your device's camera or enter manually.
+   - Update item statuses (e.g., available, borrowed, damaged).
+   - Save changes to record the last checked date.
+
+For Viewers (if permitted):
+1. Log in as a Viewer.
+2. Access your Viewer Dashboard (/viewer/dashboard).
+3. View items in your assigned room.
+4. If you have update permissions, use the scanner to check and update item statuses.
+
+Note: Only users with "can_update_status" permission can modify item statuses. Contact your admin if you need this permission.
+
+5. How to Approve/Decline Borrow Requests (Admin Only)
+=======================================================
+
+Admins can manage borrow requests from viewers:
+
+1. Log in as an Admin.
+2. Navigate to "Borrow Requests" in the admin section (/admin/borrow-requests).
+3. View all requests or filter by status (pending, approved, rejected).
+4. For pending requests:
+   - Click "View Details" to see the full request information.
+   - Review the item availability and request details.
+   - Click "Approve" to approve the request (if sufficient quantity is available).
+   - Or click "Reject" and provide a reason for rejection.
+5. For approved requests, you can mark them as "Returned" when items are returned.
+
+Note: The system automatically checks available quantities before approving requests. You cannot approve requests that exceed available stock.
+
+6. How to Export
+================
+
+Currently, the system supports exporting inventory data as Word documents:
+
+1. Log in as an Admin.
+2. Go to the Dashboard (/dashboard).
+3. For a specific room, click the "Export" button or navigate to /export/word/{roomId}.
+4. The system will generate a Memorandum Receipt document in Word format.
+5. Download and save the file.
+
+Note: CSV export/import functionality is not currently available. Contact your system administrator for future enhancements or custom export options.
+
+Additional Notes:
+- Always ensure you have the necessary permissions for actions (Admin role required for most management tasks).
+- Use the search functionality on the items page to quickly find specific items.
+- QR codes are automatically generated for items and can be used for quick scanning.
+- Borrow requests help track item usage and ensure accountability.
+- Regular inventory checks using the scanner help maintain accurate records.
+
+For technical support or questions about specific features, contact your system administrator.
