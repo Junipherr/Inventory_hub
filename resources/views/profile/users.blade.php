@@ -175,7 +175,7 @@
                                                 </td>
                                                 <td>
                                                     <small class="text-muted">
-                                                        {{ $profile->created_at->format('M d, Y') }}
+                                                        {{ $profile->created_at ? $profile->created_at->format('M d, Y') : 'N/A' }}
                                                     </small>
                                                 </td>
                                                 <td class="text-end">
@@ -263,7 +263,7 @@
                                                 @endif
                                                 <div class="col-4 text-end">
                                                     <small class="text-muted d-block">Created</small>
-                                                    <span>{{ $profile->created_at->format('M d, Y') }}</span>
+                                                    <span>{{ $profile->created_at ? $profile->created_at->format('M d, Y') : 'N/A' }}</span>
                                                 </div>
                                             </div>
                                             

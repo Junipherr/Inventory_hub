@@ -171,7 +171,7 @@ class UserProfileController extends Controller
                     'email' => $user->email,
                     'room' => $user->room,
                     'can_update_status' => $user->can_update_status,
-                    'created_at' => $user->created_at->format('M d, Y'),
+                    'created_at' => $user->created_at ? $user->created_at->format('M d, Y') : 'N/A',
                     'password_info' => [
                         'has_password' => $hasPassword,
                         'last_updated' => $passwordUpdatedAt ? $passwordUpdatedAt->format('M d, Y') : 'Never',
