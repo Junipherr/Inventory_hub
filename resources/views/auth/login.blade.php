@@ -23,7 +23,7 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: white;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -354,7 +354,7 @@
                     <label for="login" class="form-label">Email or Username</label>
                     <div class="input-icon">
                         <i class="fas fa-user"></i>
-                        <input type="text" name="login" id="login" class="form-input" placeholder="Enter your email or username" value="{{ old('login') }}" required autofocus>
+                        <input type="text" name="login" id="login" class="form-input" placeholder="Enter your email or username" value="{{ old('login') }}" required>
                     </div>
                     <div class="error-message" id="login-error"></div>
                 </div>

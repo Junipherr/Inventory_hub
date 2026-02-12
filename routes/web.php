@@ -26,6 +26,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Tarp Mockup Route
+Route::get('/tarp-mockup', function () {
+    return view('tarp-mockup');
+})->name('tarp.mockup');
+
 Route::get('/category', function () {
     return view('custodian/inventory/category');
 })->middleware(['auth', 'verified', 'role:Admin'])->name('category');
