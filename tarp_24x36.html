@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custodian Inventory Hub - Digital Tarp Layout</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Professional Color Palette */
+            --primary-blue: #1e40af;
+            --primary-blue-light: #3b82f6;
+            --emerald-green: #059669;
+            --emerald-green-light: #10b981;
+            --dark-gray: #1f2937;
+            --medium-gray: #4b5563;
+            --light-gray: #f3f4f6;
+            --white: #ffffff;
+            --accent-gradient: linear-gradient(135deg, #1e40af 0%, #059669 100%);
+            --overlay-gradient: linear-gradient(135deg, rgba(30, 64, 175, 0.9) 0%, rgba(5, 150, 105, 0.85) 100%);
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #e5e7eb;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Main Tarp Container - 24" x 36" Proportional Scaled for Screen */
+        .tarp-container {
+            width: 100%;
+            max-width: 1440px;
+            /* Aspect ratio for 24x36 (2:3 ratio) */
+            aspect-ratio: 36 / 24;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Geometric Overlay Pattern */
+        .tarp-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(30deg, rgba(30, 64, 175, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(30, 64, 175, 0.03) 87.5%),
+                linear-gradient(150deg, rgba(5, 150, 105, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(5, 150, 105, 0.03) 87.5%),
+                linear-gradient(30deg, rgba(30, 64, 175, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(30, 64, 175, 0.03) 87.5%),
+                linear-gradient(150deg, rgba(5, 150, 105, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(5, 150, 105, 0.03) 87.5%);
+            background-size: 80px 140px;
+            background-position: 0 0, 0 0, 40px 70px, 40px 70px;
+            pointer-events: none;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            gap: 0;
+        }
+
+        /* Left Section - Impact Zone (40%) */
+        .left-section {
+            flex: 0 0 40%;
+            background: linear-gradient(135deg, #1e3a8a 0%, #065f46 100%);
+            padding: 4rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative accent shapes */
+        .left-section::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .left-section::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: -50px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+        }
+
+        /* Hero Content */
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 400;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            border-left: 4px solid #10b981;
+            padding-left: 1.5rem;
+        }
+
+        .hero-highlight {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .hero-highlight p {
+            color: #ffffff;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        /* Accent Badge */
+        .accent-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Right Section - Information Grid (60%) */
+        .right-section {
+            flex: 0 0 60%;
+            padding: 3rem 2.5rem;
+            background: #ffffff;
+            overflow: hidden;
+        }
+
+        /* Section Headers */
+        .section-header {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid #1e40af;
+            display: inline-block;
+        }
+
+        /* Info Grid Layout */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        /* Card Styles */
+        .info-card {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border-color: #10b981;
+        }
+
+        .info-card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .card-icon.blue {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+        }
+
+        .card-icon.green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .card-icon.gray {
+            background: linear-gradient(135deg, #6b7280 0%, #374151 100%);
+            color: white;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .card-content {
+            color: #4b5563;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* List Styles */
+        .objectives-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .objectives-list li {
+            padding: 0.5rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: #4b5563;
+            font-size: 0.9rem;
+        }
+
+        .objectives-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        /* Module Tags */
+        .module-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .module-tag {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid #93c5fd;
+        }
+
+        /* Dashboard Preview */
+        .dashboard-preview {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: white;
+        }
+
+        .dashboard-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.25rem;
+        }
+
+        /* Footer Strip */
+        .footer-strip {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-top: 4px solid #059669;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .footer-heading {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #10b981;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-names {
+            color: #ffffff;
+            font-size: 0.85rem;
+            line-height: 1.8;
+        }
+
+        .tech-stack {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .tech-badge {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .school-info {
+            text-align: center;
+        }
+
+        .school-name {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .school-year {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+        }
+
+        .final-tagline {
+            text-align: center;
+            padding: 1rem 2rem;
+            background: rgba(5, 150, 105, 0.15);
+            border-radius: 8px;
+        }
+
+        .final-tagline p {
+            color: #10b981;
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-style: italic;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .tarp-container {
+                box-shadow: none;
+                max-width: 100%;
+            }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1200px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .info-grid {
+                gap: 1rem;
+            }
+            
+            .info-card {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .left-section,
+            .right-section {
+                flex: none;
+                width: 100%;
+            }
+            
+            .tarp-container {
+                aspect-ratio: auto;
+                min-height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tarp-container">
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Left Section - Impact Zone (40%) -->
+            <section class="left-section">
+                <div class="hero-content">
+                    <div class="accent-badge">SYSTEM SHOWCASE</div>
+                    <h1 class="hero-title">CUSTODIAN<br>INVENTORY<br>HUB</h1>
+                    <p class="hero-subtitle">A Centralized Inventory Management System for Efficient School Property Management</p>
+                    <div class="hero-highlight">
+                        <p>"Streamlining asset tracking, improving accountability, and enhancing operational control."</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Section - Information Grid (60%) -->
+            <section class="right-section">
+                <!-- System Overview -->
+                <div class="info-card" style="grid-column: span 2; margin-bottom: 0.5rem;">
+                    <div class="info-card-header">
+                        <div class="card-icon blue">📋</div>
+                        <h3 class="card-title">System Overview</h3>
+                    </div>
+                    <p class="card-content">
+                        The Custodian Inventory Hub is a centralized digital platform designed to help custodians efficiently manage and monitor school properties and equipment. It ensures organized tracking, accurate stock management, and improved accountability through a user-friendly interface.
+                    </p>
+                </div>
+
+                <!-- Core Objectives -->
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <div class="card-icon green">🎯</div>
+                        <h3 class="card-title">Core Objectives</h3>
+                    </div>
+                    <ul class="objectives-list">
+                        <li>Digitize inventory records</li>
+                        <li>Improve tracking accuracy</li>
+                        <li>Strengthen accountability</li>
+                        <li>Provide structured inventory monitoring</li>
+                    </ul>
+                </div>
+
+                <!-- System Modules -->
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <div class="card-icon blue">⚙️</div>
+                        <h3 class="card-title">System Modules</h3>
+                    </div>
+                    <div class="module-tags">
+                        <span class="module-tag">Inventory Management</span>
+                        <span class="module-tag">Stock Monitoring</span>
+                        <span class="module-tag">Secure Access</span>
+                        <span class="module-tag">Dashboard Overview</span>
+                    </div>
+                    <p class="card-content" style="margin-top: 1rem;">
+                        Comprehensive modules for adding/updating items, categorizing assets, maintaining structured records, and monitoring stock levels.
+                    </p>
+                </div>
+
+                <!-- Inventory Management Details -->
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <div class="card-icon blue">➕</div>
+                        <h3 class="card-title">Inventory Management</h3>
+                    </div>
+                    <p class="card-content">
+                        Add and update items with ease, categorize assets systematically, and maintain structured records for quick retrieval and auditing purposes.
+                    </p>
+                </div>
+
+                <!-- Stock Monitoring Details -->
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <div class="card-icon green">📦</div>
+                        <h3 class="card-title">Stock Monitoring</h3>
+                    </div>
+                    <p class="card-content">
+                        Record stock-in and stock-out transactions, monitor quantity levels in real-time, and prevent shortages through automated alerts and reporting.
+                    </p>
+                </div>
+
+                <!-- Secure Access & Dashboard -->
+                <div class="info-card" style="grid-column: span 2;">
+                    <div class="info-card-header">
+                        <div class="card-icon gray">🔐</div>
+                        <h3 class="card-title">Secure Access & Dashboard Overview</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 0.5rem;">
+                        <div>
+                            <p class="card-content" style="font-weight: 500; color: #1f2937; margin-bottom: 0.5rem;">Secure Access Features:</p>
+                            <ul class="objectives-list">
+                                <li>Custodian login authentication</li>
+                                <li>Protected system access</li>
+                                <li>Role-based permissions</li>
+                            </ul>
+                        </div>
+                        <div class="dashboard-preview">
+                            <p class="dashboard-title">Dashboard Overview</p>
+                            <div class="dashboard-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">1,248</div>
+                                    <div class="stat-label">Total Items</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">24</div>
+                                    <div class="stat-label">Categories</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">98%</div>
+                                    <div class="stat-label">Accuracy</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Bottom Strip - Full Width Footer -->
+        <footer class="footer-strip">
+            <div class="footer-section">
+                <div class="footer-heading">Developed By</div>
+                <div class="footer-names">
+                    Junipher Nathaniel Bayron<br>
+                    Alphono De Guzman<br>
+                    Angeline Gumo-ay<br>
+                    Reynaldo Saavedra
+                </div>
+            </div>
+            
+            <div class="footer-section school-info">
+                <div class="school-name">Philippine Advent College</div>
+                <div class="school-year">School Year 2025–2026</div>
+            </div>
+            
+            <div class="footer-section" style="text-align: right;">
+                <div class="footer-heading">Technologies</div>
+                <div class="tech-stack">
+                    <span class="tech-badge">Laravel</span>
+                    <span class="tech-badge">MySQL</span>
+                    <span class="tech-badge">HTML</span>
+                    <span class="tech-badge">CSS</span>
+                    <span class="tech-badge">JavaScript</span>
+                </div>
+            </div>
+        </footer>
+        
+        <!-- Final Tagline -->
+        <div class="final-tagline">
+            <p>Designed to improve efficiency and accountability in school property management.</p>
+        </div>
+    </div>
+</body>
+</html>
