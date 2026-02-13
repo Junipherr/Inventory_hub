@@ -23,7 +23,7 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background: white;
+            background: #f3f4f6;
             min-height: 100vh;
             display: flex;
             align-items: center;
