@@ -1,4 +1,4 @@
-/**
+ /**
  * Mobile Navigation Fix
  * Simple toggle functionality like welcome.blade.php
  */
@@ -9,13 +9,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileNavContent = document.querySelector('.mobile-nav-content');
     const sidebar = document.querySelector('.page-sidebar');
     
-    if (!mobileNavBtn || !mobileNavMenu || !sidebar) {
+    if (!mobileNavBtn || !mobileNavMenu || !mobileNavContent || !sidebar) {
         console.warn('Mobile navigation elements not found');
         return;
     }
     
     // Copy sidebar content to mobile menu and add logout
     function populateMobileMenu() {
+        // Add null check inside the function as well
+        if (!sidebar || !mobileNavContent) {
+            console.warn('Mobile menu elements not available');
+            return;
+        }
+        
         const sidebarContent = sidebar.innerHTML;
         mobileNavContent.innerHTML = sidebarContent;
         

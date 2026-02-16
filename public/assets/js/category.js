@@ -1,10 +1,16 @@
-     // Category
-     document.addEventListener('DOMContentLoaded', function () {
-        const departmentSelect = document.getElementById('departmentSelect');
-        const categoryGroup = document.getElementById('categoryGroup');
-        const categorySelect = document.getElementById('categorySelect');
+// Category
+document.addEventListener('DOMContentLoaded', function () {
+    const departmentSelect = document.getElementById('departmentSelect');
+    const categoryGroup = document.getElementById('categoryGroup');
+    const categorySelect = document.getElementById('categorySelect');
 
-        function updateCategories() {
+    // Check if required elements exist before initializing
+    if (!departmentSelect || !categoryGroup || !categorySelect) {
+        console.warn('Category form elements not found - skipping category initialization');
+        return;
+    }
+
+    function updateCategories() {
             const selectedDepartment = departmentSelect.value;
             if (!selectedDepartment) {
                 categoryGroup.style.display = 'none';

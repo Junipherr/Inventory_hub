@@ -108,53 +108,74 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add CSRF token to meta tag if not exists
     if (!document.querySelector('meta[name="csrf-token"]')) {
-        const meta = document.createElement('meta');
-        meta.name = 'csrf-token';
-        meta.content = document.querySelector('input[name="_token"]').value;
-        document.head.appendChild(meta);
+        const tokenInput = document.querySelector('input[name="_token"]');
+        if (tokenInput) {
+            const meta = document.createElement('meta');
+            meta.name = 'csrf-token';
+            meta.content = tokenInput.value;
+            document.head.appendChild(meta);
+        }
     }
 
-    // Item details modal functionality
-    const itemInfoModal = new bootstrap.Modal(document.getElementById('itemInfoModal'));
-    const modalItemName = document.getElementById('modalItemName');
-    const modalRoom = document.getElementById('modalRoom');
-    const modalCategory = document.getElementById('modalCategory');
-    const modalQuantity = document.getElementById('modalQuantity');
-    const modalStatus = document.getElementById('modalStatus');
-    const modalPersonInCharge = document.getElementById('modalPersonInCharge');
-    const modalDescription = document.getElementById('modalDescription');
+    // Item details modal functionality - check if modal elements exist
+    const itemInfoModalElement = document.getElementById('itemInfoModal');
+    if (itemInfoModalElement) {
+        const itemInfoModal = new bootstrap.Modal(itemInfoModalElement);
+        const modalItemName = document.getElementById('modalItemName');
+        const modalRoom = document.getElementById('modalRoom');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalQuantity = document.getElementById('modalQuantity');
+        const modalStatus = document.getElementById('modalStatus');
+        const modalPersonInCharge = document.getElementById('modalPersonInCharge');
+        const modalDescription = document.getElementById('modalDescription');
 
-    // View item details
-    document.querySelectorAll('.view-details').forEach(button => {
-        button.addEventListener('click', function() {
-            const row = this.closest('tr');
-            const itemName = row.dataset.itemName;
-            const room = row.dataset.room;
-            const category = row.dataset.category;
-            const quantity = row.dataset.itemQuantity;
-            const description = row.dataset.itemDescription;
-            const qrCode = row.dataset.itemQr;
-            const personInCharge = row.dataset.personInCharge;
+        // View item details - only if all required elements exist
+        const viewDetailsButtons = document.querySelectorAll('.view-details');
+        if (viewDetailsButtons.length > 0 && modalItemName && modalRoom && modalCategory) {
+            viewDetailsButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Store reference to the clicked button
+                    const clickedButton = this;
+                    
+                    const row = clickedButton.closest('tr');
+                    const itemName = row.dataset.itemName;
+                    const room = row.dataset.room;
+                    const category = row.dataset.category;
+                    const quantity = row.dataset.itemQuantity;
+                    const description = row.dataset.itemDescription;
+                    const qrCode = row.dataset.itemQr;
+                    const personInCharge = row.dataset.personInCharge;
 
-            modalItemName.textContent = itemName;
-            modalRoom.textContent = room;
-            modalCategory.textContent = category;
-            modalQuantity.textContent = quantity;
-            modalDescription.textContent = description || 'No description available';
-            modalPersonInCharge.textContent = personInCharge;
+                    modalItemName.textContent = itemName;
+                    modalRoom.textContent = room;
+                    modalCategory.textContent = category;
+                    if (modalQuantity) modalQuantity.textContent = quantity;
+                    if (modalDescription) modalDescription.textContent = description || 'No description available';
+                    if (modalPersonInCharge) modalPersonInCharge.textContent = personInCharge;
 
-            // Update QR code dynamically
-            updateModalQRCode(qrCode, itemName);
+                    // Update QR code dynamically
+                    updateModalQRCode(qrCode, itemName);
 
-            itemInfoModal.show();
-        });
-    });
+                    // Remove focus from button before showing modal to avoid aria-hidden accessibility issue
+                    clickedButton.blur();
+                    
+                    itemInfoModal.show();
+                });
+            });
+        }
+    }
 
     // Function to update QR code in modal
     function updateModalQRCode(qrCode, itemName) {
         const qrImage = document.getElementById('modalQRImage');
         const qrLoading = document.getElementById('qrLoading');
         const modalQRText = document.getElementById('modalQRText');
+
+        // Check if required elements exist
+        if (!qrImage || !qrLoading || !modalQRText) {
+            console.warn('QR code display elements not found');
+            return;
+        }
 
         if (qrCode && qrCode !== 'N/A') {
             // Show loading
