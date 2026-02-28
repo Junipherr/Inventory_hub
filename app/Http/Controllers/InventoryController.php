@@ -34,9 +34,9 @@ class InventoryController extends Controller
         return view('custodian.inventory.items', compact('items', 'rooms'));
     }
 
-    public function scanner()
+    public function scanner(Request $request)
     {
-        $items = Item::with(['units', 'room'])->get();
+        $items = Item::with(['units', 'room'])->paginate(15);
         
         // Determine person in charge for each room
         $rooms = Room::with('users')->get();

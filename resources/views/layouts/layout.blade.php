@@ -7,6 +7,70 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('Inventory', 'Inventory Hub') }}</title>
+    
+    <!-- Preloader CSS - loaded first to ensure immediate display -->
+    <style>
+        /* Immediately show preloader and hide page content until loaded */
+        body.preloader-loading .preloader-backdrop {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        /* Hide main content while preloader is active */
+        body.preloader-loading .page-wrapper,
+        body.preloader-loading .content-wrapper,
+        body.preloader-loading .header,
+        body.preloader-loading .page-sidebar {
+            visibility: hidden !important;
+        }
+        
+        /* Preloader backdrop - hidden by default */
+        .preloader-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            z-index: 9999;
+        }
+        
+        /* Preloader animation */
+        .preloader-backdrop .page-preloader {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .preloader-backdrop .page-preloader::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 10px;
+            border: 3px solid #eee;
+            border-top-color: #18c5a9;
+            border-radius: 50%;
+            animation: preloader-spin 1s linear infinite;
+        }
+        
+        @keyframes preloader-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    
+    <!-- Immediately activate preloader before any other content -->
+    <script>
+        // Show preloader immediately to prevent flash of content
+        document.documentElement.classList.add('preloader-loading');
+    </script>
+    
     <!-- GLOBAL MAINLY STYLES-->
     <link href="{{ asset('assets/vendors/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/vendors/themify-icons/css/themify-icons.css') }}" rel="stylesheet">
@@ -91,6 +155,24 @@
     @stack('scripts')
 
     <script>
+        // Preloader hide logic - run when page is fully loaded
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                // Fade out preloader
+                var preloader = document.querySelector('.preloader-backdrop');
+                if (preloader) {
+                    preloader.style.opacity = '0';
+                    preloader.style.transition = 'opacity 0.2s ease-out';
+                    setTimeout(function() {
+                        preloader.style.display = 'none';
+                    }, 200);
+                }
+                // Remove preloader-loading class to show page content
+                document.documentElement.classList.remove('preloader-loading');
+                document.body.classList.remove('preloader-loading');
+            }, 100); // Small delay to ensure smooth transition
+        });
+        
         document.addEventListener('DOMContentLoaded', function() {
             var mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
             var mobileNavMenu = document.getElementById('mobileNavMenu');

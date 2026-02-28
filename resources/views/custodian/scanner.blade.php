@@ -11,21 +11,24 @@
         <!-- Success Notification -->
         <div id="dynamicSuccessMessage"
             style="position: fixed; top: 10px; right: 10px; z-index: 1050; width: auto; max-width: 300px; display: none;">
-            <div class="alert alert-success">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <strong>Success!</strong> <span id="successMessageText"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </div>
 
         <!-- Scanner Header -->
         <div class="scanner-header">
             <div class="header-content">
-                <h1 class="scanner-title">
-                    <i class="fas fa-qrcode"></i> QR Scanner & Inventory Manager
-                </h1>
+                <div>
+                    <h1 class="scanner-title mb-2 mb-md-0">
+                        <i class="fas fa-qrcode me-2"></i>QR Scanner & Inventory Manager
+                    </h1>
+                </div>
                 <div class="header-stats">
                     <span class="stat-item">
                         <i class="fas fa-list"></i> 
-                        <span id="totalItems">{{ $items->count() }}</span> Items
+                        <span id="totalItems">{{ $items->total() }}</span> Items
                     </span>
                     <span class="stat-item">
                         <i class="fas fa-check-circle"></i>
@@ -38,48 +41,54 @@
         <div class="scanner-content">
             <!-- Scanner Section -->
             <div class="scanner-section">
-                <div class="scanner-card">
-                    <div class="scanner-header-card">
-                        <h3><i class="fas fa-camera"></i> QR Scanner</h3>
-                        <div class="scanner-controls">
-                            <button type="button" class="btn btn-outline-primary btn-sm" id="startScanner">
-                                <i class="fas fa-play"></i> Start Camera
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" id="stopScanner" style="display: none;">
-                                <i class="fas fa-stop"></i> Stop Camera
-                            </button>
+                <!-- Scanner Card -->
+                <div class="card scanner-card border-0 shadow-sm">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-camera me-2"></i>QR Scanner</h5>
+                            <div class="scanner-controls">
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="startScanner">
+                                    <i class="fas fa-play me-1"></i> Start Camera
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="stopScanner" style="display: none;">
+                                    <i class="fas fa-stop me-1"></i> Stop Camera
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="scanner-viewport">
-                        <video id="scannerVideo" autoplay muted playsinline style="display: none;"></video>
-                        <canvas id="scannerCanvas" style="display: none;"></canvas>
-                        <div id="scannerPlaceholder" class="scanner-placeholder">
-                            <i class="fas fa-camera fa-3x"></i>
-                            <p>Click "Start Camera" to begin scanning QR codes</p>
+                    <div class="card-body p-0">
+                        <div class="scanner-viewport">
+                            <video id="scannerVideo" autoplay muted playsinline style="display: none;"></video>
+                            <canvas id="scannerCanvas" style="display: none;"></canvas>
+                            <div id="scannerPlaceholder" class="scanner-placeholder">
+                                <i class="fas fa-camera fa-3x mb-3 d-block"></i>
+                                <p class="mb-0">Click "Start Camera" to begin scanning QR codes</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="scanner-results">
-                        <div id="scanResult" class="scan-result" style="display: none;">
-                            <h5>Last Scanned:</h5>
-                            <p id="scannedCode"></p>
-                            <button type="button" class="btn btn-sm btn-success" id="findItem">
-                                <i class="fas fa-search"></i> Find Item
-                            </button>
+                        <div class="scanner-results px-3 py-3">
+                            <div id="scanResult" class="scan-result" style="display: none;">
+                                <h5 class="mb-2">Last Scanned:</h5>
+                                <p id="scannedCode" class="mb-2 fw-bold"></p>
+                                <button type="button" class="btn btn-success btn-sm" id="findItem">
+                                    <i class="fas fa-search me-1"></i> Find Item
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Manual QR Input -->
-                <div class="manual-input-card">
-                    <h5><i class="fas fa-keyboard"></i> Manual QR Input</h5>
-                    <div class="input-group">
-                        <input type="text" class="form-control form-control-sm" id="manualQrInput" 
-                               placeholder="Enter QR code manually">
-                        <button class="btn btn-primary btn-sm" type="button" id="manualScanBtn">
-                            <i class="fas fa-search"></i>
-                        </button>
+                <!-- Manual QR Input Card -->
+                <div class="card manual-input-card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="mb-3"><i class="fas fa-keyboard me-2"></i>Manual QR Input</h5>
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" id="manualQrInput" 
+                                   placeholder="Enter QR code manually">
+                            <button class="btn btn-primary btn-sm" type="button" id="manualScanBtn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -87,7 +96,7 @@
             <!-- Items List Section -->
             <div class="items-section">
                 <div class="items-header">
-                    <h3><i class="fas fa-list"></i> Inventory Items</h3>
+                    <h3><i class="fas fa-list me-2"></i>Inventory Items</h3>
                     <div class="items-controls">
                         <div class="search-box">
                             <input type="text" class="form-control form-control-sm" id="searchItems" 
@@ -95,14 +104,14 @@
                             <i class="fas fa-search"></i>
                         </div>
                         <button type="button" class="btn btn-outline-info btn-sm" id="showLegendBtn">
-                            <i class="fas fa-info-circle"></i> Legend
+                            <i class="fas fa-info-circle me-1"></i> Legend
                         </button>
                     </div>
                 </div>
 
                 @if ($items->isEmpty())
                     <div class="empty-state">
-                        <i class="fas fa-inbox fa-3x"></i>
+                        <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
                         <h4>No items found</h4>
                         <p>Add some items to start scanning</p>
                     </div>
@@ -194,6 +203,51 @@
                                 </table>
                             </div>
                         </div>
+                        
+                        <!-- Pagination -->
+                        <div class="pagination-container mt-3">
+                            <nav aria-label="Items pagination">
+                                <ul class="pagination justify-content-center pagination-sm">
+                                    {{-- Previous Page Link --}}
+                                    @if ($items->onFirstPage())
+                                        <li class="page-item disabled">
+                                            <span class="page-link">Previous</span>
+                                        </li>
+                                    @else
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $items->previousPageUrl() }}">Previous</a>
+                                        </li>
+                                    @endif
+
+                                    {{-- Pagination Elements --}}
+                                    @foreach ($items->getUrlRange(1, $items->lastPage()) as $page => $url)
+                                        @if ($page == $items->currentPage())
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ $page }}</span>
+                                            </li>
+                                        @else
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                            </li>
+                                        @endif
+                                    @endforeach
+
+                                    {{-- Next Page Link --}}
+                                    @if ($items->hasMorePages())
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $items->nextPageUrl() }}">Next</a>
+                                        </li>
+                                    @else
+                                        <li class="page-item disabled">
+                                            <span class="page-link">Next</span>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </nav>
+                            <div class="text-center text-muted small">
+                                Showing {{ $items->firstItem() }} to {{ $items->lastItem() }} of {{ $items->total() }} items
+                            </div>
+                        </div>
                     </form>
                 @endif
 
@@ -202,7 +256,7 @@
                         <span id="errorText"></span>
                     </div>
                     <button type="submit" form="scannerForm" class="btn btn-success btn-lg" id="submitBtn">
-                        <i class="fas fa-save"></i> Save Changes
+                        <i class="fas fa-save me-2"></i>Save Changes
                     </button>
                 </div>
             </div>
@@ -214,7 +268,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="statusLegendModalLabel">
-                            <i class="fas fa-info-circle"></i> Status Legend
+                            <i class="fas fa-info-circle me-2"></i>Status Legend
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -333,3 +387,4 @@
     <script src="{{ asset('assets/js/scannerblade.js') }}"></script>
     <script src="{{ asset('assets/js/scanner-fix.js') }}"></script>
 </x-main-layout>
+
