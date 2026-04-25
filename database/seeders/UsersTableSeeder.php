@@ -24,6 +24,16 @@ class UsersTableSeeder extends Seeder
             'can_update_status' => true,
         ]);
 
+        // Create requested admin/custodian user
+        User::create([
+            'name' => 'Junipher',
+            'email' => 'junipherjunipher@gmail.com',
+            'password' => Hash::make('11111111'),
+            'role' => 'Admin',
+            'room_id' => 1,
+            'can_update_status' => true,
+        ]);
+
         // Create Viewer users
         User::create([
             'name' => 'John Doe',

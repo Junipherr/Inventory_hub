@@ -168,7 +168,7 @@
                                                        value="{{ old('quantity', 1) }}"
                                                        required>
                                                 <div class="input-group-append">
-                                                    <span class="input-group-text">units</span>
+                                                    <span class="input-group-text">unit(s)</span>
                                                 </div>
                                                 @error('quantity')
                                                     <div class="invalid-feedback">{{ $message }}</div>

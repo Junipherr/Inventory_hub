@@ -3,17 +3,16 @@
         
         <!-- Enhanced Success/Error Messages -->
         <div id="notificationContainer" style="position: fixed; top: 20px; right: 20px; z-index: 1050; max-width: 400px;">
-            <!-- Success Message -->
-            <div id="dynamicSuccessMessage" class="alert alert-success alert-dismissible fade show shadow-lg" role="alert" style="display: none;">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <div>
-                        <strong>Success!</strong>
-                        <span id="successMessageText" class="ms-1"></span>
-                    </div>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+             <!-- Success Message -->
+             <div id="dynamicSuccessMessage" class="alert alert-success fade show shadow-lg" role="alert" style="display: none;">
+                 <div class="d-flex align-items-center">
+                     <i class="fas fa-check-circle me-2"></i>
+                     <div>
+                         <strong>Success!</strong>
+                         <span id="successMessageText" class="ms-1"></span>
+                     </div>
+                 </div>
+             </div>
 
             <!-- Error Message -->
             <div id="dynamicErrorMessage" class="alert alert-danger alert-dismissible fade show shadow-lg" role="alert" style="display: none;">
