@@ -367,32 +367,32 @@
                             </a>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                 </div>
+             </div>
+         </div>
+     </div>
 
-    <!-- Success Modal -->
-    <div class="modal fade" id="successModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">Success!</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-center">
-                    <i class="fa fa-check-circle fa-5x text-success mb-3"></i>
-                    <h4>Item Added Successfully!</h4>
-                    <p>Your inventory item has been added to the system.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-dismiss="modal">
-                        <i class="fa fa-check"></i> OK
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</x-main-layout>
+     <!-- Success Modal -->
+     <div class="modal fade" id="successModal" tabindex="-1" role="dialog">
+         <div class="modal-dialog modal-dialog-centered" role="document">
+             <div class="modal-content">
+                 <div class="modal-header bg-success text-white">
+                     <h5 class="modal-title">Success!</h5>
+                     <button type="button" class="close" data-dismiss="modal">
+                         <span>&times;</span>
+                     </button>
+                 </div>
+                 <div class="modal-body text-center">
+                     <i class="fa fa-check-circle fa-5x text-success mb-3"></i>
+                     <h4>Item Added Successfully!</h4>
+                     <p>Your inventory item has been added to the system.</p>
+                 </div>
+                 <div class="modal-footer">
+                     <button type="button" class="btn btn-success" data-dismiss="modal">
+                         <i class="fa fa-check"></i> OK
+                     </button>
+                 </div>
+              </div>
+          </div>
+      </div>
+  </x-main-layout>

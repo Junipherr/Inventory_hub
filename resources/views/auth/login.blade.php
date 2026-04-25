@@ -316,7 +316,51 @@
                 padding: 12px 20px;
             }
         }
-    </style>
+    .demo-button {
+        width: 100%;
+        padding: 12px 24px;
+        background: #f0f0f0;
+        color: #555;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 12px;
+        user-select: none;
+    }
+
+    .demo-button:hover:not(:disabled) {
+        background: #e0e0e0;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .demo-button:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    .demo-button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .demo-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    @media (max-width: 480px) {
+        .demo-options {
+            grid-template-columns: 1fr;
+        }
+    }
+
+</style>
         
 </head>
 <body>
@@ -385,6 +429,10 @@
                     <div class="loading-spinner" id="loading-spinner"></div>
                     <span id="button-text">Sign In</span>
                 </button>
+                <div class="demo-options">
+                    <button type="button" class="demo-button" id="demo-admin-btn">Demo Admin</button>
+                    <button type="button" class="demo-button" id="demo-viewer-btn">Demo Viewer</button>
+                </div>
                 
                 <div class="system-info">
                     <p><i class="fas fa-shield-alt"></i> Secure login for School Inventory Management System</p>
@@ -440,6 +488,28 @@
                 this.classList.remove('error');
             }
         });
-    </script>
+        // Demo login
+    document.addEventListener("DOMContentLoaded", function() {
+        // Demo Admin login (admin@example.com)
+        const demoAdminBtn = document.getElementById("demo-admin-btn");
+        if (demoAdminBtn) {
+            demoAdminBtn.addEventListener("click", function() {
+                document.getElementById("login").value = "admin@example.com";
+                document.getElementById("password").value = "password";
+                document.getElementById("login-form").submit();
+            });
+        }
+        
+        // Demo Viewer login (john@example.com)
+        const demoViewerBtn = document.getElementById("demo-viewer-btn");
+        if (demoViewerBtn) {
+            demoViewerBtn.addEventListener("click", function() {
+                document.getElementById("login").value = "john@example.com";
+                document.getElementById("password").value = "password";
+                document.getElementById("login-form").submit();
+            });
+        }
+    });
+</script>
 </body>
 </html>
